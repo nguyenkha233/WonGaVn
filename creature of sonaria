@@ -13,118 +13,86 @@ local Lighting = game:GetService("Lighting")
 local TweenService = game:GetService("TweenService")
 local LP = Players.LocalPlayer
 
--- ============================================================
---  STATE
--- ============================================================
 _G.WGState = _G.WGState or {
-    lang = "vi",
-    hitboxOn = false, hitboxSize = 15, aoeOn = false, aoeRange = 30,
-    espPlayers = false, espMushrooms = false, espShowName = false, espShowHealth = false,
-    effects = true, systemName = "Chưa đặt tên", personality = "normal", utilityUnlocked = false,
-    walkSpeed = 16, jumpPower = 50, infJump = false, freecam = false,
-    antiAfkOn = false, spamChatOn = false, spamChatMsg = "WonGaVn on top", spamChatDelay = 0.8,
-    spamBypassOn = false, autoTradeOn = false, tradeLog = {}, bypassMode = "unicode",
-    playerJoinAlert = true, flyOn = false, flySpeed = 50, noclipOn = false,
-    autoCollectOn = false, clickTpOn = false, optimizeOn = false,
-    antivoidOn = false, antivoidSafe = Vector3.new(0, 50, 0),
-    dragMenu = true,
+    hitboxOn=false, hitboxSize=15, aoeOn=false, aoeRange=30,
+    espPlayers=false, espMushrooms=false,
+    effects=true, systemName="Chưa đặt tên", personality="normal", utilityUnlocked=false,
+    walkSpeed=16, jumpPower=50, infJump=false,
+    antiAfkOn=false, spamChatOn=false, spamChatMsg="WonGaVn on top", spamChatDelay=0.8,
+    autoTradeOn=false, tradeLog={}, bypassMode="unicode",
+    playerJoinAlert=true, flyOn=false, flySpeed=50, noclipOn=false,
+    antivoidOn=false, antivoidSafe=Vector3.new(0,50,0),
+    dragMenu=true,
 }
 local S = _G.WGState
 
 -- ============================================================
---  LỜI THOẠI TÍNH CÁCH (tự nhiên hơn)
+--  TÍNH CÁCH
 -- ============================================================
 local PERSONALITIES = {
-    normal = { name = "Bình thường", lines = {
-        loaded = "Ta đã trở lại. Cần gì cứ nói.",
-        on = "Xong rồi. Đang chạy đây.",
-        off = "Đã ngưng. Khi nào cần gọi ta.",
-        unlock = "Phong ấn vỡ rồi. Ta cảm nhận được sức mạnh.",
-        powerRelease = "Sức mạnh đang trở lại... từ từ thôi.",
-        fly = "Bay thôi nào.",
-        noclip = "Xuyên qua thôi.",
-        collect = "Nhặt đồ đây.",
-        optimize = "Ta dọn dẹp đồ họa cho nhẹ máy nhé.",
-        portal = "Cổng mở rồi. Bước qua đi.",
-        antivoid = "Ta canh chừng, không để ngươi rớt đâu.",
+    normal = { name="Bình thường", lines={
+        loaded="Ta đã trở lại. Cần gì cứ nói.",
+        on="Xong rồi. Đang chạy đây.",
+        off="Đã ngưng.",
+        unlock="Phong ấn vỡ rồi.",
+        powerRelease="Sức mạnh đang trở lại... từ từ thôi.",
+        fly="Bay thôi nào.", noclip="Xuyên qua thôi.",
+        collect="Nhặt đồ đây.", optimize="Ta dọn đồ họa cho nhẹ máy.",
+        portal="Cổng mở rồi.", antivoid="Ta canh chừng ngươi.",
     }},
-    neko = { name = "Neko 🐱", lines = {
-        loaded = "Nya~ Em tới rồi nè! Chủ nhân cần gì ạ?",
-        on = "Nyaa! Bật rồi đó nha~",
-        off = "Hức... tắt rồi... buồn quá đi...",
-        unlock = "Nya! Phong ấn vỡ rồi, em mạnh hơn rồi đó~",
-        powerRelease = "Waaa~ Sức mạnh tràn ra kìa, sợ quá đi~",
-        fly = "Bay lên nào chủ nhân~",
-        noclip = "Xuyên tường nè~ Nyaa~",
-        collect = "Em nhặt hết cho chủ nhân nhé~",
-        optimize = "Em dọn cho máy chủ nhân nhẹ nhàng nè~",
-        portal = "Cổng kìa~ Mình đi đâu thế ạ?",
-        antivoid = "Em ôm chủ nhân, không cho rớt đâu~",
+    neko = { name="Neko 🐱", lines={
+        loaded="Nya~ Em tới rồi! Chủ nhân cần gì ạ?",
+        on="Nyaa! Bật rồi nha~", off="Hức... tắt rồi...",
+        unlock="Nya! Phong ấn vỡ rồi~",
+        powerRelease="Waaa~ Sức mạnh tràn ra kìa~",
+        fly="Bay lên nào~", noclip="Xuyên tường nè~",
+        collect="Em nhặt cho chủ nhân nhé~", optimize="Em dọn máy cho chủ nhân nè~",
+        portal="Cổng kìa~", antivoid="Em ôm chủ nhân~",
     }},
-    demon = { name = "Ác quỷ 😈", lines = {
-        loaded = "Ta tỉnh dậy rồi... Hồn ngươi là của ta.",
-        on = "Triệu hồi thành công. Ngươi sẽ thấy ta mạnh cỡ nào.",
-        off = "Ta ngủ đây... ngươi thoát tạm thời đấy.",
-        unlock = "Phong ấn vỡ! Ta sẽ nghiền nát kẻ chống đối.",
-        powerRelease = "Hắc ám tuôn ra... Thế giới này sẽ run sợ.",
-        fly = "Ta bay trên đống xác ngươi.",
-        noclip = "Cõi âm không cản được ta.",
-        collect = "Ta thu hoạch linh hồn.",
-        optimize = "Ta nuốt chửng gánh nặng này...",
-        portal = "Cổng địa ngục mở rồi. Bước qua nếu ngươi dám.",
-        antivoid = "Vực sâu không dám nuốt ngươi khi có ta.",
+    demon = { name="Ác quỷ 😈", lines={
+        loaded="Ta tỉnh dậy rồi... Hồn ngươi là của ta.",
+        on="Triệu hồi thành công.", off="Ta ngủ đây...",
+        unlock="Phong ấn vỡ! Ta sẽ nghiền nát kẻ chống đối.",
+        powerRelease="Hắc ám tuôn ra...",
+        fly="Ta bay trên xác ngươi.", noclip="Cõi âm không cản được ta.",
+        collect="Ta thu hoạch linh hồn.", optimize="Ta nuốt gánh nặng này...",
+        portal="Cổng địa ngục mở.", antivoid="Vực sâu không dám nuốt ngươi.",
     }},
-    king = { name = "Vua 👑", lines = {
-        loaded = "Trẫm đã giáng trần. Quỳ xuống, thần dân!",
-        on = "Triều đình khai mở. Mọi thứ sẽ theo ý trẫm.",
-        off = "Trẫm thu hồi uy quyền. Ban ân cho các ngươi.",
-        unlock = "Ngai vàng đã mở. Trẫm sẽ trị vì tất cả.",
-        powerRelease = "Long uy chấn động! Vạn vật phải cúi đầu!",
-        fly = "Trẫm ngự không phi hành.",
-        noclip = "Chướng ngại không cản nổi trẫm.",
-        collect = "Kho báu hoàng gia sẽ đầy ắp.",
-        optimize = "Trẫm tinh giản mọi thứ cho quốc thái dân an.",
-        portal = "Cổng hoàng gia đã mở.",
-        antivoid = "Kết giới của trẫm bảo vệ ngươi.",
+    king = { name="Vua 👑", lines={
+        loaded="Trẫm đã giáng trần. Quỳ xuống!",
+        on="Triều đình khai mở.", off="Trẫm thu hồi uy quyền.",
+        unlock="Ngai vàng đã mở.",
+        powerRelease="Long uy chấn động!",
+        fly="Trẫm ngự không phi hành.", noclip="Chướng ngại không cản nổi trẫm.",
+        collect="Kho báu đầy ắp.", optimize="Trẫm tinh giản mọi thứ.",
+        portal="Cổng hoàng gia đã mở.", antivoid="Kết giới bảo vệ ngươi.",
     }},
-    hacker = { name = "Hacker 💻", lines = {
-        loaded = "Đã xâm nhập. Hệ thống thuộc về ta.",
-        on = "Bypass xong. Không dấu vết.",
-        off = "Ẩn mình. Server không thấy gì.",
-        unlock = "Bẻ khóa phong ấn thành công.",
-        powerRelease = "Đang giải mã sức mạnh... brute-force 100%...",
-        fly = "Vượt firewall.",
-        noclip = "Xuyên qua mọi layer bảo mật.",
-        collect = "Auto-farm data.",
-        optimize = "Đã tối ưu hệ thống. FPS tăng vọt.",
-        portal = "Wormhole khởi tạo xong.",
-        antivoid = "Firewall chống void đã bật.",
+    hacker = { name="Hacker 💻", lines={
+        loaded="Đã xâm nhập. Hệ thống thuộc về ta.",
+        on="Bypass xong. Không dấu vết.", off="Ẩn mình.",
+        unlock="Bẻ khóa phong ấn thành công.",
+        powerRelease="Đang giải mã sức mạnh... 100%...",
+        fly="Vượt firewall.", noclip="Xuyên mọi layer.",
+        collect="Auto-farm data.", optimize="Đã tối ưu. FPS tăng vọt.",
+        portal="Wormhole xong.", antivoid="Firewall đã bật.",
     }},
-    god = { name = "Thần linh 🌌", lines = {
-        loaded = "Ta đã giáng thế. Vạn vật hãy lắng nghe.",
-        on = "Thần uy khai mở. Ta sẽ bảo hộ ngươi.",
-        off = "Ta thu hồi thần uy. Bình an cho ngươi.",
-        unlock = "Thiên môn đã mở. Sức mạnh thần thánh tuôn chảy.",
-        powerRelease = "Linh khí đang trở về... ta cảm nhận được.",
-        fly = "Đằng vân giá vũ.",
-        noclip = "Ta xuyên qua cõi hư không.",
-        collect = "Ta thu hoạch vạn vật.",
-        optimize = "Thần lực thanh lọc mọi gánh nặng.",
-        portal = "Thiên môn mở ra trước mắt ngươi.",
-        antivoid = "Thần quang phong ấn vực sâu.",
+    god = { name="Thần linh 🌌", lines={
+        loaded="Ta đã giáng thế.",
+        on="Thần uy khai mở.", off="Ta thu hồi thần uy.",
+        unlock="Thiên môn đã mở.",
+        powerRelease="Linh khí trở về...",
+        fly="Đằng vân giá vũ.", noclip="Ta xuyên cõi hư không.",
+        collect="Ta thu hoạch vạn vật.", optimize="Thần lực thanh lọc.",
+        portal="Thiên môn mở ra.", antivoid="Thần quang phong ấn vực sâu.",
     }},
-    pervert = { name = "Biến thái 🔞", lines = {
-        loaded = "Hừm... con mồi của ta đâu rồi~?",
-        on = "Ta tỉnh dậy rồi... cơ thể ngươi sẽ thuộc về ta~",
-        off = "Đi ngủ đây... để dành lần sau vậy~",
-        unlock = "Phong ấn vỡ... ta sẽ không nhẹ nhàng đâu~",
-        powerRelease = "Dục vọng trào dâng... ngươi có chịu nổi không~?",
-        fly = "Bay lên cùng ta nhé~",
-        noclip = "Xuyên qua mọi thứ ~ kể cả ngươi~",
-        collect = "Ta gom 'đồ chơi' về vậy~",
-        optimize = "Cởi bỏ lớp áo nặng nề... nhẹ nhõm chưa~?",
-        portal = "Cổng dẫn tới chốn riêng tư của ta~",
-        antivoid = "Ta giữ ngươi, không cho rớt đâu~",
+    pervert = { name="Biến thái 🔞", lines={
+        loaded="Hừm... con mồi của ta đâu~?",
+        on="Cơ thể ngươi sẽ thuộc về ta~", off="Để dành lần sau vậy~",
+        unlock="Phong ấn vỡ... ta sẽ không nhẹ nhàng~",
+        powerRelease="Dục vọng trào dâng...",
+        fly="Bay lên cùng ta nhé~", noclip="Xuyên qua mọi thứ~",
+        collect="Gom 'đồ chơi' về~", optimize="Cởi bỏ lớp áo nặng nề~",
+        portal="Chốn riêng tư của ta~", antivoid="Ta giữ ngươi~",
     }},
 }
 
@@ -134,12 +102,31 @@ local function getPLine(key)
 end
 
 -- ============================================================
---  INTRO SCREEN - NHẬP TÊN HỆ THỐNG TRƯỚC KHI MỞ MENU
+--  LOAD FILE ĐÃ LƯU
+-- ============================================================
+pcall(function()
+    if readfile and isfile then
+        if isfile("WonGaVn_Name.txt") then
+            local n = readfile("WonGaVn_Name.txt")
+            if n and #n > 0 then S.systemName = n end
+        end
+        if isfile("WonGaVn_Personality.txt") then
+            local p = readfile("WonGaVn_Personality.txt")
+            if p and #p > 0 and PERSONALITIES[p] then S.personality = p end
+        end
+        if isfile("WonGaVn_Seal.txt") then S.utilityUnlocked = true end
+        if isfile("WonGaVn_Trades.json") then
+            local d = HttpService:JSONDecode(readfile("WonGaVn_Trades.json"))
+            if type(d) == "table" then S.tradeLog = d end
+        end
+    end
+end)
+
+-- ============================================================
+--  INTRO NHẬP TÊN
 -- ============================================================
 local function showIntro(onDone)
     local parent = (gethui and gethui()) or game:GetService("CoreGui")
-
-    -- Xóa intro cũ nếu có
     for _, g in ipairs(parent:GetChildren()) do
         if g.Name == "WG_Intro" then g:Destroy() end
     end
@@ -150,168 +137,252 @@ local function showIntro(onDone)
     gui.IgnoreGuiInset = true
     gui.Parent = parent
 
-    -- Background mờ tối
     local bg = Instance.new("Frame")
-    bg.Size = UDim2.new(1, 0, 1, 0)
-    bg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    bg.Size = UDim2.new(1,0,1,0)
+    bg.BackgroundColor3 = Color3.fromRGB(0,0,0)
     bg.BackgroundTransparency = 0.3
     bg.BorderSizePixel = 0
     bg.Parent = gui
 
-    -- Panel chính
     local panel = Instance.new("Frame")
-    panel.Size = UDim2.new(0, 420, 0, 260)
-    panel.Position = UDim2.new(0.5, -210, 0.5, -130)
-    panel.BackgroundColor3 = Color3.fromRGB(18, 18, 28)
+    panel.Size = UDim2.new(0,420,0,260)
+    panel.Position = UDim2.new(0.5,-210,0.5,-130)
+    panel.BackgroundColor3 = Color3.fromRGB(18,18,28)
     panel.BorderSizePixel = 0
     panel.Parent = gui
 
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 14)
+    corner.CornerRadius = UDim.new(0,14)
     corner.Parent = panel
 
-    local stroke = Instance.new("UIStroke")
-    stroke.Color = Color3.fromRGB(120, 180, 255)
-    stroke.Thickness = 2
-    stroke.Transparency = 0.3
-    stroke.Parent = panel
-
-    -- Gradient nền
     local grad = Instance.new("UIGradient")
     grad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 25, 60)),
-        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(25, 45, 85)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 25, 60)),
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(35,25,60)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(25,45,85)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(35,25,60)),
     })
     grad.Rotation = 45
     grad.Parent = panel
 
-    -- Tiêu đề
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(120,180,255)
+    stroke.Thickness = 2
+    stroke.Transparency = 0.3
+    stroke.Parent = panel
+
     local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, 0, 0, 50)
-    title.Position = UDim2.new(0, 0, 0, 18)
+    title.Size = UDim2.new(1,0,0,50)
+    title.Position = UDim2.new(0,0,0,18)
     title.BackgroundTransparency = 1
     title.Text = "⚡ HỆ THỐNG ĐANG THỨC DẬY ⚡"
-    title.TextColor3 = Color3.fromRGB(200, 220, 255)
+    title.TextColor3 = Color3.fromRGB(200,220,255)
     title.TextStrokeTransparency = 0.5
     title.Font = Enum.Font.GothamBlack
     title.TextSize = 22
     title.Parent = panel
 
-    -- Subtitle
     local sub = Instance.new("TextLabel")
-    sub.Size = UDim2.new(1, -40, 0, 30)
-    sub.Position = UDim2.new(0, 20, 0, 70)
+    sub.Size = UDim2.new(1,-40,0,30)
+    sub.Position = UDim2.new(0,20,0,70)
     sub.BackgroundTransparency = 1
     sub.Text = "Đặt tên cho ta — Chủ Nhân"
-    sub.TextColor3 = Color3.fromRGB(160, 180, 220)
+    sub.TextColor3 = Color3.fromRGB(160,180,220)
     sub.Font = Enum.Font.Gotham
     sub.TextSize = 14
     sub.Parent = panel
 
-    -- TextBox
     local tb = Instance.new("TextBox")
-    tb.Size = UDim2.new(1, -60, 0, 44)
-    tb.Position = UDim2.new(0, 30, 0, 110)
-    tb.BackgroundColor3 = Color3.fromRGB(28, 28, 42)
+    tb.Size = UDim2.new(1,-60,0,44)
+    tb.Position = UDim2.new(0,30,0,110)
+    tb.BackgroundColor3 = Color3.fromRGB(28,28,42)
     tb.BorderSizePixel = 0
     tb.Text = ""
     tb.PlaceholderText = "VD: WonGaVn, Ryu, Hắc Long..."
-    tb.PlaceholderColor3 = Color3.fromRGB(100, 100, 130)
-    tb.TextColor3 = Color3.fromRGB(240, 245, 255)
+    tb.PlaceholderColor3 = Color3.fromRGB(100,100,130)
+    tb.TextColor3 = Color3.fromRGB(240,245,255)
     tb.Font = Enum.Font.GothamBold
     tb.TextSize = 16
     tb.ClearTextOnFocus = false
     tb.Parent = panel
 
     local tbc = Instance.new("UICorner")
-    tbc.CornerRadius = UDim.new(0, 8)
+    tbc.CornerRadius = UDim.new(0,8)
     tbc.Parent = tb
 
     local tbs = Instance.new("UIStroke")
-    tbs.Color = Color3.fromRGB(100, 150, 230)
+    tbs.Color = Color3.fromRGB(100,150,230)
     tbs.Thickness = 1.5
     tbs.Transparency = 0.4
     tbs.Parent = tb
 
-    -- Button
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -60, 0, 44)
-    btn.Position = UDim2.new(0, 30, 0, 175)
-    btn.BackgroundColor3 = Color3.fromRGB(70, 120, 220)
+    btn.Size = UDim2.new(1,-60,0,44)
+    btn.Position = UDim2.new(0,30,0,175)
+    btn.BackgroundColor3 = Color3.fromRGB(70,120,220)
     btn.BorderSizePixel = 0
     btn.Text = "⚡ ĐÁNH THỨC HỆ THỐNG"
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextColor3 = Color3.fromRGB(255,255,255)
     btn.Font = Enum.Font.GothamBold
     btn.TextSize = 16
     btn.Parent = panel
 
     local bc = Instance.new("UICorner")
-    bc.CornerRadius = UDim.new(0, 8)
+    bc.CornerRadius = UDim.new(0,8)
     bc.Parent = btn
 
-    -- Footer
     local foot = Instance.new("TextLabel")
-    foot.Size = UDim2.new(1, 0, 0, 20)
-    foot.Position = UDim2.new(0, 0, 1, -25)
+    foot.Size = UDim2.new(1,0,0,20)
+    foot.Position = UDim2.new(0,0,1,-25)
     foot.BackgroundTransparency = 1
     foot.Text = "TikTok: Nkhaj97"
-    foot.TextColor3 = Color3.fromRGB(120, 140, 180)
+    foot.TextColor3 = Color3.fromRGB(120,140,180)
     foot.Font = Enum.Font.Gotham
     foot.TextSize = 12
     foot.Parent = panel
 
-    -- Animation pop-in
-    panel.Size = UDim2.new(0, 0, 0, 0)
+    panel.Size = UDim2.new(0,0,0,0)
     TweenService:Create(panel, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-        {Size = UDim2.new(0, 420, 0, 260)}):Play()
+        {Size = UDim2.new(0,420,0,260)}):Play()
 
-    -- Sự kiện
     local done = false
     local function submit()
         if done then return end
         local name = tb.Text
-        if not name or #name < 1 then
-            name = "Hệ thống"
-        end
+        if not name or #name < 1 then name = "Hệ thống" end
         done = true
-
-        -- Fade out
         TweenService:Create(panel, TweenInfo.new(0.4), {
             BackgroundTransparency = 1,
-            Size = UDim2.new(0, 0, 0, 0),
-            Position = UDim2.new(0.5, 0, 0.5, 0),
+            Size = UDim2.new(0,0,0,0),
+            Position = UDim2.new(0.5,0,0.5,0),
         }):Play()
         task.wait(0.5)
         gui:Destroy()
-
         S.systemName = name
-        if writefile then
-            pcall(function()
-                writefile("WonGaVn_Name.txt", name)
-            end)
-        end
+        if writefile then pcall(function() writefile("WonGaVn_Name.txt", name) end) end
         onDone(name)
     end
 
     btn.MouseButton1Click:Connect(submit)
-    tb.FocusLost:Connect(function(enter)
-        if enter then submit() end
-    end)
+    tb.FocusLost:Connect(function(enter) if enter then submit() end end)
 end
 
 -- ============================================================
---  LOAD TÊN CŨ
+--  SEAL PROMPT
 -- ============================================================
-pcall(function()
-    if readfile and isfile and isfile("WonGaVn_Name.txt") then
-        local old = readfile("WonGaVn_Name.txt")
-        if old and #old > 0 then S.systemName = old end
+local function showSealPrompt(onYes, onNo)
+    local parent = (gethui and gethui()) or game:GetService("CoreGui")
+    for _, g in ipairs(parent:GetChildren()) do
+        if g.Name == "WG_SealPrompt" then g:Destroy() end
     end
-end)
+
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "WG_SealPrompt"
+    gui.ResetOnSpawn = false
+    gui.IgnoreGuiInset = true
+    gui.Parent = parent
+
+    local bg = Instance.new("Frame")
+    bg.Size = UDim2.new(1,0,1,0)
+    bg.BackgroundColor3 = Color3.fromRGB(0,0,0)
+    bg.BackgroundTransparency = 0.4
+    bg.BorderSizePixel = 0
+    bg.Parent = gui
+
+    local panel = Instance.new("Frame")
+    panel.Size = UDim2.new(0,440,0,240)
+    panel.Position = UDim2.new(0.5,-220,0.5,-120)
+    panel.BackgroundColor3 = Color3.fromRGB(22,14,40)
+    panel.BorderSizePixel = 0
+    panel.Parent = gui
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0,16)
+    corner.Parent = panel
+
+    local grad = Instance.new("UIGradient")
+    grad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(60,20,90)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(30,40,110)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(60,20,90)),
+    })
+    grad.Rotation = 45
+    grad.Parent = panel
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(180,100,255)
+    stroke.Thickness = 2.5
+    stroke.Transparency = 0.2
+    stroke.Parent = panel
+
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1,0,0,50)
+    title.Position = UDim2.new(0,0,0,20)
+    title.BackgroundTransparency = 1
+    title.Text = "🔒 PHONG ẤN ĐANG NIÊM PHONG"
+    title.TextColor3 = Color3.fromRGB(220,180,255)
+    title.Font = Enum.Font.GothamBlack
+    title.TextSize = 20
+    title.TextStrokeTransparency = 0.5
+    title.Parent = panel
+
+    local sub = Instance.new("TextLabel")
+    sub.Size = UDim2.new(1,-40,0,60)
+    sub.Position = UDim2.new(0,20,0,75)
+    sub.BackgroundTransparency = 1
+    sub.Text = "Ngươi có muốn giải phóng sức mạnh bị phong ấn?\nMột khi phá vỡ, không thể quay lại."
+    sub.TextColor3 = Color3.fromRGB(180,200,240)
+    sub.Font = Enum.Font.Gotham
+    sub.TextSize = 14
+    sub.TextWrapped = true
+    sub.Parent = panel
+
+    local yesBtn = Instance.new("TextButton")
+    yesBtn.Size = UDim2.new(0,160,0,46)
+    yesBtn.Position = UDim2.new(0,30,1,-70)
+    yesBtn.BackgroundColor3 = Color3.fromRGB(140,50,220)
+    yesBtn.BorderSizePixel = 0
+    yesBtn.Text = "⚡ CÓ — GIẢI PHÓNG"
+    yesBtn.TextColor3 = Color3.fromRGB(255,255,255)
+    yesBtn.Font = Enum.Font.GothamBold
+    yesBtn.TextSize = 15
+    yesBtn.Parent = panel
+    local yc = Instance.new("UICorner"); yc.CornerRadius = UDim.new(0,10); yc.Parent = yesBtn
+
+    local noBtn = Instance.new("TextButton")
+    noBtn.Size = UDim2.new(0,160,0,46)
+    noBtn.Position = UDim2.new(1,-190,1,-70)
+    noBtn.BackgroundColor3 = Color3.fromRGB(60,60,80)
+    noBtn.BorderSizePixel = 0
+    noBtn.Text = "✖ KHÔNG — ĐỂ SAU"
+    noBtn.TextColor3 = Color3.fromRGB(220,220,240)
+    noBtn.Font = Enum.Font.GothamBold
+    noBtn.TextSize = 15
+    noBtn.Parent = panel
+    local nc = Instance.new("UICorner"); nc.CornerRadius = UDim.new(0,10); nc.Parent = noBtn
+
+    panel.Size = UDim2.new(0,0,0,0)
+    TweenService:Create(panel, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+        {Size = UDim2.new(0,440,0,240)}):Play()
+
+    local done = false
+    local function close()
+        if done then return end
+        done = true
+        TweenService:Create(panel, TweenInfo.new(0.3), {
+            BackgroundTransparency = 1,
+            Size = UDim2.new(0,0,0,0),
+            Position = UDim2.new(0.5,0,0.5,0),
+        }):Play()
+        task.wait(0.35)
+        gui:Destroy()
+    end
+
+    yesBtn.MouseButton1Click:Connect(function() close(); onYes() end)
+    noBtn.MouseButton1Click:Connect(function() close(); onNo() end)
+end
 
 -- ============================================================
---  PORTAL FLOATING GUI (menu riêng, kéo thả, ẩn)
+--  PORTAL SYSTEM
 -- ============================================================
 local portalA_part, portalB_part = nil, nil
 local portalRange = 6
@@ -322,16 +393,14 @@ local function createPortalPart(pos, color)
     p.Name = "WG_Portal"
     p.Anchored = true
     p.CanCollide = false
-    p.Size = Vector3.new(6, 10, 0.5)
+    p.Size = Vector3.new(6,10,0.5)
     p.Material = Enum.Material.Neon
     p.Color = color
     p.Transparency = 0.2
     p.CFrame = CFrame.new(pos)
     p.Parent = workspace
     local light = Instance.new("PointLight")
-    light.Color = color
-    light.Range = 20
-    light.Brightness = 3
+    light.Color = color; light.Range = 20; light.Brightness = 3
     light.Parent = p
     return p
 end
@@ -356,162 +425,136 @@ local function buildPortalGui()
     portalGuiRef = gui
 
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 260, 0, 240)
-    frame.Position = UDim2.new(0.5, -130, 0.5, 200)
-    frame.BackgroundColor3 = Color3.fromRGB(20, 20, 32)
+    frame.Size = UDim2.new(0,260,0,240)
+    frame.Position = UDim2.new(0.5,-130,0.5,200)
+    frame.BackgroundColor3 = Color3.fromRGB(20,20,32)
     frame.BorderSizePixel = 0
     frame.Active = true
     frame.Draggable = true
     frame.Parent = gui
 
-    local fc = Instance.new("UICorner")
-    fc.CornerRadius = UDim.new(0, 12)
-    fc.Parent = frame
+    local fc = Instance.new("UICorner"); fc.CornerRadius = UDim.new(0,12); fc.Parent = frame
+    local fs = Instance.new("UIStroke"); fs.Color = Color3.fromRGB(150,120,255); fs.Thickness = 2; fs.Transparency = 0.4; fs.Parent = frame
 
-    local fs = Instance.new("UIStroke")
-    fs.Color = Color3.fromRGB(150, 120, 255)
-    fs.Thickness = 2
-    fs.Transparency = 0.4
-    fs.Parent = frame
-
-    -- Title bar
     local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, -60, 0, 32)
-    title.Position = UDim2.new(0, 10, 0, 0)
+    title.Size = UDim2.new(1,-60,0,32)
+    title.Position = UDim2.new(0,10,0,0)
     title.BackgroundTransparency = 1
     title.Text = "🌀 Cổng Xuyên Không"
-    title.TextColor3 = Color3.fromRGB(220, 200, 255)
+    title.TextColor3 = Color3.fromRGB(220,200,255)
     title.Font = Enum.Font.GothamBold
     title.TextSize = 15
     title.TextXAlignment = Enum.TextXAlignment.Left
     title.Parent = frame
 
-    -- Nút ẩn
     local hideBtn = Instance.new("TextButton")
-    hideBtn.Size = UDim2.new(0, 24, 0, 24)
-    hideBtn.Position = UDim2.new(1, -54, 0, 4)
-    hideBtn.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+    hideBtn.Size = UDim2.new(0,24,0,24)
+    hideBtn.Position = UDim2.new(1,-54,0,4)
+    hideBtn.BackgroundColor3 = Color3.fromRGB(255,100,100)
     hideBtn.BorderSizePixel = 0
     hideBtn.Text = "−"
-    hideBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    hideBtn.TextColor3 = Color3.fromRGB(255,255,255)
     hideBtn.Font = Enum.Font.GothamBold
     hideBtn.TextSize = 16
     hideBtn.Parent = frame
-    local hc = Instance.new("UICorner")
-    hc.CornerRadius = UDim.new(0, 6)
-    hc.Parent = hideBtn
+    local hc = Instance.new("UICorner"); hc.CornerRadius = UDim.new(0,6); hc.Parent = hideBtn
 
-    -- Nút đóng
     local closeBtn = Instance.new("TextButton")
-    closeBtn.Size = UDim2.new(0, 24, 0, 24)
-    closeBtn.Position = UDim2.new(1, -26, 0, 4)
-    closeBtn.BackgroundColor3 = Color3.fromRGB(180, 60, 60)
+    closeBtn.Size = UDim2.new(0,24,0,24)
+    closeBtn.Position = UDim2.new(1,-26,0,4)
+    closeBtn.BackgroundColor3 = Color3.fromRGB(180,60,60)
     closeBtn.BorderSizePixel = 0
     closeBtn.Text = "×"
-    closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    closeBtn.TextColor3 = Color3.fromRGB(255,255,255)
     closeBtn.Font = Enum.Font.GothamBold
     closeBtn.TextSize = 18
     closeBtn.Parent = frame
-    local cc = Instance.new("UICorner")
-    cc.CornerRadius = UDim.new(0, 6)
-    cc.Parent = closeBtn
+    local cc = Instance.new("UICorner"); cc.CornerRadius = UDim.new(0,6); cc.Parent = closeBtn
 
-    -- Nội dung (ban đầu hiện)
     local content = Instance.new("Frame")
-    content.Size = UDim2.new(1, -20, 1, -45)
-    content.Position = UDim2.new(0, 10, 0, 38)
+    content.Size = UDim2.new(1,-20,1,-45)
+    content.Position = UDim2.new(0,10,0,38)
     content.BackgroundTransparency = 1
     content.Parent = frame
 
     local function makeBtn(text, yPos, color, callback)
         local b = Instance.new("TextButton")
-        b.Size = UDim2.new(1, 0, 0, 38)
-        b.Position = UDim2.new(0, 0, 0, yPos)
+        b.Size = UDim2.new(1,0,0,38)
+        b.Position = UDim2.new(0,0,0,yPos)
         b.BackgroundColor3 = color
         b.BorderSizePixel = 0
         b.Text = text
-        b.TextColor3 = Color3.fromRGB(255, 255, 255)
+        b.TextColor3 = Color3.fromRGB(255,255,255)
         b.Font = Enum.Font.GothamBold
         b.TextSize = 14
         b.Parent = content
-        local c = Instance.new("UICorner")
-        c.CornerRadius = UDim.new(0, 8)
-        c.Parent = b
+        local c = Instance.new("UICorner"); c.CornerRadius = UDim.new(0,8); c.Parent = b
         b.MouseButton1Click:Connect(callback)
         return b
     end
 
-    makeBtn("🌀 Tạo Cổng A", 0, Color3.fromRGB(60, 130, 220), function()
+    makeBtn("🌀 Tạo Cổng A", 0, Color3.fromRGB(60,130,220), function()
         local c = LP.Character
         local hrp = c and c:FindFirstChild("HumanoidRootPart")
         if hrp then
             if portalA_part then pcall(function() portalA_part:Destroy() end) end
-            portalA_part = createPortalPart(hrp.Position, Color3.fromRGB(100, 200, 255))
-            pcall(function() Rayfield:Notify({Title = "🌀 Cổng A", Content = "Đã tạo", Duration = 2}) end)
+            portalA_part = createPortalPart(hrp.Position, Color3.fromRGB(100,200,255))
         end
     end)
 
-    makeBtn("🌀 Tạo Cổng B", 46, Color3.fromRGB(220, 100, 180), function()
+    makeBtn("🌀 Tạo Cổng B", 46, Color3.fromRGB(220,100,180), function()
         local c = LP.Character
         local hrp = c and c:FindFirstChild("HumanoidRootPart")
         if hrp then
             if portalB_part then pcall(function() portalB_part:Destroy() end) end
-            portalB_part = createPortalPart(hrp.Position, Color3.fromRGB(255, 100, 180))
-            pcall(function() Rayfield:Notify({Title = "🌀 Cổng B", Content = "Đã tạo", Duration = 2}) end)
+            portalB_part = createPortalPart(hrp.Position, Color3.fromRGB(255,100,180))
         end
     end)
 
-    -- Tầm kích hoạt
     local rangeLabel = Instance.new("TextLabel")
-    rangeLabel.Size = UDim2.new(1, 0, 0, 20)
-    rangeLabel.Position = UDim2.new(0, 0, 0, 92)
+    rangeLabel.Size = UDim2.new(1,0,0,20)
+    rangeLabel.Position = UDim2.new(0,0,0,92)
     rangeLabel.BackgroundTransparency = 1
     rangeLabel.Text = "Tầm kích hoạt: " .. portalRange .. " studs"
-    rangeLabel.TextColor3 = Color3.fromRGB(180, 200, 240)
+    rangeLabel.TextColor3 = Color3.fromRGB(180,200,240)
     rangeLabel.Font = Enum.Font.Gotham
     rangeLabel.TextSize = 12
     rangeLabel.Parent = content
 
     local rangeSlider = Instance.new("TextButton")
-    rangeSlider.Size = UDim2.new(1, 0, 0, 30)
-    rangeSlider.Position = UDim2.new(0, 0, 0, 116)
-    rangeSlider.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+    rangeSlider.Size = UDim2.new(1,0,0,30)
+    rangeSlider.Position = UDim2.new(0,0,0,116)
+    rangeSlider.BackgroundColor3 = Color3.fromRGB(40,40,60)
     rangeSlider.BorderSizePixel = 0
-    rangeSlider.Text = "◄ Kéo để chỉnh ►"
-    rangeSlider.TextColor3 = Color3.fromRGB(200, 210, 240)
+    rangeSlider.Text = "◄ Bấm để tăng tầm ►"
+    rangeSlider.TextColor3 = Color3.fromRGB(200,210,240)
     rangeSlider.Font = Enum.Font.Gotham
     rangeSlider.TextSize = 12
     rangeSlider.Parent = content
-    local rc = Instance.new("UICorner")
-    rc.CornerRadius = UDim.new(0, 6)
-    rc.Parent = rangeSlider
+    local rc = Instance.new("UICorner"); rc.CornerRadius = UDim.new(0,6); rc.Parent = rangeSlider
 
-    -- Click nút để tăng
     rangeSlider.MouseButton1Click:Connect(function()
         portalRange = portalRange + 2
         if portalRange > 30 then portalRange = 4 end
         rangeLabel.Text = "Tầm kích hoạt: " .. portalRange .. " studs"
     end)
 
-    makeBtn("🗑️ Xóa tất cả cổng", 154, Color3.fromRGB(180, 60, 60), function()
+    makeBtn("🗑️ Xóa tất cả cổng", 154, Color3.fromRGB(180,60,60), function()
         destroyPortals()
-        pcall(function() Rayfield:Notify({Title = "🌀", Content = "Đã xóa cổng", Duration = 2}) end)
     end)
 
-    -- Nút ẩn → thu nhỏ về title bar
     hideBtn.MouseButton1Click:Connect(function()
         if content.Visible then
             content.Visible = false
-            frame.Size = UDim2.new(0, 260, 0, 36)
+            frame.Size = UDim2.new(0,260,0,36)
             hideBtn.Text = "+"
         else
             content.Visible = true
-            frame.Size = UDim2.new(0, 260, 0, 240)
+            frame.Size = UDim2.new(0,260,0,240)
             hideBtn.Text = "−"
         end
     end)
 
-    -- Nút đóng → xóa hẳn
     closeBtn.MouseButton1Click:Connect(function()
         destroyPortals()
         gui:Destroy()
@@ -519,9 +562,6 @@ local function buildPortalGui()
     end)
 end
 
--- ============================================================
---  PORTAL LOOP
--- ============================================================
 if not _G.WGPortalLoopStarted then
     _G.WGPortalLoopStarted = true
     local lastTp = 0
@@ -537,10 +577,10 @@ if not _G.WGPortalLoopStarted then
                         local pA = portalA_part.Position
                         local pB = portalB_part.Position
                         if (myPos - pA).Magnitude < portalRange then
-                            root.CFrame = CFrame.new(pB + Vector3.new(0, 3, 0))
+                            root.CFrame = CFrame.new(pB + Vector3.new(0,3,0))
                             lastTp = now
                         elseif (myPos - pB).Magnitude < portalRange then
-                            root.CFrame = CFrame.new(pA + Vector3.new(0, 3, 0))
+                            root.CFrame = CFrame.new(pA + Vector3.new(0,3,0))
                             lastTp = now
                         end
                     end
@@ -565,8 +605,8 @@ if not _G.WGAntiVoidStarted then
                     local pos = root.Position
                     if pos.Y > -100 then S.antivoidSafe = pos end
                     if pos.Y < -500 then
-                        local safe = S.antivoidSafe or Vector3.new(0, 50, 0)
-                        root.CFrame = CFrame.new(safe + Vector3.new(0, 5, 0))
+                        local safe = S.antivoidSafe or Vector3.new(0,50,0)
+                        root.CFrame = CFrame.new(safe + Vector3.new(0,5,0))
                     end
                 end
             end
@@ -576,7 +616,7 @@ if not _G.WGAntiVoidStarted then
 end
 
 -- ============================================================
---  TRADE LOG (lưu file)
+--  TRADE LOG
 -- ============================================================
 local TRADE_FILE = "WonGaVn_Trades.json"
 
@@ -586,17 +626,6 @@ local function saveTrades()
         writefile(TRADE_FILE, HttpService:JSONEncode(S.tradeLog))
     end)
 end
-
-local function loadTrades()
-    if not (readfile and isfile) then return end
-    pcall(function()
-        if isfile(TRADE_FILE) then
-            local data = HttpService:JSONDecode(readfile(TRADE_FILE))
-            if type(data) == "table" then S.tradeLog = data end
-        end
-    end)
-end
-loadTrades()
 
 local function addTradeLog(tn, inm, dir)
     table.insert(S.tradeLog, 1, {
@@ -673,7 +702,7 @@ local function enableAntiban()
 end
 
 -- ============================================================
---  LOOPS (walk/jump/infjump/fly/noclip)
+--  LOOPS NỀN
 -- ============================================================
 if not _G.WGLoopsStarted then
     _G.WGLoopsStarted = true
@@ -746,7 +775,7 @@ if not _G.WGLoopsStarted then
 end
 
 -- ============================================================
---  HITBOX / AOE / ESP / CHAT (giữ nguyên logic cũ - rút gọn)
+--  HITBOX / AOE
 -- ============================================================
 local originals = {}
 local atkRemotesGlobal = {}
@@ -782,34 +811,6 @@ local function resetHitbox(pl)
         hrp.Material = o.Material; hrp.CanCollide = o.CanCollide
         hrp.Color = o.Color; originals[pl] = nil
     end
-end
-
-local mushroomESP = {}
-local function makeESP(part)
-    local hl = Instance.new("Highlight")
-    hl.FillTransparency = 1
-    hl.OutlineColor = Color3.fromRGB(255, 255, 255)
-    hl.OutlineTransparency = 0.3
-    hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-    hl.Adornee = part
-    hl.Parent = part
-    return hl
-end
-local function clearPlayerESP()
-    for _, pl in ipairs(Players:GetPlayers()) do
-        local c = pl.Character
-        if c then
-            local hl = c:FindFirstChild("WG_ESP_P"); if hl then hl:Destroy() end
-            local head = c:FindFirstChild("Head")
-            if head then
-                local bb = head:FindFirstChild("WG_ESP_Info"); if bb then bb:Destroy() end
-            end
-        end
-    end
-end
-local function clearMushroomESP()
-    for part, hl in pairs(mushroomESP) do if hl then hl:Destroy() end end
-    mushroomESP = {}
 end
 
 if not _G.WGHitboxLoopStarted then
@@ -860,9 +861,36 @@ if not _G.WGHitboxLoopStarted then
 end
 
 -- ============================================================
+--  ESP
+-- ============================================================
+local mushroomESP = {}
+local function makeESP(part)
+    local hl = Instance.new("Highlight")
+    hl.FillTransparency = 1
+    hl.OutlineColor = Color3.fromRGB(255,255,255)
+    hl.OutlineTransparency = 0.3
+    hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    hl.Adornee = part
+    hl.Parent = part
+    return hl
+end
+local function clearPlayerESP()
+    for _, pl in ipairs(Players:GetPlayers()) do
+        local c = pl.Character
+        if c then
+            local hl = c:FindFirstChild("WG_ESP_P"); if hl then hl:Destroy() end
+        end
+    end
+end
+local function clearMushroomESP()
+    for part, hl in pairs(mushroomESP) do if hl then hl:Destroy() end end
+    mushroomESP = {}
+end
+
+-- ============================================================
 --  CHAT BYPASS
 -- ============================================================
-local spamThread, bypassThread = nil, nil
+local spamThread = nil
 local CONFUSABLES = {["a"]="а",["e"]="е",["o"]="о",["p"]="р",["c"]="с",["x"]="х",["y"]="у"}
 local function getBypassedMessage(m)
     local r = m
@@ -894,7 +922,7 @@ local function stopSpamChat()
 end
 
 -- ============================================================
---  BUILD MENU CHÍNH (gọi sau khi Rayfield load)
+--  HELPER
 -- ============================================================
 local Rayfield = nil
 local CurrentWindow = nil
@@ -902,11 +930,7 @@ local buildMenu
 
 local function sysNotify(key, custom)
     pcall(function()
-        Rayfield:Notify({
-            Title = "⚡ " .. S.systemName,
-            Content = custom or getPLine(key),
-            Duration = 4
-        })
+        Rayfield:Notify({Title = "⚡ " .. S.systemName, Content = custom or getPLine(key), Duration = 4})
     end)
 end
 
@@ -920,58 +944,114 @@ local function destroyOldUI()
     end)
 end
 
+local function applyMenuTheme()
+    if not S.effects then return end
+    task.wait(1.0)
+    local rayGui = nil
+    local function isRay(o)
+        if not o or not o:IsA("ScreenGui") then return false end
+        local nm = o.Name:lower()
+        return nm:find("rayfield") or nm:find("sirius")
+    end
+    for _, g in ipairs(game:GetService("CoreGui"):GetChildren()) do
+        if isRay(g) then rayGui = g; break end
+    end
+    if not rayGui then
+        pcall(function()
+            if gethui then
+                for _, g in ipairs(gethui():GetChildren()) do
+                    if isRay(g) then rayGui = g; break end
+                end
+            end
+        end)
+    end
+    if not rayGui then return end
+    local accents = {
+        normal = Color3.fromRGB(100,200,255),
+        neko = Color3.fromRGB(255,150,220),
+        demon = Color3.fromRGB(220,60,60),
+        king = Color3.fromRGB(255,200,60),
+        hacker = Color3.fromRGB(80,255,140),
+        god = Color3.fromRGB(200,160,255),
+        pervert = Color3.fromRGB(255,100,180),
+    }
+    local accent = accents[S.personality] or accents.normal
+    for _, child in ipairs(rayGui:GetDescendants()) do
+        if not child:IsA("GuiObject") then continue end
+        pcall(function()
+            if child:IsA("TextLabel") or child:IsA("TextButton") then
+                child.TextColor3 = Color3.fromRGB(240,245,255)
+            end
+            if child.Parent and child.Parent:IsA("ScreenGui") then return end
+            if (child:IsA("Frame") or child:IsA("TextButton")) then
+                local abs = child.AbsoluteSize
+                if abs.X > 60 and abs.X < 320 and abs.Y > 20 and abs.Y < 70 then
+                    if not child:FindFirstChildOfClass("UIStroke") then
+                        local stroke = Instance.new("UIStroke")
+                        stroke.Color = accent
+                        stroke.Thickness = 1
+                        stroke.Transparency = 0.7
+                        stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+                        stroke.Parent = child
+                    end
+                end
+            end
+        end)
+    end
+end
+
 local function doUnlock()
     if S.utilityUnlocked then
         Rayfield:Notify({Title = "🔓", Content = "Phong ấn đã vỡ rồi.", Duration = 3})
         return
     end
     task.spawn(function()
-        local steps = 12
+        local steps = 15
         for i = 1, steps do
             pcall(function()
                 Rayfield:Notify({
-                    Title = "🔓 Đang giải phong ấn...",
-                    Content = string.rep("█", i) .. string.rep("░", steps - i) .. " " .. math.floor(i/steps*100) .. "%",
+                    Title = "💥 SỨC MẠNH ĐANG TRÀN VỀ...",
+                    Content = string.rep("▓", i) .. string.rep("░", steps-i) .. " " .. math.floor(i/steps*100) .. "%",
                     Duration = 1
                 })
             end)
-            task.wait(0.25)
+            task.wait(0.22)
         end
     end)
-    task.wait(12 * 0.25 + 0.3)
+    task.wait(15 * 0.22 + 0.3)
+
     S.utilityUnlocked = true
     if writefile then pcall(function() writefile("WonGaVn_Seal.txt", "unlocked") end) end
-    Rayfield:Notify({Title = "🔓", Content = getPLine("unlock"), Duration = 4})
-    task.wait(1.2)
-    Rayfield:Notify({Title = "⚡", Content = getPLine("powerRelease"), Duration = 4})
-    task.wait(1.2)
-    Rayfield:Notify({Title = "✅", Content = "Phong ấn đã vỡ hoàn toàn.", Duration = 5})
 
-    -- Rebuild menu để hiện phần phong ấn
+    Rayfield:Notify({Title = "🔥 " .. S.systemName, Content = "AAAA... Sức mạnh tràn về!", Duration = 4})
+    task.wait(1.5)
+    Rayfield:Notify({Title = "💥 PHONG ẤN VỠ TAN", Content = getPLine("unlock"), Duration = 4})
+    task.wait(1.5)
+    Rayfield:Notify({Title = "⚡ " .. S.systemName, Content = getPLine("powerRelease"), Duration = 4})
+    task.wait(1.5)
+    Rayfield:Notify({Title = "🌟 SỨC MẠNH THỨC TỈNH", Content = "Hãy dùng sức mạnh này khôn ngoan.", Duration = 5})
+
+    task.wait(2)
     task.spawn(function()
         destroyOldUI()
         task.wait(0.4)
         pcall(buildMenu)
+        task.wait(0.5)
+        pcall(applyMenuTheme)
     end)
 end
 
--- Load seal state
-pcall(function()
-    if readfile and isfile and isfile("WonGaVn_Seal.txt") then
-        S.utilityUnlocked = true
-    end
-end)
-
--- Menu toggle (RightShift)
+-- Menu toggle keybind
 UIS.InputBegan:Connect(function(input, gp)
     if gp then return end
     if input.KeyCode == Enum.KeyCode.RightShift then
-        if CurrentWindow then
-            pcall(function() CurrentWindow:Toggle() end)
-        end
+        if CurrentWindow then pcall(function() CurrentWindow:Toggle() end) end
     end
 end)
 
+-- ============================================================
+--  BUILD MENU
+-- ============================================================
 buildMenu = function()
     local Window = Rayfield:CreateWindow({
         Name = "WonGaVn🇻🇳 Script",
@@ -1008,20 +1088,26 @@ buildMenu = function()
             if v then sysNotify("on") end
         end
     })
-    TabCombat:CreateSlider({
-        Name = "Kích thước Hitbox", Range = {5, 1000}, Increment = 5,
-        Suffix = " studs", CurrentValue = S.hitboxSize, Flag = "HitboxSize",
-        Callback = function(v) S.hitboxSize = v end
+    TabCombat:CreateInput({
+        Name = "Kích thước Hitbox", CurrentValue = tostring(S.hitboxSize),
+        PlaceholderText = "Nhập số bất kỳ", RemoveTextAfterFocusLost = false, Flag = "HitboxSize",
+        Callback = function(t)
+            local n = tonumber(t)
+            if n and n > 0 then S.hitboxSize = n end
+        end
     })
     TabCombat:CreateSection("AoE")
     TabCombat:CreateToggle({
         Name = "Bật AoE", CurrentValue = S.aoeOn, Flag = "AoE",
         Callback = function(v) S.aoeOn = v; if v then sysNotify("on") end end
     })
-    TabCombat:CreateSlider({
-        Name = "Bán kính AoE", Range = {5, 500}, Increment = 5,
-        Suffix = " studs", CurrentValue = S.aoeRange, Flag = "AoERange",
-        Callback = function(v) S.aoeRange = v end
+    TabCombat:CreateInput({
+        Name = "Bán kính AoE", CurrentValue = tostring(S.aoeRange),
+        PlaceholderText = "Nhập số bất kỳ", RemoveTextAfterFocusLost = false, Flag = "AoERange",
+        Callback = function(t)
+            local n = tonumber(t)
+            if n and n > 0 then S.aoeRange = n end
+        end
     })
 
     -- ===== ESP =====
@@ -1062,7 +1148,18 @@ buildMenu = function()
             for code, p in pairs(PERSONALITIES) do
                 if p.name == sel then
                     S.personality = code
-                    sysNotify(nil, "🎭 Tính cách: " .. sel)
+                    if writefile then pcall(function() writefile("WonGaVn_Personality.txt", code) end) end
+                    task.spawn(function()
+                        Rayfield:Notify({Title = "🎭 " .. S.systemName, Content = "Tính cách mới: " .. sel, Duration = 3})
+                        task.wait(1.2)
+                        Rayfield:Notify({Title = "✨ " .. S.systemName, Content = getPLine("on"), Duration = 4})
+                        task.wait(0.5)
+                        destroyOldUI()
+                        task.wait(0.4)
+                        pcall(buildMenu)
+                        task.wait(0.5)
+                        pcall(applyMenuTheme)
+                    end)
                     break
                 end
             end
@@ -1071,12 +1168,12 @@ buildMenu = function()
 
     TabMisc:CreateSection("🚶 Tốc độ & Nhảy")
     TabMisc:CreateSlider({
-        Name = "Tốc độ chạy", Range = {16, 1000}, Increment = 10,
+        Name = "Tốc độ chạy", Range = {16,1000}, Increment = 10,
         Suffix = " studs/s", CurrentValue = S.walkSpeed, Flag = "WalkSlider",
         Callback = function(v) S.walkSpeed = v end
     })
     TabMisc:CreateSlider({
-        Name = "Lực nhảy", Range = {50, 1000}, Increment = 10,
+        Name = "Lực nhảy", Range = {50,1000}, Increment = 10,
         Suffix = "", CurrentValue = S.jumpPower, Flag = "JumpSlider",
         Callback = function(v) S.jumpPower = v end
     })
@@ -1103,7 +1200,10 @@ buildMenu = function()
     TabMisc:CreateSection("🎨 Giao diện")
     TabMisc:CreateToggle({
         Name = "Hiệu ứng menu", CurrentValue = S.effects ~= false, Flag = "Effects",
-        Callback = function(v) S.effects = v end
+        Callback = function(v)
+            S.effects = v
+            if v then task.spawn(function() pcall(applyMenuTheme) end) end
+        end
     })
     TabMisc:CreateToggle({
         Name = "Cho phép kéo menu", CurrentValue = S.dragMenu ~= false, Flag = "DragMenu",
@@ -1127,28 +1227,22 @@ buildMenu = function()
         end
     })
 
-    TabMisc:CreateSection("💾 Config")
-    TabMisc:CreateButton({
-        Name = "💾 Lưu cấu hình",
-        Callback = function()
-            if writefile then
-                pcall(function()
-                    writefile("WonGaVn_Config.json", HttpService:JSONEncode({
-                        lang=S.lang, hitboxSize=S.hitboxSize, aoeRange=S.aoeRange,
-                        walkSpeed=S.walkSpeed, jumpPower=S.jumpPower,
-                        systemName=S.systemName, personality=S.personality,
-                    }))
-                end)
-            end
-            sysNotify(nil, "💾 Đã lưu")
-        end
-    })
+    TabMisc:CreateSection("🔒 Phong Ấn")
+    if not S.utilityUnlocked then
+        TabMisc:CreateButton({
+            Name = "🔓 Mở khóa năng lực bị phong ấn",
+            Callback = function() pcall(doUnlock) end
+        })
+        TabMisc:CreateLabel("⚠️ Sau khi mở khóa, menu sẽ tự tải lại.")
+    else
+        TabMisc:CreateLabel("✅ Phong ấn đã vỡ. Vào tab Phong Ấn để dùng tính năng.")
+    end
 
     -- ===== PHONG ẤN =====
     if not S.utilityUnlocked then
         TabUtil:CreateSection("🔒 PHONG ẤN CHƯA VỠ")
         TabUtil:CreateLabel("Phong ấn đang niêm phong.")
-        TabUtil:CreateLabel("💡 Vào Misc → Bấm 'Mở khóa phong ấn' để giải phong.")
+        TabUtil:CreateLabel("💡 Vào Misc → Bấm 'Mở khóa năng lực bị phong ấn'.")
         TabUtil:CreateButton({
             Name = "🔓 Mở khóa ngay",
             Callback = function() pcall(doUnlock) end
@@ -1172,7 +1266,7 @@ buildMenu = function()
             Callback = function(v) S.flyOn = v; if v then sysNotify("fly") end end
         })
         TabUtil:CreateSlider({
-            Name = "Tốc độ bay", Range = {10, 500}, Increment = 10,
+            Name = "Tốc độ bay", Range = {10,500}, Increment = 10,
             Suffix = "", CurrentValue = S.flySpeed, Flag = "FlySpeed",
             Callback = function(v) S.flySpeed = v end
         })
@@ -1180,19 +1274,12 @@ buildMenu = function()
         TabUtil:CreateSection("🌀 Cổng Xuyên Không")
         TabUtil:CreateButton({
             Name = "🪟 Mở Menu Cổng (kéo thả được)",
-            Callback = function()
-                buildPortalGui()
-                pcall(function() Rayfield:Notify({Title = "🌀 Cổng", Content = "Menu cổng đã mở. Kéo di chuyển được.", Duration = 3}) end)
-            end
+            Callback = function() buildPortalGui() end
         })
         TabUtil:CreateButton({
             Name = "🗑️ Xóa tất cả cổng",
-            Callback = function()
-                destroyPortals()
-                Rayfield:Notify({Title = "🌀", Content = "Đã xóa cổng", Duration = 2})
-            end
+            Callback = function() destroyPortals() end
         })
-        TabUtil:CreateLabel("💡 Bấm 'Mở Menu Cổng' để hiện bảng riêng có thể kéo + ẩn.")
 
         TabUtil:CreateSection("🛡️ Anti-Void")
         TabUtil:CreateToggle({
@@ -1211,7 +1298,7 @@ buildMenu = function()
             Callback = function(t) if t and #t > 0 then S.spamChatMsg = t end end
         })
         TabUtil:CreateSlider({
-            Name = "Delay spam", Range = {0.3, 5}, Increment = 0.1,
+            Name = "Delay spam", Range = {0.3,5}, Increment = 0.1,
             Suffix = "s", CurrentValue = S.spamChatDelay, Flag = "SpamDelay",
             Callback = function(v) S.spamChatDelay = v end
         })
@@ -1232,8 +1319,7 @@ buildMenu = function()
             Name = "📋 Xem lịch sử giao dịch",
             Callback = function()
                 local text = "=== LỊCH SỬ GIAO DỊCH ===\n"
-                if #S.tradeLog == 0 then
-                    text = text .. "(Chưa có giao dịch nào)"
+                if #S.tradeLog == 0 then text = text .. "(Chưa có giao dịch nào)"
                 else
                     for i, t in ipairs(S.tradeLog) do
                         if i > 15 then break end
@@ -1249,21 +1335,10 @@ buildMenu = function()
             Name = "🗑️ Xóa lịch sử",
             Callback = function()
                 S.tradeLog = {}
-                saveTrades()
-                Rayfield:Notify({Title = "🗑️", Content = "Đã xóa lịch sử", Duration = 2})
+                if writefile then pcall(function() writefile(TRADE_FILE, "[]") end) end
+                Rayfield:Notify({Title = "🗑️", Content = "Đã xóa", Duration = 2})
             end
         })
-        TabUtil:CreateLabel("💡 Lịch sử tự động lưu vào file. Bật lại script vẫn còn.")
-    end
-
-    -- ===== Nút mở khóa ở Misc =====
-    if not S.utilityUnlocked then
-        TabMisc:CreateSection("🔒 Phong Ấn")
-        TabMisc:CreateButton({
-            Name = "🔓 Mở khóa năng lực bị phong ấn",
-            Callback = function() pcall(doUnlock) end
-        })
-        TabMisc:CreateLabel("⚠️ Sau khi mở khóa, menu sẽ tự tải lại và hiện phần Phong Ấn.")
     end
 
     -- ===== Info =====
@@ -1271,24 +1346,23 @@ buildMenu = function()
     TabMisc:CreateButton({
         Name = "📱 TikTok: Nkhaj97",
         Callback = function()
-            Rayfield:Notify({Title = "📢", Content = "Theo dõi TikTok Nkhaj97 để cập nhật!", Duration = 5})
+            Rayfield:Notify({Title = "📢", Content = "Theo dõi TikTok Nkhaj97!", Duration = 5})
         end
     })
     TabMisc:CreateButton({
         Name = "💬 Discord: discord.gg/rY3BUVJz5",
         Callback = function()
             if setclipboard then pcall(function() setclipboard("https://discord.gg/rY3BUVJz5") end) end
-            Rayfield:Notify({Title = "💬 Discord", Content = "Đã copy link. Join để lấy key!", Duration = 5})
+            Rayfield:Notify({Title = "💬 Discord", Content = "Đã copy link!", Duration = 5})
         end
     })
     TabMisc:CreateLabel("Script by WonGaVn🇻🇳 | TikTok: Nkhaj97")
 end
 
 -- ============================================================
---  KHỞI ĐỘNG — INTRO → RAYFIELD → MENU
+--  KHỞI ĐỘNG
 -- ============================================================
 local function startMain()
-    -- Load Rayfield
     local ok, err = pcall(function()
         Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
     end)
@@ -1298,7 +1372,6 @@ local function startMain()
     end
     task.wait(0.5)
 
-    -- Build menu
     local ok2, err2 = pcall(buildMenu)
     if not ok2 then
         warn("[WonGaVn] buildMenu lỗi: " .. tostring(err2))
@@ -1307,25 +1380,40 @@ local function startMain()
 
     task.wait(1)
     enableAntiban()
+    task.wait(0.5)
+    pcall(applyMenuTheme)
 
     pcall(function()
-        Rayfield:Notify({
-            Title = "⚡ " .. S.systemName,
-            Content = getPLine("loaded"),
-            Duration = 6
-        })
+        Rayfield:Notify({Title = "⚡ " .. S.systemName, Content = getPLine("loaded"), Duration = 6})
     end)
-    task.wait(1.5)
-    pcall(function()
-        Rayfield:Notify({
-            Title = "⚔️ CẢNH BÁO",
-            Content = "Bạn đang dùng script trong game combat. Nguy cơ ban cao — dùng alt!",
-            Duration = 10
-        })
-    end)
+
+    -- Kiểm tra phong ấn
+    if not S.utilityUnlocked then
+        task.wait(2)
+        showSealPrompt(
+            function() pcall(doUnlock) end,
+            function()
+                pcall(function()
+                    Rayfield:Notify({
+                        Title = "🔒 " .. S.systemName,
+                        Content = "Phong ấn chưa vỡ... Ngươi hãy đến tìm ta khi sẵn sàng.",
+                        Duration = 5
+                    })
+                end)
+            end
+        )
+    else
+        task.wait(2)
+        pcall(function()
+            Rayfield:Notify({
+                Title = "⚔️ CẢNH BÁO",
+                Content = "Script dùng trong game combat. Nguy cơ ban cao — dùng alt!",
+                Duration = 10
+            })
+        end)
+    end
 end
 
--- Kiểm tra tên cũ
 if S.systemName and S.systemName ~= "Chưa đặt tên" and #S.systemName > 0 then
     startMain()
 else
