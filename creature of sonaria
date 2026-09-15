@@ -98,7 +98,7 @@ local TXT = {
     vi = {
         tab_ab="🛡️ antiban", tab_combat="⚔️ combat", tab_esp="👁️ esp",
         tab_util="🔒 phong ấn", tab_misc="⚙️ misc",
-        ab_toggle="bật antiban", ab_warn="⚠️ antiban chỉ bảo vệ ~80% nên có thể bị bot quét nếu bị phát hiện nhed.",
+        ab_toggle="bật antiban", ab_warn="⚠️ antiban chỉ bảo vệ ~80% nên có thể bị bot quét nếu bị phát hiện nhé.",
         combat_warn="⚠️ game combat —, dùng acc phụ nếu sợ bị quét!",
         speed_warn="⚠️ nên chọn 500-1000. dưới 100 rất chậm.",
         hitbox="bật hitbox", hitbox_size="kích thước hitbox",
