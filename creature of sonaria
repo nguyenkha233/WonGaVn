@@ -100,7 +100,7 @@ local TXT = {
         tab_util="🔒 phong ấn", tab_misc="⚙️ misc",
         ab_toggle="bật antiban", ab_warn="⚠️ antiban chỉ bảo vệ ~80% nên có thể bị bot quét nếu bị phát hiện nhé.",
         combat_warn="⚠️ combat — dùng acc phụ nếu sợ bị quét!",
-        speed_warn="⚠️ nên chọn 500-1000. tầm khu vực chọn lên cao sẽ dễ bị lag.",
+        speed_warn="⚠️ nên chọn 500-1000. tầm khu vực lên cao nữa sẽ dễ bị lag.",
         hitbox="bật hitbox", hitbox_size="kích thước hitbox",
         aoe="bật aoe", aoe_range="bán kính aoe",
         esp_p="esp player", esp_m="esp nấm",
