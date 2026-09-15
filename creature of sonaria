@@ -30,6 +30,7 @@ _G.WGState = _G.WGState or {
     antivoidOn=false, antivoidSafe=Vector3.new(0,50,0),
     dragMenu=true, portalRange=8,
     timeStopOn=false, timeStopRange=50,
+    freecamSensitivity=0.08, freecamZoom=30,
 }
 local S = _G.WGState
 
@@ -47,6 +48,7 @@ local function saveFullConfig()
             flySpeed=S.flySpeed, portalRange=S.portalRange, timeStopRange=S.timeStopRange,
             spamChatMsg=S.spamChatMsg, spamChatDelay=S.spamChatDelay,
             bypassMode=S.bypassMode, playerJoinAlert=S.playerJoinAlert, dragMenu=S.dragMenu,
+            freecamSensitivity=S.freecamSensitivity,
         }))
     end)
 end
@@ -96,9 +98,9 @@ local TXT = {
     vi = {
         tab_ab="🛡️ antiban", tab_combat="⚔️ combat", tab_esp="👁️ esp",
         tab_util="🔒 phong ấn", tab_misc="⚙️ misc",
-        ab_toggle="bật antiban", ab_warn="⚠️ antiban chỉ bảo vệ ~80%.",
-        combat_warn="⚠️ game combat — nguy cơ ban cao, dùng alt!",
-        speed_warn="⚠️ nên chọn 500-1000. dưới 100 rất chậm.",
+        ab_toggle="bật antiban", ab_warn="⚠️ antiban chỉ bảo vệ 80~ nên có lúc bot sẽ quét ra được",
+        combat_warn="⚠️ game combat — nguy cơ ban cao, dùng acc phụ nhé",
+        speed_warn="⚠️ nên chọn 500-1000 là đánh khu vực lên cao nữa sẽ gây lag.",
         hitbox="bật hitbox", hitbox_size="kích thước hitbox",
         aoe="bật aoe", aoe_range="bán kính aoe",
         esp_p="esp player", esp_m="esp nấm",
@@ -116,12 +118,13 @@ local TXT = {
         antivoid_toggle="bật anti-void",
         timestop_open="🪟 mở menu ngưng đông",
         timestop_hint="💡 menu riêng với nút bật/tắt và chỉnh tầm",
-        freecam_toggle="bật freecam", freecam_hint="💡 vuốt màn hình để xoay | chụm 2 ngón để zoom",
+        freecam_toggle="bật freecam", freecam_hint="💡 vuốt để xoay | chụm 2 ngón để zoom",
+        freecam_sensitivity="độ nhạy xoay",
         spam_toggle="spam chat", spam_msg="nội dung tin nhắn", spam_delay="delay spam",
         trade_toggle="auto trade", trade_view="📋 xem lịch sử", trade_clear="🗑️ xóa lịch sử",
         seal_locked="🔒 phong ấn chưa vỡ", seal_hint="💡 bấm nút bên dưới để mở khóa.",
         seal_unlock="🔓 mở khóa ngay", credit="script by WonGaVn🇻🇳 | tiktok: Nkhaj97",
-        testing_notif="⚠️ script đang trong quá trình thử nghiệm.\nmột số tính năng có thể chưa ổn định.",
+        testing_notif="⚠️ script đang trong quá trình thử nghiệm.\một số tính năng có thể chưa ổn định.",
         esp_coming="🚧 esp đang được cập nhật thêm.",
         tiktok_update="📢 script sẽ được cập nhật tại tiktok Nkhaj97",
         update_section="📢 cập nhật",
@@ -148,6 +151,7 @@ local TXT = {
         timestop_open="🪟 open time stop menu",
         timestop_hint="💡 floating menu with toggle and range",
         freecam_toggle="enable freecam", freecam_hint="💡 swipe to rotate | pinch to zoom",
+        freecam_sensitivity="rotation sensitivity",
         spam_toggle="spam chat", spam_msg="message", spam_delay="delay",
         trade_toggle="auto trade", trade_view="📋 history", trade_clear="🗑️ clear",
         seal_locked="🔒 seal not broken", seal_hint="💡 click button below.",
@@ -168,6 +172,7 @@ local TXT = {
         portal_open_menu="🪟 传送门", antivoid_toggle="防掉落",
         timestop_open="🪟 时间停止菜单", timestop_hint="💡 浮动菜单带开关",
         freecam_toggle="自由相机", freecam_hint="💡 滑动旋转 | 捏合缩放",
+        freecam_sensitivity="旋转灵敏度",
         spam_toggle="刷屏", spam_msg="消息", spam_delay="延迟",
         trade_toggle="自动交易", trade_view="📋 历史", trade_clear="🗑️ 清除",
         seal_locked="🔒 封印未破", seal_hint="💡 点击下方。", seal_unlock="🔓 立即解锁",
@@ -185,6 +190,7 @@ local TXT = {
         portal_open_menu="🪟 ポータル", antivoid_toggle="アンチボイド",
         timestop_open="🪟 時間停止メニュー", timestop_hint="💡 フローティングメニュー",
         freecam_toggle="フリーカメラ", freecam_hint="💡 スワイプ回転 | ピンチズーム",
+        freecam_sensitivity="回転感度",
         spam_toggle="スパム", spam_msg="メッセージ", spam_delay="間隔",
         trade_toggle="自動トレード", trade_view="📋 履歴", trade_clear="🗑️ 削除",
         seal_locked="🔒 封印中", seal_hint="💡 下のボタン。", seal_unlock="🔓 解除",
@@ -202,6 +208,7 @@ local TXT = {
         portal_open_menu="🪟 포탈", antivoid_toggle="안티보이드",
         timestop_open="🪟 시간 정지 메뉴", timestop_hint="💡 플로팅 메뉴",
         freecam_toggle="프리캠", freecam_hint="💡 스와이프 회전 | 핀치 줌",
+        freecam_sensitivity="회전 감도",
         spam_toggle="스팸", spam_msg="메시지", spam_delay="지연",
         trade_toggle="자동 거래", trade_view="📋 기록", trade_clear="🗑️ 삭제",
         seal_locked="🔒 봉인 중", seal_hint="💡 아래 버튼.", seal_unlock="🔓 지금 해제",
@@ -373,7 +380,7 @@ local function showIntro(onDone)
 end
 
 -- ============================================================
---  FLOATING MENU STYLE - dùng chung cho portal + timestop
+--  FLOATING MENU STYLE
 -- ============================================================
 local function styleFloatingFrame(frame)
     frame.BackgroundColor3 = Color3.fromRGB(22, 20, 32)
@@ -879,11 +886,14 @@ local function buildTimeStopGui()
     end)
 end
 
--- FREECAM MOBILE
+-- ============================================================
+--  FREECAM MOBILE - ĐÃ SỬA (dùng delta thay vì totalTranslation)
+-- ============================================================
 local freecamActive = false
 local freecamYaw, freecamPitch = 0, 0
 local freecamZoom = 30
 local freecamCenter = nil
+local freecamLastTranslation = nil
 
 local function startFreecam()
     if freecamActive then return end
@@ -895,6 +905,8 @@ local function startFreecam()
     local cf = cam.CFrame
     freecamYaw = math.atan2(-cf.LookVector.X, -cf.LookVector.Z)
     freecamPitch = math.asin(math.clamp(cf.LookVector.Y, -1, 1))
+    freecamZoom = 30
+    freecamLastTranslation = nil
     cam.CameraSubject = nil
     cam.CameraType = Enum.CameraType.Scriptable
 end
@@ -908,16 +920,37 @@ local function stopFreecam()
     if h then cam.CameraSubject = h end
 end
 
-UIS.TouchPan:Connect(function(_, totalTranslation)
+-- FIX: dùng delta từ totalTranslation thay vì totalTranslation trực tiếp
+UIS.TouchPan:Connect(function(touchPositions, totalTranslation, velocity, state)
     if not freecamActive then return end
-    local d = totalTranslation
-    freecamYaw = freecamYaw - math.rad(d.X * 0.6)
-    freecamPitch = math.clamp(freecamPitch - math.rad(d.Y * 0.6), -math.rad(85), math.rad(85))
+    if state == Enum.UserInputState.Begin then
+        freecamLastTranslation = totalTranslation
+        return
+    end
+    if state == Enum.UserInputState.End or state == Enum.UserInputState.Cancel then
+        freecamLastTranslation = nil
+        return
+    end
+    if not freecamLastTranslation then
+        freecamLastTranslation = totalTranslation
+        return
+    end
+    -- delta = vị trí hiện tại - vị trí frame trước
+    local delta = totalTranslation - freecamLastTranslation
+    freecamLastTranslation = totalTranslation
+    -- nhân với sensitivity thấp để xoay mượt
+    local sens = S.freecamSensitivity or 0.08
+    freecamYaw = freecamYaw - math.rad(delta.X * sens * 100)
+    freecamPitch = math.clamp(freecamPitch - math.rad(delta.Y * sens * 100), -math.rad(85), math.rad(85))
 end)
-UIS.TouchPinch:Connect(function(_, scale)
+
+-- Zoom bằng chụm 2 ngón
+UIS.TouchPinch:Connect(function(_, scale, velocity, state)
     if not freecamActive then return end
     freecamZoom = math.clamp(freecamZoom / scale, 5, 300)
 end)
+
+-- PC: giữ chuột phải để xoay, scroll để zoom
 UIS.InputChanged:Connect(function(input)
     if not freecamActive then return end
     if input.UserInputType == Enum.UserInputType.MouseMovement then
@@ -930,6 +963,7 @@ UIS.InputChanged:Connect(function(input)
         freecamZoom = math.clamp(freecamZoom - input.Position.Z * 3, 5, 300)
     end
 end)
+
 RunService.RenderStepped:Connect(function()
     if not freecamActive then return end
     local cam = workspace.CurrentCamera
@@ -1626,7 +1660,7 @@ buildMenu = function()
 
     -- 📢 cập nhật
     TabMisc:CreateSection(T("update_section"))
-    local tiktokBtn = TabMisc:CreateButton({
+    TabMisc:CreateButton({
         Name = "📱 tiktok: Nkhaj97",
         Callback = function()
             Rayfield:Notify({
@@ -1636,7 +1670,7 @@ buildMenu = function()
             })
         end
     })
-    local discordBtn = TabMisc:CreateButton({
+    TabMisc:CreateButton({
         Name = "💬 discord: discord.gg/ry3buvjz5",
         Callback = function()
             if setclipboard then pcall(function() setclipboard("https://discord.gg/rY3BUVJz5") end) end
@@ -1663,6 +1697,21 @@ buildMenu = function()
                 if v then startFreecam(); sysNotify("freecam_on")
                 else stopFreecam(); sysNotify("freecam_off") end
             end})
+        TabUtil:CreateInput({
+            Name = T("freecam_sensitivity"),
+            CurrentValue = tostring(S.freecamSensitivity),
+            PlaceholderText = "0.08",
+            RemoveTextAfterFocusLost = false,
+            Flag = "FreecamSens",
+            Callback = function(t)
+                local n = tonumber(t)
+                if n and n > 0 then
+                    S.freecamSensitivity = n
+                    saveFullConfig()
+                    Rayfield:Notify({Title = "🎥", Content = "độ nhạy: " .. n, Duration = 2})
+                end
+            end
+        })
         TabUtil:CreateLabel(T("freecam_hint"))
 
         TabUtil:CreateSection("⏸️ ngưng đông thời gian")
