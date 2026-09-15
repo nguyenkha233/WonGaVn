@@ -118,7 +118,7 @@ local TXT = {
         antivoid_toggle="bật anti-void",
         timestop_open="🪟 mở menu ngưng đông",
         timestop_hint="💡 menu riêng với nút bật/tắt và chỉnh tầm",
-        freecam_toggle="bật freecam", freecam_hint="💡 vuốt để xoay | chụm 2 ngón để zoom",
+        freecam_toggle="bật freecam", freecam_hint=
         freecam_sensitivity="độ nhạy xoay",
         spam_toggle="spam chat", spam_msg="nội dung tin nhắn", spam_delay="delay spam",
         trade_toggle="auto trade", trade_view="📋 xem lịch sử", trade_clear="🗑️ xóa lịch sử",
