@@ -1,6 +1,6 @@
 -- ============================================================
 --  WonGaVn🇻🇳 Script
---  tiktok: nkhaj97 | discord: discord.gg/ry3buvjz5
+--  tiktok: Nkhaj97 | discord: discord.gg/ry3buvjz5
 -- ============================================================
 local SCRIPT_URL = "https://raw.githubusercontent.com/nguyenkha233/WonGaVn/refs/heads/main/creature%20of%20sonaria"
 
@@ -112,16 +112,19 @@ local TXT = {
         unlock_hint="script sẽ tự khởi động lại sau khi mở khóa.",
         util_anti_afk="🟢 anti afk", util_join="👋 thông báo người vào",
         util_noclip="👻 noclip", util_fly="🕊️ fly", util_flyspeed="tốc độ bay",
-        portal_open_menu="🪟 mở menu cổng", portal_quick="➕ tạo cổng nhanh",
+        portal_open_menu="🪟 mở menu cổng",
         antivoid_toggle="bật anti-void",
-        timestop_open="🪟 mở menu ngưng đông", timestop_hint="💡 menu riêng nhỏ gọn, có nút bật/tắt và chỉnh tầm",
+        timestop_open="🪟 mở menu ngưng đông",
+        timestop_hint="💡 menu riêng với nút bật/tắt và chỉnh tầm",
         freecam_toggle="bật freecam", freecam_hint="💡 vuốt màn hình để xoay | chụm 2 ngón để zoom",
         spam_toggle="spam chat", spam_msg="nội dung tin nhắn", spam_delay="delay spam",
         trade_toggle="auto trade", trade_view="📋 xem lịch sử", trade_clear="🗑️ xóa lịch sử",
         seal_locked="🔒 phong ấn chưa vỡ", seal_hint="💡 bấm nút bên dưới để mở khóa.",
-        seal_unlock="🔓 mở khóa ngay", credit="script by wongavn🇻🇳 | tiktok: nkhaj97",
+        seal_unlock="🔓 mở khóa ngay", credit="script by WonGaVn🇻🇳 | tiktok: Nkhaj97",
         testing_notif="⚠️ script đang trong quá trình thử nghiệm.\nmột số tính năng có thể chưa ổn định.",
         esp_coming="🚧 esp đang được cập nhật thêm.",
+        tiktok_update="📢 script sẽ được cập nhật tại tiktok Nkhaj97",
+        update_section="📢 cập nhật",
     },
     us = {
         tab_ab="🛡️ antiban", tab_combat="⚔️ combat", tab_esp="👁️ esp",
@@ -140,15 +143,18 @@ local TXT = {
         unlock_misc="🔓 unlock sealed power", unlock_hint="script restarts after unlock.",
         util_anti_afk="🟢 anti afk", util_join="👋 player join alert",
         util_noclip="👻 noclip", util_fly="🕊️ fly", util_flyspeed="fly speed",
-        portal_open_menu="🪟 open portal menu", portal_quick="➕ quick portal",
+        portal_open_menu="🪟 open portal menu",
         antivoid_toggle="enable anti-void",
-        timestop_open="🪟 open time stop menu", timestop_hint="💡 small floating menu with toggle & range",
+        timestop_open="🪟 open time stop menu",
+        timestop_hint="💡 floating menu with toggle and range",
         freecam_toggle="enable freecam", freecam_hint="💡 swipe to rotate | pinch to zoom",
         spam_toggle="spam chat", spam_msg="message", spam_delay="delay",
         trade_toggle="auto trade", trade_view="📋 history", trade_clear="🗑️ clear",
         seal_locked="🔒 seal not broken", seal_hint="💡 click button below.",
-        seal_unlock="🔓 unlock now", credit="script by wongavn🇻🇳 | tiktok: nkhaj97",
+        seal_unlock="🔓 unlock now", credit="script by WonGaVn🇻🇳 | tiktok: Nkhaj97",
         testing_notif="⚠️ script is in testing phase.", esp_coming="🚧 esp updating.",
+        tiktok_update="📢 script will be updated at tiktok Nkhaj97",
+        update_section="📢 updates",
     },
     cn = {
         tab_ab="🛡️ 反封", tab_combat="⚔️ 战斗", tab_esp="👁️ esp", tab_util="🔒 封印", tab_misc="⚙️ 杂项",
@@ -159,13 +165,14 @@ local TXT = {
         optimize="自动优化", effects_toggle="菜单特效", drag_menu="允许拖动", lang="语言",
         unlock_misc="🔓 解锁封印", unlock_hint="解锁后重启。",
         util_anti_afk="🟢 防挂机", util_join="👋 玩家提醒", util_noclip="👻 穿墙", util_fly="🕊️ 飞行", util_flyspeed="速度",
-        portal_open_menu="🪟 传送门", portal_quick="➕ 快速创建", antivoid_toggle="防掉落",
-        timestop_open="🪟 打开时间停止", timestop_hint="💡 小浮动菜单，带开关和范围",
+        portal_open_menu="🪟 传送门", antivoid_toggle="防掉落",
+        timestop_open="🪟 时间停止菜单", timestop_hint="💡 浮动菜单带开关",
         freecam_toggle="自由相机", freecam_hint="💡 滑动旋转 | 捏合缩放",
         spam_toggle="刷屏", spam_msg="消息", spam_delay="延迟",
         trade_toggle="自动交易", trade_view="📋 历史", trade_clear="🗑️ 清除",
         seal_locked="🔒 封印未破", seal_hint="💡 点击下方。", seal_unlock="🔓 立即解锁",
-        credit="wongavn🇻🇳 | nkhaj97", testing_notif="⚠️ 测试中。", esp_coming="🚧 更新中。" },
+        credit="WonGaVn🇻🇳 | Nkhaj97", testing_notif="⚠️ 测试中。", esp_coming="🚧 更新中。",
+        tiktok_update="📢 脚本将在 tiktok Nkhaj97 更新", update_section="📢 更新" },
     jp = {
         tab_ab="🛡️ アンチban", tab_combat="⚔️ 戦闘", tab_esp="👁️ esp", tab_util="🔒 封印", tab_misc="⚙️ その他",
         ab_toggle="アンチban", ab_warn="⚠️ 約80%。", combat_warn="⚠️ 戦闘ゲーム！", speed_warn="⚠️ 500-1000。",
@@ -175,13 +182,14 @@ local TXT = {
         optimize="自動最適化", effects_toggle="メニュー効果", drag_menu="ドラッグ", lang="言語",
         unlock_misc="🔓 封印解除", unlock_hint="解除後再起動。",
         util_anti_afk="🟢 アンチafk", util_join="👋 参加通知", util_noclip="👻 ノークリップ", util_fly="🕊️ フライ", util_flyspeed="速度",
-        portal_open_menu="🪟 ポータル", portal_quick="➕ 作成", antivoid_toggle="アンチボイド",
-        timestop_open="🪟 時間停止メニュー", timestop_hint="💡 小型フローティングメニュー",
+        portal_open_menu="🪟 ポータル", antivoid_toggle="アンチボイド",
+        timestop_open="🪟 時間停止メニュー", timestop_hint="💡 フローティングメニュー",
         freecam_toggle="フリーカメラ", freecam_hint="💡 スワイプ回転 | ピンチズーム",
         spam_toggle="スパム", spam_msg="メッセージ", spam_delay="間隔",
         trade_toggle="自動トレード", trade_view="📋 履歴", trade_clear="🗑️ 削除",
         seal_locked="🔒 封印中", seal_hint="💡 下のボタン。", seal_unlock="🔓 解除",
-        credit="wongavn🇻🇳 | nkhaj97", testing_notif="⚠️ テスト中。", esp_coming="🚧 更新中。" },
+        credit="WonGaVn🇻🇳 | Nkhaj97", testing_notif="⚠️ テスト中。", esp_coming="🚧 更新中。",
+        tiktok_update="📢 スクリプトは tiktok Nkhaj97 で更新", update_section="📢 更新" },
     kr = {
         tab_ab="🛡️ 안티밴", tab_combat="⚔️ 전투", tab_esp="👁️ esp", tab_util="🔒 봉인", tab_misc="⚙️ 기타",
         ab_toggle="안티밴", ab_warn="⚠️ 약 80%.", combat_warn="⚠️ 전투 게임!", speed_warn="⚠️ 500-1000.",
@@ -191,13 +199,14 @@ local TXT = {
         optimize="자동 최적화", effects_toggle="메뉴 효과", drag_menu="드래그", lang="언어",
         unlock_misc="🔓 봉인 해제", unlock_hint="해제 후 재시작.",
         util_anti_afk="🟢 안티afk", util_join="👋 참가 알림", util_noclip="👻 노클립", util_fly="🕊️ 비행", util_flyspeed="속도",
-        portal_open_menu="🪟 포탈", portal_quick="➕ 생성", antivoid_toggle="안티보이드",
-        timestop_open="🪟 시간 정지 메뉴", timestop_hint="💡 작은 플로팅 메뉴",
+        portal_open_menu="🪟 포탈", antivoid_toggle="안티보이드",
+        timestop_open="🪟 시간 정지 메뉴", timestop_hint="💡 플로팅 메뉴",
         freecam_toggle="프리캠", freecam_hint="💡 스와이프 회전 | 핀치 줌",
         spam_toggle="스팸", spam_msg="메시지", spam_delay="지연",
         trade_toggle="자동 거래", trade_view="📋 기록", trade_clear="🗑️ 삭제",
         seal_locked="🔒 봉인 중", seal_hint="💡 아래 버튼.", seal_unlock="🔓 지금 해제",
-        credit="wongavn🇻🇳 | nkhaj97", testing_notif="⚠️ 테스트 중.", esp_coming="🚧 업데이트 중." },
+        credit="WonGaVn🇻🇳 | Nkhaj97", testing_notif="⚠️ 테스트 중.", esp_coming="🚧 업데이트 중.",
+        tiktok_update="📢 스크립트는 tiktok Nkhaj97에서 업데이트", update_section="📢 업데이트" },
 }
 local function T(k)
     local t = TXT[S.lang] or TXT.vi
@@ -331,7 +340,7 @@ local function showIntro(onDone)
     local tb = Instance.new("TextBox", panel)
     tb.Size = UDim2.new(1,-60,0,42); tb.Position = UDim2.new(0,30,0,100)
     tb.BackgroundColor3 = Color3.fromRGB(28,28,42); tb.BorderSizePixel = 0; tb.Text = ""
-    tb.PlaceholderText = "vd: wongavn, ryu, hắc long..."
+    tb.PlaceholderText = "vd: WonGaVn, Ryu, Hắc Long..."
     tb.PlaceholderColor3 = Color3.fromRGB(100,100,130)
     tb.TextColor3 = Color3.fromRGB(240,245,255)
     tb.Font = Enum.Font.GothamBold; tb.TextSize = 15; tb.ClearTextOnFocus = false
@@ -363,7 +372,75 @@ local function showIntro(onDone)
     tb.FocusLost:Connect(function(enter) if enter then submit() end end)
 end
 
--- PORTAL
+-- ============================================================
+--  FLOATING MENU STYLE - dùng chung cho portal + timestop
+-- ============================================================
+local function styleFloatingFrame(frame)
+    frame.BackgroundColor3 = Color3.fromRGB(22, 20, 32)
+    frame.BorderSizePixel = 0
+    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
+    local fs = Instance.new("UIStroke", frame)
+    fs.Color = Color3.fromRGB(130, 110, 200); fs.Thickness = 1.5; fs.Transparency = 0.35
+    local grad = Instance.new("UIGradient", frame)
+    grad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 28, 55)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(28, 32, 55)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 28, 55))})
+    grad.Rotation = 35
+end
+
+local function styleDragBar(dragBar, titleText)
+    dragBar.BackgroundColor3 = Color3.fromRGB(45, 35, 70)
+    dragBar.BorderSizePixel = 0
+    Instance.new("UICorner", dragBar).CornerRadius = UDim.new(0, 12)
+    local title = Instance.new("TextLabel", dragBar)
+    title.Size = UDim2.new(1, -50, 1, 0); title.Position = UDim2.new(0, 10, 0, 0)
+    title.BackgroundTransparency = 1
+    title.Text = titleText
+    title.TextColor3 = Color3.fromRGB(230, 215, 255)
+    title.Font = Enum.Font.GothamBold; title.TextSize = 11
+    title.TextXAlignment = Enum.TextXAlignment.Left
+    return title
+end
+
+local function makeMinCloseBtns(dragBar, onMin, onClose)
+    local minBtn = Instance.new("TextButton", dragBar)
+    minBtn.Size = UDim2.new(0, 18, 0, 18); minBtn.Position = UDim2.new(1, -42, 0, 4)
+    minBtn.BackgroundColor3 = Color3.fromRGB(255, 190, 100); minBtn.BorderSizePixel = 0
+    minBtn.Text = "−"; minBtn.TextColor3 = Color3.fromRGB(40,30,0)
+    minBtn.Font = Enum.Font.GothamBold; minBtn.TextSize = 13
+    Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 5)
+
+    local closeBtn = Instance.new("TextButton", dragBar)
+    closeBtn.Size = UDim2.new(0, 18, 0, 18); closeBtn.Position = UDim2.new(1, -20, 0, 4)
+    closeBtn.BackgroundColor3 = Color3.fromRGB(220, 80, 80); closeBtn.BorderSizePixel = 0
+    closeBtn.Text = "×"; closeBtn.TextColor3 = Color3.fromRGB(255,255,255)
+    closeBtn.Font = Enum.Font.GothamBold; closeBtn.TextSize = 15
+    Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 5)
+
+    minBtn.MouseButton1Click:Connect(onMin)
+    closeBtn.MouseButton1Click:Connect(onClose)
+    return minBtn, closeBtn
+end
+
+local function makeMiniIcon(gui, emoji, posY)
+    local btn = Instance.new("TextButton", gui)
+    btn.Size = UDim2.new(0, 36, 0, 36)
+    btn.Position = UDim2.new(0.02, 0, posY, 0)
+    btn.BackgroundColor3 = Color3.fromRGB(60, 45, 100)
+    btn.BorderSizePixel = 0; btn.Text = emoji
+    btn.TextColor3 = Color3.fromRGB(255,255,255)
+    btn.Font = Enum.Font.GothamBold; btn.TextSize = 17
+    btn.Visible = false
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 18)
+    local bs = Instance.new("UIStroke", btn)
+    bs.Color = Color3.fromRGB(180, 150, 255); bs.Thickness = 1.5
+    return btn
+end
+
+-- ============================================================
+--  PORTAL SYSTEM
+-- ============================================================
 local portals = {}
 local portalGuiRef = nil
 
@@ -469,88 +546,58 @@ local function buildPortalGui()
     gui.Parent = game:GetService("CoreGui")
     portalGuiRef = gui
 
-    local miniBtn = Instance.new("TextButton", gui)
-    miniBtn.Size = UDim2.new(0, 34, 0, 34)
-    miniBtn.Position = UDim2.new(0.02, 0, 0.4, 0)
-    miniBtn.BackgroundColor3 = Color3.fromRGB(80, 50, 150)
-    miniBtn.BorderSizePixel = 0; miniBtn.Text = "🌀"
-    miniBtn.TextColor3 = Color3.fromRGB(255,255,255)
-    miniBtn.Font = Enum.Font.GothamBold; miniBtn.TextSize = 18
-    miniBtn.Visible = false
-    Instance.new("UICorner", miniBtn).CornerRadius = UDim.new(0, 17)
-    local mbs = Instance.new("UIStroke", miniBtn)
-    mbs.Color = Color3.fromRGB(200,170,255); mbs.Thickness = 1.5
+    local miniBtn = makeMiniIcon(gui, "🌀", 0.4)
 
     local frame = Instance.new("Frame", gui)
-    frame.Size = UDim2.new(0, 180, 0, 190)
+    frame.Size = UDim2.new(0, 190, 0, 210)
     frame.Position = UDim2.new(0.4, 0, 0.35, 0)
-    frame.BackgroundColor3 = Color3.fromRGB(20, 18, 30)
-    frame.BorderSizePixel = 0; frame.Active = true
-    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
-    local fs = Instance.new("UIStroke", frame)
-    fs.Color = Color3.fromRGB(150, 120, 255); fs.Thickness = 1.5; fs.Transparency = 0.4
+    frame.Active = true
+    styleFloatingFrame(frame)
 
     local dragBar = Instance.new("Frame", frame)
-    dragBar.Size = UDim2.new(1, 0, 0, 26)
-    dragBar.BackgroundColor3 = Color3.fromRGB(55, 40, 90)
-    dragBar.BorderSizePixel = 0; dragBar.Active = true
-    Instance.new("UICorner", dragBar).CornerRadius = UDim.new(0, 10)
+    dragBar.Size = UDim2.new(1, 0, 0, 28)
+    dragBar.Active = true
+    styleDragBar(dragBar, "🌀 cổng xuyên không")
 
-    local title = Instance.new("TextLabel", dragBar)
-    title.Size = UDim2.new(1, -46, 1, 0); title.Position = UDim2.new(0, 8, 0, 0)
-    title.BackgroundTransparency = 1; title.Text = "🌀 cổng"
-    title.TextColor3 = Color3.fromRGB(220, 200, 255)
-    title.Font = Enum.Font.GothamBold; title.TextSize = 11
-    title.TextXAlignment = Enum.TextXAlignment.Left
-
-    local minBtn = Instance.new("TextButton", dragBar)
-    minBtn.Size = UDim2.new(0, 18, 0, 18); minBtn.Position = UDim2.new(1, -42, 0, 4)
-    minBtn.BackgroundColor3 = Color3.fromRGB(255, 180, 80); minBtn.BorderSizePixel = 0
-    minBtn.Text = "−"; minBtn.TextColor3 = Color3.fromRGB(0,0,0)
-    minBtn.Font = Enum.Font.GothamBold; minBtn.TextSize = 13
-    Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 5)
-
-    local closeBtn = Instance.new("TextButton", dragBar)
-    closeBtn.Size = UDim2.new(0, 18, 0, 18); closeBtn.Position = UDim2.new(1, -20, 0, 4)
-    closeBtn.BackgroundColor3 = Color3.fromRGB(220, 80, 80); closeBtn.BorderSizePixel = 0
-    closeBtn.Text = "×"; closeBtn.TextColor3 = Color3.fromRGB(255,255,255)
-    closeBtn.Font = Enum.Font.GothamBold; closeBtn.TextSize = 15
-    Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 5)
+    makeMinCloseBtns(dragBar,
+        function() frame.Visible = false; miniBtn.Visible = true end,
+        function() destroyPortals(); gui:Destroy(); portalGuiRef = nil end
+    )
 
     makeDraggable(frame, dragBar)
     makeDraggable(miniBtn, miniBtn)
 
     local content = Instance.new("Frame", frame)
-    content.Size = UDim2.new(1, -12, 1, -34); content.Position = UDim2.new(0, 6, 0, 30)
+    content.Size = UDim2.new(1, -14, 1, -40); content.Position = UDim2.new(0, 7, 0, 34)
     content.BackgroundTransparency = 1
 
     local scroll = Instance.new("ScrollingFrame", content)
-    scroll.Size = UDim2.new(1, 0, 1, -60)
-    scroll.BackgroundColor3 = Color3.fromRGB(12, 10, 20)
+    scroll.Size = UDim2.new(1, 0, 1, -64)
+    scroll.BackgroundColor3 = Color3.fromRGB(14, 12, 22)
     scroll.BorderSizePixel = 0; scroll.ScrollBarThickness = 4
     scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
     scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    Instance.new("UICorner", scroll).CornerRadius = UDim.new(0, 6)
+    Instance.new("UICorner", scroll).CornerRadius = UDim.new(0, 8)
 
     local listLayout = Instance.new("UIListLayout", scroll)
-    listLayout.Padding = UDim.new(0, 4); listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    listLayout.Padding = UDim.new(0, 5); listLayout.SortOrder = Enum.SortOrder.LayoutOrder
     local listPad = Instance.new("UIPadding", scroll)
-    listPad.PaddingTop = UDim.new(0, 5); listPad.PaddingBottom = UDim.new(0, 5)
-    listPad.PaddingLeft = UDim.new(0, 5); listPad.PaddingRight = UDim.new(0, 5)
+    listPad.PaddingTop = UDim.new(0, 6); listPad.PaddingBottom = UDim.new(0, 6)
+    listPad.PaddingLeft = UDim.new(0, 6); listPad.PaddingRight = UDim.new(0, 6)
 
     local addBtn = Instance.new("TextButton", content)
-    addBtn.Size = UDim2.new(1, 0, 0, 24); addBtn.Position = UDim2.new(0, 0, 1, -52)
-    addBtn.BackgroundColor3 = Color3.fromRGB(60, 130, 220); addBtn.BorderSizePixel = 0
+    addBtn.Size = UDim2.new(1, 0, 0, 28); addBtn.Position = UDim2.new(0, 0, 1, -56)
+    addBtn.BackgroundColor3 = Color3.fromRGB(70, 130, 220); addBtn.BorderSizePixel = 0
     addBtn.Text = "➕ tạo cổng mới"; addBtn.TextColor3 = Color3.fromRGB(255,255,255)
     addBtn.Font = Enum.Font.GothamBold; addBtn.TextSize = 11
-    Instance.new("UICorner", addBtn).CornerRadius = UDim.new(0, 5)
+    Instance.new("UICorner", addBtn).CornerRadius = UDim.new(0, 6)
 
     local clearBtn = Instance.new("TextButton", content)
-    clearBtn.Size = UDim2.new(1, 0, 0, 24); clearBtn.Position = UDim2.new(0, 0, 1, -24)
+    clearBtn.Size = UDim2.new(1, 0, 0, 28); clearBtn.Position = UDim2.new(0, 0, 1, -26)
     clearBtn.BackgroundColor3 = Color3.fromRGB(180, 60, 60); clearBtn.BorderSizePixel = 0
     clearBtn.Text = "🗑️ xóa tất cả"; clearBtn.TextColor3 = Color3.fromRGB(255,255,255)
     clearBtn.Font = Enum.Font.GothamBold; clearBtn.TextSize = 11
-    Instance.new("UICorner", clearBtn).CornerRadius = UDim.new(0, 5)
+    Instance.new("UICorner", clearBtn).CornerRadius = UDim.new(0, 6)
 
     local function renderList()
         for _, child in ipairs(scroll:GetChildren()) do
@@ -558,34 +605,34 @@ local function buildPortalGui()
         end
         if #portals == 0 then
             local lbl = Instance.new("TextLabel", scroll)
-            lbl.Size = UDim2.new(1, 0, 0, 25); lbl.BackgroundTransparency = 1
+            lbl.Size = UDim2.new(1, 0, 0, 30); lbl.BackgroundTransparency = 1
             lbl.Text = "(chưa có cổng)"; lbl.TextColor3 = Color3.fromRGB(140, 140, 170)
             lbl.Font = Enum.Font.Gotham; lbl.TextSize = 10
         else
             for i, info in ipairs(portals) do
                 local row = Instance.new("TextButton", scroll)
-                row.Size = UDim2.new(1, 0, 0, 26)
-                row.BackgroundColor3 = Color3.fromRGB(30, 25, 45); row.BorderSizePixel = 0
-                row.Text = ""; Instance.new("UICorner", row).CornerRadius = UDim.new(0, 5)
+                row.Size = UDim2.new(1, 0, 0, 30)
+                row.BackgroundColor3 = Color3.fromRGB(28, 24, 40); row.BorderSizePixel = 0
+                row.Text = ""; Instance.new("UICorner", row).CornerRadius = UDim.new(0, 6)
 
                 local dot = Instance.new("Frame", row)
-                dot.Size = UDim2.new(0, 12, 0, 12); dot.Position = UDim2.new(0, 6, 0.5, -6)
+                dot.Size = UDim2.new(0, 12, 0, 12); dot.Position = UDim2.new(0, 8, 0.5, -6)
                 dot.BackgroundColor3 = info.color; dot.BorderSizePixel = 0
                 Instance.new("UICorner", dot).CornerRadius = UDim.new(0, 6)
 
                 local idx = Instance.new("TextLabel", row)
-                idx.Size = UDim2.new(1, -60, 1, 0); idx.Position = UDim2.new(0, 24, 0, 0)
+                idx.Size = UDim2.new(1, -70, 1, 0); idx.Position = UDim2.new(0, 26, 0, 0)
                 idx.BackgroundTransparency = 1; idx.Text = "cổng " .. i
                 idx.TextColor3 = Color3.fromRGB(220, 220, 240)
-                idx.Font = Enum.Font.GothamBold; idx.TextSize = 10
+                idx.Font = Enum.Font.GothamBold; idx.TextSize = 11
                 idx.TextXAlignment = Enum.TextXAlignment.Left
 
                 local tpBtn = Instance.new("TextButton", row)
-                tpBtn.Size = UDim2.new(0, 26, 0, 20); tpBtn.Position = UDim2.new(1, -58, 0.5, -10)
-                tpBtn.BackgroundColor3 = Color3.fromRGB(60, 130, 220); tpBtn.BorderSizePixel = 0
+                tpBtn.Size = UDim2.new(0, 30, 0, 22); tpBtn.Position = UDim2.new(1, -64, 0.5, -11)
+                tpBtn.BackgroundColor3 = Color3.fromRGB(70, 130, 220); tpBtn.BorderSizePixel = 0
                 tpBtn.Text = "tp"; tpBtn.TextColor3 = Color3.fromRGB(255,255,255)
-                tpBtn.Font = Enum.Font.GothamBold; tpBtn.TextSize = 9
-                Instance.new("UICorner", tpBtn).CornerRadius = UDim.new(0, 4)
+                tpBtn.Font = Enum.Font.GothamBold; tpBtn.TextSize = 10
+                Instance.new("UICorner", tpBtn).CornerRadius = UDim.new(0, 5)
                 tpBtn.MouseButton1Click:Connect(function()
                     local c = LP.Character
                     local hrp = c and c:FindFirstChild("HumanoidRootPart")
@@ -595,11 +642,11 @@ local function buildPortalGui()
                 end)
 
                 local delBtn = Instance.new("TextButton", row)
-                delBtn.Size = UDim2.new(0, 26, 0, 20); delBtn.Position = UDim2.new(1, -28, 0.5, -10)
+                delBtn.Size = UDim2.new(0, 30, 0, 22); delBtn.Position = UDim2.new(1, -32, 0.5, -11)
                 delBtn.BackgroundColor3 = Color3.fromRGB(180, 60, 60); delBtn.BorderSizePixel = 0
                 delBtn.Text = "×"; delBtn.TextColor3 = Color3.fromRGB(255,255,255)
-                delBtn.Font = Enum.Font.GothamBold; delBtn.TextSize = 13
-                Instance.new("UICorner", delBtn).CornerRadius = UDim.new(0, 4)
+                delBtn.Font = Enum.Font.GothamBold; delBtn.TextSize = 14
+                Instance.new("UICorner", delBtn).CornerRadius = UDim.new(0, 5)
                 delBtn.MouseButton1Click:Connect(function()
                     destroyOnePortal(i); saveFullConfig(); renderList()
                 end)
@@ -618,14 +665,8 @@ local function buildPortalGui()
 
     renderList()
 
-    minBtn.MouseButton1Click:Connect(function()
-        frame.Visible = false; miniBtn.Visible = true
-    end)
     miniBtn.MouseButton1Click:Connect(function()
         frame.Visible = true; miniBtn.Visible = false; renderList()
-    end)
-    closeBtn.MouseButton1Click:Connect(function()
-        destroyPortals(); gui:Destroy(); portalGuiRef = nil
     end)
 end
 
@@ -690,16 +731,13 @@ RunService.RenderStepped:Connect(function()
     local c = LP.Character
     local myRoot = c and c:FindFirstChild("HumanoidRootPart")
     if myRoot then myPos = myRoot.Position end
-
     for _, pl in ipairs(Players:GetPlayers()) do
         if pl ~= LP then
             local pc = pl.Character
             local hrp = pc and pc:FindFirstChild("HumanoidRootPart")
             if hrp then
                 local inRange = true
-                if myPos then
-                    inRange = (hrp.Position - myPos).Magnitude <= S.timeStopRange
-                end
+                if myPos then inRange = (hrp.Position - myPos).Magnitude <= S.timeStopRange end
                 if inRange then
                     if not frozenCFrames[pl] then frozenCFrames[pl] = hrp.CFrame end
                     hrp.CFrame = frozenCFrames[pl]
@@ -723,106 +761,76 @@ local function buildTimeStopGui()
     gui.Parent = game:GetService("CoreGui")
     timeStopGuiRef = gui
 
-    local miniBtn = Instance.new("TextButton", gui)
-    miniBtn.Size = UDim2.new(0, 34, 0, 34)
-    miniBtn.Position = UDim2.new(0.02, 0, 0.5, 0)
-    miniBtn.BackgroundColor3 = Color3.fromRGB(80, 50, 150)
-    miniBtn.BorderSizePixel = 0; miniBtn.Text = "⏸️"
-    miniBtn.TextColor3 = Color3.fromRGB(255,255,255)
-    miniBtn.Font = Enum.Font.GothamBold; miniBtn.TextSize = 16
-    miniBtn.Visible = false
-    Instance.new("UICorner", miniBtn).CornerRadius = UDim.new(0, 17)
-    local mbs = Instance.new("UIStroke", miniBtn)
-    mbs.Color = Color3.fromRGB(200,170,255); mbs.Thickness = 1.5
+    local miniBtn = makeMiniIcon(gui, "⏸️", 0.5)
 
     local frame = Instance.new("Frame", gui)
-    frame.Size = UDim2.new(0, 160, 0, 110)
+    frame.Size = UDim2.new(0, 170, 0, 125)
     frame.Position = UDim2.new(0.55, 0, 0.35, 0)
-    frame.BackgroundColor3 = Color3.fromRGB(20, 18, 30)
-    frame.BorderSizePixel = 0; frame.Active = true
-    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
-    local fs = Instance.new("UIStroke", frame)
-    fs.Color = Color3.fromRGB(150, 120, 255); fs.Thickness = 1.5; fs.Transparency = 0.4
+    frame.Active = true
+    styleFloatingFrame(frame)
 
     local dragBar = Instance.new("Frame", frame)
-    dragBar.Size = UDim2.new(1, 0, 0, 26)
-    dragBar.BackgroundColor3 = Color3.fromRGB(55, 40, 90)
-    dragBar.BorderSizePixel = 0; dragBar.Active = true
-    Instance.new("UICorner", dragBar).CornerRadius = UDim.new(0, 10)
+    dragBar.Size = UDim2.new(1, 0, 0, 28)
+    dragBar.Active = true
+    styleDragBar(dragBar, "⏸️ ngưng đông thời gian")
 
-    local title = Instance.new("TextLabel", dragBar)
-    title.Size = UDim2.new(1, -46, 1, 0); title.Position = UDim2.new(0, 8, 0, 0)
-    title.BackgroundTransparency = 1; title.Text = "⏸️ ngưng đông"
-    title.TextColor3 = Color3.fromRGB(220, 200, 255)
-    title.Font = Enum.Font.GothamBold; title.TextSize = 11
-    title.TextXAlignment = Enum.TextXAlignment.Left
-
-    local minBtn = Instance.new("TextButton", dragBar)
-    minBtn.Size = UDim2.new(0, 18, 0, 18); minBtn.Position = UDim2.new(1, -42, 0, 4)
-    minBtn.BackgroundColor3 = Color3.fromRGB(255, 180, 80); minBtn.BorderSizePixel = 0
-    minBtn.Text = "−"; minBtn.TextColor3 = Color3.fromRGB(0,0,0)
-    minBtn.Font = Enum.Font.GothamBold; minBtn.TextSize = 13
-    Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 5)
-
-    local closeBtn = Instance.new("TextButton", dragBar)
-    closeBtn.Size = UDim2.new(0, 18, 0, 18); closeBtn.Position = UDim2.new(1, -20, 0, 4)
-    closeBtn.BackgroundColor3 = Color3.fromRGB(220, 80, 80); closeBtn.BorderSizePixel = 0
-    closeBtn.Text = "×"; closeBtn.TextColor3 = Color3.fromRGB(255,255,255)
-    closeBtn.Font = Enum.Font.GothamBold; closeBtn.TextSize = 15
-    Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 5)
+    makeMinCloseBtns(dragBar,
+        function() frame.Visible = false; miniBtn.Visible = true end,
+        function() gui:Destroy(); timeStopGuiRef = nil end
+    )
 
     makeDraggable(frame, dragBar)
     makeDraggable(miniBtn, miniBtn)
 
     local content = Instance.new("Frame", frame)
-    content.Size = UDim2.new(1, -12, 1, -34); content.Position = UDim2.new(0, 6, 0, 30)
+    content.Size = UDim2.new(1, -14, 1, -40); content.Position = UDim2.new(0, 7, 0, 34)
     content.BackgroundTransparency = 1
 
     local toggleBtn = Instance.new("TextButton", content)
     toggleBtn.Size = UDim2.new(1, 0, 0, 34)
     toggleBtn.Position = UDim2.new(0, 0, 0, 0)
-    toggleBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
+    toggleBtn.BackgroundColor3 = Color3.fromRGB(55, 55, 75)
     toggleBtn.BorderSizePixel = 0
     toggleBtn.Text = "▶ bật ngưng đông"
     toggleBtn.TextColor3 = Color3.fromRGB(255,255,255)
     toggleBtn.Font = Enum.Font.GothamBold; toggleBtn.TextSize = 12
-    Instance.new("UICorner", toggleBtn).CornerRadius = UDim.new(0, 6)
+    Instance.new("UICorner", toggleBtn).CornerRadius = UDim.new(0, 8)
 
     local rangeLabel = Instance.new("TextLabel", content)
-    rangeLabel.Size = UDim2.new(1, 0, 0, 18); rangeLabel.Position = UDim2.new(0, 0, 0, 42)
+    rangeLabel.Size = UDim2.new(1, 0, 0, 16); rangeLabel.Position = UDim2.new(0, 0, 0, 44)
     rangeLabel.BackgroundTransparency = 1
     rangeLabel.Text = "tầm: " .. S.timeStopRange .. " studs"
     rangeLabel.TextColor3 = Color3.fromRGB(180, 200, 240)
     rangeLabel.Font = Enum.Font.Gotham; rangeLabel.TextSize = 10
 
     local minusBtn = Instance.new("TextButton", content)
-    minusBtn.Size = UDim2.new(0.3, -2, 0, 24); minusBtn.Position = UDim2.new(0, 0, 0, 62)
+    minusBtn.Size = UDim2.new(0.3, -2, 0, 26); minusBtn.Position = UDim2.new(0, 0, 0, 66)
     minusBtn.BackgroundColor3 = Color3.fromRGB(180, 60, 60); minusBtn.BorderSizePixel = 0
     minusBtn.Text = "−"; minusBtn.TextColor3 = Color3.fromRGB(255,255,255)
-    minusBtn.Font = Enum.Font.GothamBold; minusBtn.TextSize = 14
-    Instance.new("UICorner", minusBtn).CornerRadius = UDim.new(0, 5)
+    minusBtn.Font = Enum.Font.GothamBold; minusBtn.TextSize = 15
+    Instance.new("UICorner", minusBtn).CornerRadius = UDim.new(0, 6)
 
     local rangeDisplay = Instance.new("TextButton", content)
-    rangeDisplay.Size = UDim2.new(0.4, -4, 0, 24); rangeDisplay.Position = UDim2.new(0.3, 2, 0, 62)
-    rangeDisplay.BackgroundColor3 = Color3.fromRGB(40, 40, 60); rangeDisplay.BorderSizePixel = 0
+    rangeDisplay.Size = UDim2.new(0.4, -4, 0, 26); rangeDisplay.Position = UDim2.new(0.3, 2, 0, 66)
+    rangeDisplay.BackgroundColor3 = Color3.fromRGB(38, 34, 55); rangeDisplay.BorderSizePixel = 0
     rangeDisplay.Text = tostring(S.timeStopRange); rangeDisplay.TextColor3 = Color3.fromRGB(220, 220, 240)
     rangeDisplay.Font = Enum.Font.GothamBold; rangeDisplay.TextSize = 12
-    Instance.new("UICorner", rangeDisplay).CornerRadius = UDim.new(0, 5)
+    Instance.new("UICorner", rangeDisplay).CornerRadius = UDim.new(0, 6)
 
     local plusBtn = Instance.new("TextButton", content)
-    plusBtn.Size = UDim2.new(0.3, -2, 0, 24); plusBtn.Position = UDim2.new(0.7, 2, 0, 62)
-    plusBtn.BackgroundColor3 = Color3.fromRGB(60, 130, 220); plusBtn.BorderSizePixel = 0
+    plusBtn.Size = UDim2.new(0.3, -2, 0, 26); plusBtn.Position = UDim2.new(0.7, 2, 0, 66)
+    plusBtn.BackgroundColor3 = Color3.fromRGB(70, 130, 220); plusBtn.BorderSizePixel = 0
     plusBtn.Text = "+"; plusBtn.TextColor3 = Color3.fromRGB(255,255,255)
-    plusBtn.Font = Enum.Font.GothamBold; plusBtn.TextSize = 14
-    Instance.new("UICorner", plusBtn).CornerRadius = UDim.new(0, 5)
+    plusBtn.Font = Enum.Font.GothamBold; plusBtn.TextSize = 15
+    Instance.new("UICorner", plusBtn).CornerRadius = UDim.new(0, 6)
 
     local function updateToggleUI()
         if S.timeStopOn then
             toggleBtn.Text = "⏸ đang ngưng đông"
-            toggleBtn.BackgroundColor3 = Color3.fromRGB(140, 50, 200)
+            toggleBtn.BackgroundColor3 = Color3.fromRGB(130, 60, 190)
         else
             toggleBtn.Text = "▶ bật ngưng đông"
-            toggleBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
+            toggleBtn.BackgroundColor3 = Color3.fromRGB(55, 55, 75)
         end
     end
     updateToggleUI()
@@ -839,19 +847,15 @@ local function buildTimeStopGui()
         saveFullConfig()
     end)
 
-    minusBtn.MouseButton1Click:Connect(function()
-        S.timeStopRange = math.max(5, S.timeStopRange - 10)
+    local function updateRange(delta)
+        S.timeStopRange = math.clamp(S.timeStopRange + delta, 5, 500)
         rangeDisplay.Text = tostring(S.timeStopRange)
         rangeLabel.Text = "tầm: " .. S.timeStopRange .. " studs"
         saveFullConfig()
-    end)
+    end
 
-    plusBtn.MouseButton1Click:Connect(function()
-        S.timeStopRange = math.min(500, S.timeStopRange + 10)
-        rangeDisplay.Text = tostring(S.timeStopRange)
-        rangeLabel.Text = "tầm: " .. S.timeStopRange .. " studs"
-        saveFullConfig()
-    end)
+    minusBtn.MouseButton1Click:Connect(function() updateRange(-10) end)
+    plusBtn.MouseButton1Click:Connect(function() updateRange(10) end)
 
     local holdMinus, holdPlus = false, false
     minusBtn.MouseButton1Down:Connect(function() holdMinus = true end)
@@ -863,34 +867,15 @@ local function buildTimeStopGui()
 
     task.spawn(function()
         while timeStopGuiRef == gui do
-            if holdMinus then
-                S.timeStopRange = math.max(5, S.timeStopRange - 5)
-                rangeDisplay.Text = tostring(S.timeStopRange)
-                rangeLabel.Text = "tầm: " .. S.timeStopRange .. " studs"
-                saveFullConfig()
-                task.wait(0.1)
-            elseif holdPlus then
-                S.timeStopRange = math.min(500, S.timeStopRange + 5)
-                rangeDisplay.Text = tostring(S.timeStopRange)
-                rangeLabel.Text = "tầm: " .. S.timeStopRange .. " studs"
-                saveFullConfig()
-                task.wait(0.1)
-            else
-                task.wait(0.1)
-            end
+            if holdMinus then updateRange(-5); task.wait(0.08)
+            elseif holdPlus then updateRange(5); task.wait(0.08)
+            else task.wait(0.1) end
         end
     end)
 
-    minBtn.MouseButton1Click:Connect(function()
-        frame.Visible = false; miniBtn.Visible = true
-    end)
     miniBtn.MouseButton1Click:Connect(function()
         frame.Visible = true; miniBtn.Visible = false
         updateToggleUI()
-    end)
-    closeBtn.MouseButton1Click:Connect(function()
-        gui:Destroy()
-        timeStopGuiRef = nil
     end)
 end
 
@@ -1428,9 +1413,9 @@ end)
 
 buildMenu = function()
     local Window = Rayfield:CreateWindow({
-        Name = "wongavn🇻🇳 script",
-        LoadingTitle = "wongavn🇻🇳",
-        LoadingSubtitle = "tiktok: nkhaj97",
+        Name = "WonGaVn🇻🇳 Script",
+        LoadingTitle = "WonGaVn🇻🇳",
+        LoadingSubtitle = "tiktok: Nkhaj97",
         ConfigurationSaving = { Enabled = false },
         KeySystem = false
     })
@@ -1639,6 +1624,28 @@ buildMenu = function()
         TabMisc:CreateLabel("✅ phong ấn đã vỡ.")
     end
 
+    -- 📢 cập nhật
+    TabMisc:CreateSection(T("update_section"))
+    local tiktokBtn = TabMisc:CreateButton({
+        Name = "📱 tiktok: Nkhaj97",
+        Callback = function()
+            Rayfield:Notify({
+                Title = "📢 " .. S.systemName,
+                Content = T("tiktok_update"),
+                Duration = 8
+            })
+        end
+    })
+    local discordBtn = TabMisc:CreateButton({
+        Name = "💬 discord: discord.gg/ry3buvjz5",
+        Callback = function()
+            if setclipboard then pcall(function() setclipboard("https://discord.gg/rY3BUVJz5") end) end
+            Rayfield:Notify({Title = "💬", Content = "đã copy link!", Duration = 5})
+        end
+    })
+    TabMisc:CreateLabel(T("tiktok_update"))
+    TabMisc:CreateLabel(T("credit"))
+
     if not S.utilityUnlocked then
         TabUtil:CreateSection("🔒 " .. T("seal_locked"))
         TabUtil:CreateLabel(T("seal_hint"))
@@ -1662,20 +1669,13 @@ buildMenu = function()
         TabUtil:CreateButton({Name = T("timestop_open"),
             Callback = function()
                 pcall(buildTimeStopGui)
-                pcall(function()
-                    Rayfield:Notify({Title = "⏸️", Content = "đã mở menu ngưng đông", Duration = 2})
-                end)
+                pcall(function() Rayfield:Notify({Title = "⏸️", Content = "đã mở menu ngưng đông", Duration = 2}) end)
             end})
         TabUtil:CreateLabel(T("timestop_hint"))
 
         TabUtil:CreateSection("🌀 cổng xuyên không")
         TabUtil:CreateButton({Name = T("portal_open_menu"),
             Callback = function() pcall(buildPortalGui); sysNotify(nil, getPLine("portal")) end})
-        TabUtil:CreateButton({Name = T("portal_quick"),
-            Callback = function()
-                addPortal()
-                pcall(function() Rayfield:Notify({Title = "🌀", Content = "đã tạo cổng " .. #portals, Duration = 2}) end)
-            end})
 
         TabUtil:CreateSection("🛡️ anti-void")
         TabUtil:CreateToggle({Name = T("antivoid_toggle"), CurrentValue = S.antivoidOn, Flag = "AntiVoid",
@@ -1723,16 +1723,6 @@ buildMenu = function()
                 Rayfield:Notify({Title = "🗑️", Content = "đã xóa", Duration = 2})
             end})
     end
-
-    TabMisc:CreateSection("📢 thông tin")
-    TabMisc:CreateButton({Name = "📱 tiktok: nkhaj97",
-        Callback = function() Rayfield:Notify({Title = "📢", Content = "theo dõi tiktok nkhaj97!", Duration = 5}) end})
-    TabMisc:CreateButton({Name = "💬 discord: discord.gg/ry3buvjz5",
-        Callback = function()
-            if setclipboard then pcall(function() setclipboard("https://discord.gg/rY3BUVJz5") end) end
-            Rayfield:Notify({Title = "💬", Content = "đã copy link!", Duration = 5})
-        end})
-    TabMisc:CreateLabel(T("credit"))
 end
 
 local function startMain()
