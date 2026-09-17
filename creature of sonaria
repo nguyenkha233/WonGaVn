@@ -26,9 +26,8 @@ _G.WGState = _G.WGState or {
     autoTradeOn=false, tradeLog={}, bypassMode="unicode",
     playerJoinAlert=true, flyOn=false, flySpeed=50, noclipOn=false,
     antivoidOn=false, antivoidSafe=Vector3.new(0,50,0),
-    dragMenu=true, portalRange=8,
-    timeStopOn=false, timeStopRange=50,
-    freecamSensitivity=0.08, freecamZoom=30,
+    dragMenu=true,
+    freecamSensitivity=0.08,
     autoFarmOn=false,
     antiDeathOn=false, antiDeathThreshold=30,
 }
@@ -45,7 +44,7 @@ local function saveFullConfig()
             effects=S.effects, systemName=S.systemName, personality=S.personality,
             utilityUnlocked=S.utilityUnlocked,
             walkSpeed=S.walkSpeed, jumpPower=S.jumpPower, infJump=S.infJump,
-            flySpeed=S.flySpeed, portalRange=S.portalRange, timeStopRange=S.timeStopRange,
+            flySpeed=S.flySpeed,
             spamChatMsg=S.spamChatMsg, spamChatDelay=S.spamChatDelay,
             bypassMode=S.bypassMode, playerJoinAlert=S.playerJoinAlert, dragMenu=S.dragMenu,
             freecamSensitivity=S.freecamSensitivity,
@@ -99,9 +98,9 @@ local TXT = {
     vi = {
         tab_ab="🛡️ antiban", tab_combat="⚔️ combat", tab_esp="👁️ esp",
         tab_farm="🍄 auto farm", tab_misc="⚙️ misc", tab_util="🔒 phong ấn",
-        ab_toggle="bật antiban", ab_warn="⚠️ antiban chỉ bảo vệ ~80%.",
-        combat_warn="⚠️ combat",
-        speed_warn="⚠️ nên chọn 500-1000. là khu vực lên cao sẽ lag.",
+        ab_toggle="bật antiban", ab_warn="⚠️ antiban chỉ bảo vệ ~80% bot có thể quét.",
+        combat_warn="⚠️ combat !",
+        speed_warn="⚠️ nên chọn 500-1000. khu vực lên nữa sẽ lag.",
         hitbox="bật hitbox", hitbox_size="kích thước hitbox",
         aoe="bật aoe", aoe_range="bán kính aoe",
         esp_p="esp player", esp_m="esp nấm",
@@ -115,11 +114,8 @@ local TXT = {
         unlock_hint="script sẽ tự khởi động lại sau khi mở khóa.",
         util_anti_afk="🟢 anti afk", util_join="👋 thông báo người vào",
         util_noclip="👻 noclip", util_fly="🕊️ fly", util_flyspeed="tốc độ bay",
-        portal_open_menu="🪟 mở menu cổng",
         antivoid_toggle="bật anti-void",
-        timestop_open="🪟 mở menu ngưng đông",
-        timestop_hint="💡 menu riêng với nút bật/tắt và chỉnh tầm",
-        freecam_toggle="bật freecam", freecam_hint="💡 1 ngón kéo lên/xuống để zoom xa/gần",
+        freecam_toggle="bật freecam", freecam_hint="💡 1 ngón kéo lên/xuống để zoom",
         freecam_sensitivity="độ nhạy xoay",
         spam_toggle="spam chat", spam_msg="nội dung tin nhắn", spam_delay="delay spam",
         trade_toggle="auto trade", trade_view="📋 xem lịch sử", trade_clear="🗑️ xóa lịch sử",
@@ -130,9 +126,6 @@ local TXT = {
         tiktok_update="📢 script sẽ được cập nhật tại tiktok Nkhaj97",
         update_section="📢 cập nhật",
         farm_toggle="🍄 bật auto farm nấm",
-        farm_status="📊 trạng thái farm",
-        farm_no_mush="🍄 hết nấm trong tầm",
-        farm_found="✅ đã tìm thấy nấm, bắt đầu nhặt",
         antideath_toggle="💀 bật anti-death (tự tránh chết)",
         antideath_threshold="📊 ngưỡng máu kích hoạt (%)",
         antideath_hint="💡 khi máu xuống dưới ngưỡng, tự dịch chuyển tới vị trí an toàn đợi hồi máu.",
@@ -154,10 +147,7 @@ local TXT = {
         unlock_misc="🔓 unlock sealed power", unlock_hint="script restarts after unlock.",
         util_anti_afk="🟢 anti afk", util_join="👋 player join alert",
         util_noclip="👻 noclip", util_fly="🕊️ fly", util_flyspeed="fly speed",
-        portal_open_menu="🪟 open portal menu",
         antivoid_toggle="enable anti-void",
-        timestop_open="🪟 open time stop menu",
-        timestop_hint="💡 floating menu with toggle and range",
         freecam_toggle="enable freecam", freecam_hint="💡 1 finger drag up/down to zoom",
         freecam_sensitivity="rotation sensitivity",
         spam_toggle="spam chat", spam_msg="message", spam_delay="delay",
@@ -168,9 +158,6 @@ local TXT = {
         tiktok_update="📢 script will be updated at tiktok Nkhaj97",
         update_section="📢 updates",
         farm_toggle="🍄 enable auto farm mushroom",
-        farm_status="📊 farm status",
-        farm_no_mush="🍄 no mushrooms in range",
-        farm_found="✅ found mushrooms, start collecting",
         antideath_toggle="💀 enable anti-death",
         antideath_threshold="📊 HP threshold (%)",
         antideath_hint="💡 when HP drops below, auto-move to safe spot and wait to heal.",
@@ -185,8 +172,7 @@ local TXT = {
         optimize="自动优化", effects_toggle="菜单特效", drag_menu="允许拖动", lang="语言",
         unlock_misc="🔓 解锁封印", unlock_hint="解锁后重启。",
         util_anti_afk="🟢 防挂机", util_join="👋 玩家提醒", util_noclip="👻 穿墙", util_fly="🕊️ 飞行", util_flyspeed="速度",
-        portal_open_menu="🪟 传送门", antivoid_toggle="防掉落",
-        timestop_open="🪟 时间停止菜单", timestop_hint="💡 浮动菜单带开关",
+        antivoid_toggle="防掉落",
         freecam_toggle="自由相机", freecam_hint="💡 单指拖动缩放", freecam_sensitivity="旋转灵敏度",
         spam_toggle="刷屏", spam_msg="消息", spam_delay="延迟",
         trade_toggle="自动交易", trade_view="📋 历史", trade_clear="🗑️ 清除",
@@ -194,7 +180,6 @@ local TXT = {
         credit="WonGaVn🇻🇳 | Nkhaj97", testing_notif="⚠️ 测试中。", esp_coming="🚧 更新中。",
         tiktok_update="📢 脚本将在 tiktok Nkhaj97 更新", update_section="📢 更新",
         farm_toggle="🍄 启用自动农场蘑菇",
-        farm_status="📊 状态", farm_no_mush="🍄 范围内无蘑菇", farm_found="✅ 找到蘑菇，开始收集",
         antideath_toggle="💀 启用防死亡", antideath_threshold="📊 生命阈值(%)",
         antideath_hint="💡 生命低于阈值时自动移动到安全位置等待恢复。",
     },
@@ -208,8 +193,7 @@ local TXT = {
         optimize="自動最適化", effects_toggle="メニュー効果", drag_menu="ドラッグ", lang="言語",
         unlock_misc="🔓 封印解除", unlock_hint="解除後再起動。",
         util_anti_afk="🟢 アンチafk", util_join="👋 参加通知", util_noclip="👻 ノークリップ", util_fly="🕊️ フライ", util_flyspeed="速度",
-        portal_open_menu="🪟 ポータル", antivoid_toggle="アンチボイド",
-        timestop_open="🪟 時間停止メニュー", timestop_hint="💡 フローティングメニュー",
+        antivoid_toggle="アンチボイド",
         freecam_toggle="フリーカメラ", freecam_hint="💡 1本指でズーム", freecam_sensitivity="回転感度",
         spam_toggle="スパム", spam_msg="メッセージ", spam_delay="間隔",
         trade_toggle="自動トレード", trade_view="📋 履歴", trade_clear="🗑️ 削除",
@@ -217,7 +201,6 @@ local TXT = {
         credit="WonGaVn🇻🇳 | Nkhaj97", testing_notif="⚠️ テスト中。", esp_coming="🚧 更新中。",
         tiktok_update="📢 スクリプトは tiktok Nkhaj97 で更新", update_section="📢 更新",
         farm_toggle="🍄 自動ファーム有効",
-        farm_status="📊 状態", farm_no_mush="🍄 範囲内にキノコなし", farm_found="✅ キノコ発見",
         antideath_toggle="💀 アンチデス有効", antideath_threshold="📊 HP閾値(%)",
         antideath_hint="💡 HPが閾値以下になると安全地帯に移動して回復を待ちます。",
     },
@@ -231,8 +214,7 @@ local TXT = {
         optimize="자동 최적화", effects_toggle="메뉴 효과", drag_menu="드래그", lang="언어",
         unlock_misc="🔓 봉인 해제", unlock_hint="해제 후 재시작.",
         util_anti_afk="🟢 안티afk", util_join="👋 참가 알림", util_noclip="👻 노클립", util_fly="🕊️ 비행", util_flyspeed="속도",
-        portal_open_menu="🪟 포탈", antivoid_toggle="안티보이드",
-        timestop_open="🪟 시간 정지 메뉴", timestop_hint="💡 플로팅 메뉴",
+        antivoid_toggle="안티보이드",
         freecam_toggle="프리캠", freecam_hint="💡 1손가락 줌", freecam_sensitivity="회전 감도",
         spam_toggle="스팸", spam_msg="메시지", spam_delay="지연",
         trade_toggle="자동 거래", trade_view="📋 기록", trade_clear="🗑️ 삭제",
@@ -240,7 +222,6 @@ local TXT = {
         credit="WonGaVn🇻🇳 | Nkhaj97", testing_notif="⚠️ 테스트 중.", esp_coming="🚧 업데이트 중.",
         tiktok_update="📢 스크립트는 tiktok Nkhaj97에서 업데이트", update_section="📢 업데이트",
         farm_toggle="🍄 자동 파밍",
-        farm_status="📊 상태", farm_no_mush="🍄 범위 내 버섯 없음", farm_found="✅ 버섯 발견",
         antideath_toggle="💀 안티데스 활성화", antideath_threshold="📊 HP 임계값(%)",
         antideath_hint="💡 HP가 임계값 이하로 떨어지면 안전한 곳으로 이동해 회복을 기다립니다.",
     },
@@ -265,7 +246,6 @@ local PERSONALITIES = {
         spam_on="spam chat bật.", spam_off="ngừng spam.",
         trade_on="ta theo dõi giao dịch.", trade_off="ngừng.",
         infjump_on="nhảy vô hạn.", infjump_off="nhảy bình thường.",
-        portal="cổng mở rồi.", timestop_on="ta ngưng đông thời gian.", timestop_off="thời gian tiếp tục.",
         freecam_on="camera tự do.", freecam_off="camera trở lại.",
         farm_on="ta bắt đầu nhặt nấm.", farm_off="ngừng nhặt nấm.",
         antideath_on="ta bảo vệ ngươi.", antideath_off="ngừng bảo vệ." }},
@@ -279,8 +259,7 @@ local PERSONALITIES = {
         afk_on="em canh nè~", afk_off="thôi canh~", antivoid_on="em ôm chủ nhân~", antivoid_off="buông tay~",
         optimize_on="em dọn máy nè~", optimize_off="trả lại~", join_on="em để ý~", join_off="thôi~",
         spam_on="nyaa spam~", spam_off="ngừng~", trade_on="em xem giao dịch~", trade_off="thôi~",
-        infjump_on="nhảy cao nè~", infjump_off="thường~", portal="cổng kìa~",
-        timestop_on="nya~ em đóng băng mọi người!", timestop_off="tan băng rồi~",
+        infjump_on="nhảy cao nè~", infjump_off="thường~",
         freecam_on="camera bay nè~", freecam_off="camera trở lại~",
         farm_on="nya~ em nhặt nấm nè!", farm_off="thôi nhặt~",
         antideath_on="nya~ em bảo vệ chủ nhân!", antideath_off="thôi bảo vệ~" }},
@@ -292,8 +271,7 @@ local PERSONALITIES = {
         afk_on="ta canh.", afk_off="ta lơ.", antivoid_on="vực sâu không nuốt.", antivoid_off="buông tha.",
         optimize_on="nuốt gánh nặng...", optimize_off="nhả ra.", join_on="ta thấy kẻ đến.", join_off="nhắm mắt.",
         spam_on="nổ tung chat.", spam_off="im lặng.", trade_on="theo dõi giao dịch.", trade_off="ngừng.",
-        infjump_on="nhảy vô tận.", infjump_off="bình thường.", portal="cổng địa ngục mở.",
-        timestop_on="ta đóng băng thời gian!", timestop_off="thời gian chảy lại.",
+        infjump_on="nhảy vô tận.", infjump_off="bình thường.",
         freecam_on="nhãn thần mở.", freecam_off="nhãn thần đóng.",
         farm_on="ta thu hoạch nấm.", farm_off="ngừng thu hoạch.",
         antideath_on="ta bảo hộ ngươi.", antideath_off="thu hồi." }},
@@ -305,8 +283,7 @@ local PERSONALITIES = {
         afk_on="trẫm canh ngươi.", afk_off="trẫm lơ.", antivoid_on="kết giới bảo vệ.", antivoid_off="thu kết giới.",
         optimize_on="trẫm tinh giản.", optimize_off="trả lại.", join_on="trẫm để ý.", join_off="thôi.",
         spam_on="khải hoàn spam.", spam_off="ngừng.", trade_on="trẫm theo dõi.", trade_off="ngừng.",
-        infjump_on="nhảy vô hạn.", infjump_off="bình thường.", portal="cổng hoàng gia mở.",
-        timestop_on="trẫm phong ấn thời gian!", timestop_off="thời gian trở lại.",
+        infjump_on="nhảy vô hạn.", infjump_off="bình thường.",
         freecam_on="thiên nhãn mở.", freecam_off="thiên nhãn khép.",
         farm_on="trẫm thu hoạch nấm.", farm_off="ngừng.",
         antideath_on="trẫm bảo hộ thần dân.", antideath_off="thu hồi." }},
@@ -318,8 +295,7 @@ local PERSONALITIES = {
         afk_on="bypass idle.", afk_off="ngừng.", antivoid_on="firewall bật.", antivoid_off="tắt firewall.",
         optimize_on="đã tối ưu.", optimize_off="revert.", join_on="log player join.", join_off="ngừng log.",
         spam_on="spam packet.", spam_off="ngừng.", trade_on="monitor trade.", trade_off="ngừng.",
-        infjump_on="enable inf jump.", infjump_off="disable.", portal="wormhole xong.",
-        timestop_on="freeze server packets.", timestop_off="unfreeze.",
+        infjump_on="enable inf jump.", infjump_off="disable.",
         freecam_on="camera exploit.", freecam_off="camera reset.",
         farm_on="auto collect nấm.", farm_off="ngừng.",
         antideath_on="auto protect on.", antideath_off="auto protect off." }},
@@ -331,8 +307,7 @@ local PERSONALITIES = {
         afk_on="ta hộ ngươi.", afk_off="ngừng hộ.", antivoid_on="thần quang phong ấn.", antivoid_off="thu quang.",
         optimize_on="thần lực thanh lọc.", optimize_off="trả lại.", join_on="ta thấy hết.", join_off="nhắm mắt.",
         spam_on="thần ngôn tràn ra.", spam_off="ngừng.", trade_on="ta theo dõi.", trade_off="ngừng.",
-        infjump_on="nhảy vô hạn.", infjump_off="bình thường.", portal="thiên môn mở ra.",
-        timestop_on="ta ngưng đọng thời gian!", timestop_off="thời gian tiếp tục.",
+        infjump_on="nhảy vô hạn.", infjump_off="bình thường.",
         freecam_on="thần nhãn mở.", freecam_off="thần nhãn khép.",
         farm_on="ta thu hoạch vạn vật.", farm_off="ngừng.",
         antideath_on="thần quang hộ thể.", antideath_off="thu hồi." }},
@@ -344,8 +319,7 @@ local PERSONALITIES = {
         afk_on="ta giữ ngươi~", afk_off="buông~", antivoid_on="ta giữ ngươi~", antivoid_off="buông~",
         optimize_on="cởi bỏ lớp áo~", optimize_off="mặc lại~", join_on="ta để ý ngươi~", join_off="thôi~",
         spam_on="ta rên nhiều~", spam_off="im~", trade_on="ta xem ngươi~", trade_off="thôi~",
-        infjump_on="nhảy cao~", infjump_off="thường~", portal="chốn riêng tư~",
-        timestop_on="ta đóng băng ngươi~", timestop_off="tan băng~",
+        infjump_on="nhảy cao~", infjump_off="thường~",
         freecam_on="ta nhìn ngươi~", freecam_off="thôi nhìn~",
         farm_on="ta gom nấm~", farm_off="thôi gom~",
         antideath_on="ta che chở ngươi~", antideath_off="buông~" }},
@@ -423,7 +397,7 @@ local function showIntro(onDone)
 end
 
 -- ============================================================
---  AUTO FARM NẤM — QUÉT TOÀN BỘ WORKSPACE (GetDescendants)
+--  NHẬN DIỆN NẤM SIÊU KỸ (đỏ/xanh/vàng, loại bỏ oxy + trang trí)
 -- ============================================================
 local farmThread = nil
 local collectRemotes = {}
@@ -433,63 +407,181 @@ task.spawn(function()
         if v:IsA("RemoteEvent") or v:IsA("RemoteFunction") then
             local n = v.Name:lower()
             if n:find("collect") or n:find("pick") or n:find("interact")
-               or n:find("mush") or n:find("harvest") or n:find("grab")
-               or n:find("quest") or n:find("eat") then
+               or n:find("mush") or n:find("shoom") or n:find("shroom")
+               or n:find("harvest") or n:find("grab")
+               or n:find("quest") or n:find("eat") or n:find("forage") then
                 table.insert(collectRemotes, v)
             end
         end
     end
 end)
 
-local function isMushroomName(n)
-    if not n then return false end
-    n = n:lower()
-    return n:find("mushroom") ~= nil
-        or n:find("shroom") ~= nil
-        or n:find("shoom") ~= nil
-        or n:find("mushie") ~= nil
+-- Từ khóa LOẠI TRỪ (oxy, rong biển, nấm trang trí...)
+local EXCLUDE_KW = {
+    "oxy", "oxygen", "bubble", "kelp", "coral", "seaweed", "algae",
+    "decor", "decoration", "prop", "fake", "grass", "tree", "rock",
+    "flower", "leaf", "leaves", "plant", "vine", "bush", "crystal",
+    "waypoint", "spawn", "portal", "sign", "lamp", "light",
+}
+-- Từ khóa PHẢI CÓ (nấm)
+local SHROOM_KW = {"shoom", "shroom", "mushroom", "mushie", "fungus"}
+
+local function nameHasAny(str, list)
+    if not str then return false end
+    str = str:lower()
+    for _, k in ipairs(list) do
+        if str:find(k, 1, true) then return true end
+    end
+    return false
 end
 
--- QUÉT TOÀN BỘ WORKSPACE — KHÔNG GIỚI HẠN ĐỘ SÂU
-local function findMushrooms()
+-- Kiểm tra cây có phải nấm collectible không
+local function detectShroom(obj)
+    if not obj or not obj.Parent then return false end
+    if not (obj:IsA("BasePart") or obj:IsA("Model")) then return false end
+
+    -- 1. Loại trừ theo tên của chính nó và tất cả cha (5 cấp)
+    local cur = obj
+    local depth = 0
+    while cur and cur ~= workspace and depth < 5 do
+        if nameHasAny(cur.Name, EXCLUDE_KW) then return false end
+        cur = cur.Parent
+        depth = depth + 1
+    end
+
+    -- 2. BẮT BUỘC tên phải chứa từ khóa nấm
+    if not nameHasAny(obj.Name, SHROOM_KW) then return false end
+
+    -- 3. Kích thước phải đủ lớn (nấm collectible to)
+    local sz
+    if obj:IsA("BasePart") then
+        sz = obj.Size
+    else
+        local ok, ext = pcall(function() return obj:GetExtentsSize() end)
+        if not ok then return false end
+        sz = ext
+    end
+    if sz.X < 8 or sz.Z < 8 or sz.Y < 3 then return false end
+
+    -- 4. Phải nằm trên bề mặt (Y > -100) — loại bỏ nấm/oxy dưới biển sâu
+    local pos
+    if obj:IsA("BasePart") then pos = obj.Position
+    else
+        local pp = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
+        if pp then pos = pp.Position end
+    end
+    if pos and pos.Y < -100 then return false end
+
+    return true
+end
+
+local function findShrooms()
     local list = {}
     for _, obj in ipairs(workspace:GetDescendants()) do
-        if obj:IsA("BasePart") and isMushroomName(obj.Name) then
-            table.insert(list, obj)
+        if (obj:IsA("BasePart") or obj:IsA("Model")) and obj.Parent then
+            if detectShroom(obj) then
+                table.insert(list, obj)
+            end
         end
     end
     return list
 end
 
-local function getMushroomPos(m)
+local function getShroomPos(m)
     if not m or not m.Parent then return nil end
     if m:IsA("BasePart") then return m.Position end
+    if m.PrimaryPart then return m.PrimaryPart.Position end
+    local bp = m:FindFirstChildWhichIsA("BasePart")
+    if bp then return bp.Position end
     return nil
 end
 
-local function collectMushroom(m)
-    if not m or not m.Parent then return end
+local function collectShroom(obj)
+    if not obj or not obj.Parent then return end
+
+    -- Fire tất cả remote collect
     for _, r in ipairs(collectRemotes) do
-        pcall(function() r:FireServer(m) end)
+        pcall(function() r:FireServer(obj) end)
     end
+
+    -- Fire touch với mọi BasePart bên trong
     local c = LP.Character
     local hrp = c and c:FindFirstChild("HumanoidRootPart")
-    if hrp and firetouchinterest and m:IsA("BasePart") then
-        pcall(function()
-            firetouchinterest(hrp, m, 0)
-            firetouchinterest(hrp, m, 1)
-        end)
+    if hrp and firetouchinterest then
+        if obj:IsA("BasePart") then
+            pcall(function()
+                firetouchinterest(hrp, obj, 0)
+                task.wait()
+                firetouchinterest(hrp, obj, 1)
+            end)
+        elseif obj:IsA("Model") then
+            for _, p in ipairs(obj:GetDescendants()) do
+                if p:IsA("BasePart") then
+                    pcall(function()
+                        firetouchinterest(hrp, p, 0)
+                        task.wait()
+                        firetouchinterest(hrp, p, 1)
+                    end)
+                end
+            end
+        end
     end
+
+    -- ProximityPrompt nếu có
+    local prompt = obj:FindFirstChildOfClass("ProximityPrompt")
+    if not prompt and obj:IsA("Model") then
+        prompt = obj:FindFirstChildWhichIsA("ProximityPrompt", true)
+    end
+    if prompt and fireproximityprompt then
+        pcall(function() fireproximityprompt(prompt) end)
+    end
+end
+
+-- Đọc quest "Search X shoom piles" từ PlayerGui
+local function readShroomQuest()
+    local bestCur, bestTotal = nil, nil
+    for _, gui in ipairs(LP.PlayerGui:GetDescendants()) do
+        if gui:IsA("TextLabel") or gui:IsA("TextButton") then
+            local txt = (gui.Text or ""):lower()
+            if txt:find("shoom", 1, true) or txt:find("shroom", 1, true)
+               or txt:find("mushroom", 1, true) or txt:find("pile", 1, true) then
+                local cur, total = txt:match("(%d+)%s*/%s*(%d+)")
+                if cur and total then
+                    cur, total = tonumber(cur), tonumber(total)
+                    if cur and total and cur >= 0 and total > 0 then
+                        bestCur, bestTotal = cur, total
+                        if cur < total then return cur, total end
+                    end
+                end
+            end
+        end
+    end
+    return bestCur, bestTotal
 end
 
 local questCount = 0
 local collected = setmetatable({}, {__mode = "k"})
 
+local function markCluster(mushroom)
+    if not mushroom or not mushroom.Parent then return end
+    local pos = getShroomPos(mushroom)
+    if not pos then return end
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if (obj:IsA("BasePart") or obj:IsA("Model")) and obj.Parent and detectShroom(obj) then
+            local p = getShroomPos(obj)
+            if p and (p - pos).Magnitude <= 80 then
+                collected[obj] = true
+            end
+        end
+    end
+end
+
 local function pickNewArea(root)
+    -- TP tới khu vực khác cách xa 600-1000 studs, cùng độ cao 50
     local angle = math.random() * math.pi * 2
-    local dist = 400 + math.random() * 400
+    local dist = 600 + math.random() * 400
     local curPos = root.Position
-    local newPos = Vector3.new(curPos.X + math.cos(angle) * dist, 100, curPos.Z + math.sin(angle) * dist)
+    local newPos = Vector3.new(curPos.X + math.cos(angle) * dist, 50, curPos.Z + math.sin(angle) * dist)
     root.CFrame = CFrame.new(newPos)
     task.wait(0.5)
 end
@@ -499,28 +591,57 @@ local function startAutoFarm()
     questCount = 0
     collected = setmetatable({}, {__mode = "k"})
     farmThread = task.spawn(function()
+        local lastQuestCur, lastQuestTotal = nil, nil
+        local emptyAreaCount = 0
+
         while S.autoFarmOn do
             local c = LP.Character
             local root = c and c:FindFirstChild("HumanoidRootPart")
             if not root then task.wait(0.5); continue end
 
-            local mushrooms = findMushrooms()
+            -- Đọc quest
+            local qCur, qTotal = readShroomQuest()
+            if qCur and qTotal and qCur ~= lastQuestCur then
+                lastQuestCur, lastQuestTotal = qCur, qTotal
+                if qCur >= qTotal then
+                    pcall(function()
+                        Rayfield:Notify({Title = "🎉 " .. S.systemName,
+                            Content = "nhiệm vụ nấm HOÀN THÀNH ("..qCur.."/"..qTotal..")!",
+                            Duration = 6})
+                    end)
+                end
+            end
+
+            local shrooms = findShrooms()
             local fresh = {}
-            for _, m in ipairs(mushrooms) do
+            for _, m in ipairs(shrooms) do
                 if not collected[m] then
                     table.insert(fresh, m)
                 end
             end
 
             if #fresh == 0 then
+                emptyAreaCount = emptyAreaCount + 1
+                if emptyAreaCount >= 3 then
+                    emptyAreaCount = 0
+                    pcall(function()
+                        Rayfield:Notify({Title = "🍄 " .. S.systemName,
+                            Content = "đã nhặt hết nấm khu vực này — chuyển khu khác...",
+                            Duration = 4})
+                    end)
+                    pickNewArea(root)
+                    collected = setmetatable({}, {__mode = "k"})
+                    questCount = 0
+                end
                 task.wait(1)
                 continue
             end
 
+            emptyAreaCount = 0
             local myPos = root.Position
             local best, bestD = nil, math.huge
             for _, m in ipairs(fresh) do
-                local p = getMushroomPos(m)
+                local p = getShroomPos(m)
                 if p then
                     local d = (p - myPos).Magnitude
                     if d < bestD then best, bestD = m, d end
@@ -528,16 +649,28 @@ local function startAutoFarm()
             end
 
             if best then
-                local pos = getMushroomPos(best)
+                local pos = getShroomPos(best)
                 if pos then
                     root.CFrame = CFrame.new(pos + Vector3.new(0, 3, 0))
-                    task.wait(0.1)
-                    collectMushroom(best)
-                    collected[best] = true
-                    questCount = questCount + 1
                     task.wait(0.15)
+                    collectShroom(best)
+                    task.wait(0.2)
+                    markCluster(best)
+                    questCount = questCount + 1
 
-                    if questCount >= 3 then
+                    -- Check quest mới
+                    local newCur = select(1, readShroomQuest())
+                    if newCur and lastQuestTotal and newCur >= lastQuestTotal then
+                        pcall(function()
+                            Rayfield:Notify({Title = "✅ " .. S.systemName,
+                                Content = "hoàn thành nhiệm vụ nấm khu này!",
+                                Duration = 5})
+                        end)
+                        lastQuestCur = newCur
+                        questCount = 0
+                        pickNewArea(root)
+                        collected = setmetatable({}, {__mode = "k"})
+                    elseif questCount >= 3 then
                         questCount = 0
                         pickNewArea(root)
                         collected = setmetatable({}, {__mode = "k"})
@@ -558,9 +691,32 @@ local function stopAutoFarm()
 end
 
 -- ============================================================
---  ANTI-DEATH
+--  ANTI-DEATH (TP xa map, tránh khu spam)
 -- ============================================================
 local antiDeathThread = nil
+
+local function findSafeSpot()
+    for attempt = 1, 25 do
+        local angle = math.random() * math.pi * 2
+        local dist = 8000 + math.random() * 4000
+        local x = math.cos(angle) * dist
+        local z = math.sin(angle) * dist
+        local y = 1500 + math.random() * 1500
+        local pos = Vector3.new(x, y, z)
+        local safe = true
+        for _, pl in ipairs(Players:GetPlayers()) do
+            if pl ~= LP then
+                local pc = pl.Character
+                local pr = pc and pc:FindFirstChild("HumanoidRootPart")
+                if pr and (pr.Position - pos).Magnitude < 600 then
+                    safe = false; break
+                end
+            end
+        end
+        if safe then return pos end
+    end
+    return Vector3.new(12000, 2500, 12000)
+end
 
 local function startAntiDeath()
     if antiDeathThread then pcall(function() task.cancel(antiDeathThread) end) end
@@ -578,19 +734,34 @@ local function startAntiDeath()
                 if not sentAway and hpPct <= threshold then
                     safeReturn = hrp.Position
                     h.PlatformStand = true
-                    local farX = (math.random() > 0.5 and 1 or -1) * (3000 + math.random() * 1000)
-                    local farZ = (math.random() > 0.5 and 1 or -1) * (3000 + math.random() * 1000)
-                    hrp.CFrame = CFrame.new(Vector3.new(farX, 800, farZ))
+                    hrp.CFrame = CFrame.new(findSafeSpot())
                     hrp.Velocity = Vector3.zero
                     sentAway = true
                     pcall(function()
                         Rayfield:Notify({Title = "💀 " .. S.systemName,
-                            Content = "máu thấp — đang trốn để hồi máu...", Duration = 4})
+                            Content = "máu thấp — đang trốn ở vùng an toàn...", Duration = 4})
                     end)
                 end
 
                 if sentAway then
-                    if hpPct >= math.min(threshold + 30, 95) then
+                    local myPos = hrp.Position
+                    local nearEnemy = false
+                    for _, pl in ipairs(Players:GetPlayers()) do
+                        if pl ~= LP then
+                            local pc = pl.Character
+                            local pr = pc and pc:FindFirstChild("HumanoidRootPart")
+                            if pr and (pr.Position - myPos).Magnitude < 400 then
+                                nearEnemy = true; break
+                            end
+                        end
+                    end
+
+                    if nearEnemy and hpPct < 95 then
+                        hrp.CFrame = CFrame.new(findSafeSpot())
+                        hrp.Velocity = Vector3.zero
+                    end
+
+                    if hpPct >= math.min(threshold + 30, 95) and not nearEnemy then
                         if safeReturn then
                             hrp.CFrame = CFrame.new(safeReturn + Vector3.new(0, 3, 0))
                         end
@@ -669,14 +840,13 @@ RunService.RenderStepped:Connect(function()
 end)
 
 -- ============================================================
---  FREECAM — 1 NGÓN KÉO LÊN/XUỐNG ĐỂ ZOOM
+--  FREECAM — 1 NGÓN: NGANG = XOAY, DỌC = ZOOM
 -- ============================================================
 local freecamActive = false
 local freecamYaw, freecamPitch = 0, 0
 local freecamZoom = 30
 local freecamCenter = nil
 local freecamLastPan = nil
-local freecamLastTouchTime = 0
 
 local function startFreecam()
     if freecamActive then return end
@@ -704,7 +874,6 @@ local function stopFreecam()
     if h then cam.CameraSubject = h end
 end
 
--- 1 ngón kéo: vừa xoay vừa zoom (ngang = xoay, dọc = zoom)
 UIS.TouchPan:Connect(function(touchPositions, totalTranslation, velocity, state)
     if not freecamActive then return end
     if state == Enum.UserInputState.Begin then
@@ -721,9 +890,7 @@ UIS.TouchPan:Connect(function(touchPositions, totalTranslation, velocity, state)
     end
     local delta = totalTranslation - freecamLastPan
     freecamLastPan = totalTranslation
-    -- NGANG = xoay camera
     freecamYaw = freecamYaw - math.rad(delta.X * 0.25)
-    -- DỌC = zoom xa/gần
     freecamZoom = math.clamp(freecamZoom + delta.Y * 1.5, 5, 300)
 end)
 
@@ -1002,7 +1169,6 @@ local function makeNameTag(pl)
     bb.StudsOffset = Vector3.new(0, 3, 0)
     bb.AlwaysOnTop = true
     bb.Adornee = head; bb.Parent = head
-
     local lbl = Instance.new("TextLabel", bb)
     lbl.Size = UDim2.new(1, 0, 1, 0)
     lbl.BackgroundTransparency = 1
@@ -1054,22 +1220,23 @@ local function applyMushroomESP()
     local myPos = root.Position
     local MAXD = 500 * 500; local MAXC = 60
     local count = 0; local current = {}
-    local function scan(parent, depth)
-        if depth > 8 or count >= MAXC then return end
-        for _, obj in ipairs(parent:GetChildren()) do
-            if obj:IsA("BasePart") then
-                local n = obj.Name:lower()
-                if n:find("mushroom") or n:find("shroom") or n:find("shoom") then
-                    local d2 = (obj.Position - myPos).Magnitude
-                    if d2 * d2 <= MAXD and count < MAXC then
-                        count = count + 1; current[obj] = true
-                        if not mushroomESP[obj] then mushroomESP[obj] = makeESP(obj) end
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if count >= MAXC then break end
+        if (obj:IsA("BasePart") or obj:IsA("Model")) and obj.Parent and detectShroom(obj) then
+            local p = getShroomPos(obj)
+            if p then
+                local d2 = (p - myPos).Magnitude
+                if d2 * d2 <= MAXD then
+                    count = count + 1
+                    local target = obj:IsA("BasePart") and obj or (obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart"))
+                    if target then
+                        current[target] = true
+                        if not mushroomESP[target] then mushroomESP[target] = makeESP(target) end
                     end
                 end
-            elseif obj:IsA("Model") or obj:IsA("Folder") then scan(obj, depth + 1) end
+            end
         end
     end
-    scan(workspace, 0)
     for part, hl in pairs(mushroomESP) do
         if not current[part] or not part.Parent then
             hl:Destroy(); mushroomESP[part] = nil
@@ -1151,13 +1318,11 @@ local function applyMenuTheme()
     if not S.effects then return end
     task.wait(1.0)
     local rayGui = nil
-    local function isRay(o)
-        if not o or not o:IsA("ScreenGui") then return false end
-        local nm = o.Name:lower()
-        return nm:find("rayfield") or nm:find("sirius")
-    end
     for _, g in ipairs(game:GetService("CoreGui"):GetChildren()) do
-        if isRay(g) then rayGui = g; break end
+        if g:IsA("ScreenGui") then
+            local nm = g.Name:lower()
+            if nm:find("rayfield") or nm:find("sirius") then rayGui = g; break end
+        end
     end
     if not rayGui then return end
     local accents = {normal=Color3.fromRGB(100,200,255), neko=Color3.fromRGB(255,150,220),
@@ -1166,24 +1331,24 @@ local function applyMenuTheme()
         pervert=Color3.fromRGB(255,100,180)}
     local accent = accents[S.personality] or accents.normal
     for _, child in ipairs(rayGui:GetDescendants()) do
-        if not child:IsA("GuiObject") then continue end
-        pcall(function()
-            if child:IsA("TextLabel") or child:IsA("TextButton") then
-                child.TextColor3 = Color3.fromRGB(240,245,255)
-            end
-            if child.Parent and child.Parent:IsA("ScreenGui") then return end
-            if (child:IsA("Frame") or child:IsA("TextButton")) then
-                local abs = child.AbsoluteSize
-                if abs.X > 60 and abs.X < 320 and abs.Y > 20 and abs.Y < 70 then
-                    if not child:FindFirstChildOfClass("UIStroke") then
-                        local stroke = Instance.new("UIStroke")
-                        stroke.Color = accent; stroke.Thickness = 1; stroke.Transparency = 0.75
-                        stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-                        stroke.Parent = child
+        if child:IsA("GuiObject") then
+            pcall(function()
+                if child:IsA("TextLabel") or child:IsA("TextButton") then
+                    child.TextColor3 = Color3.fromRGB(240,245,255)
+                end
+                if (child:IsA("Frame") or child:IsA("TextButton")) then
+                    local abs = child.AbsoluteSize
+                    if abs.X > 60 and abs.X < 320 and abs.Y > 20 and abs.Y < 70 then
+                        if not child:FindFirstChildOfClass("UIStroke") then
+                            local stroke = Instance.new("UIStroke")
+                            stroke.Color = accent; stroke.Thickness = 1; stroke.Transparency = 0.75
+                            stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+                            stroke.Parent = child
+                        end
                     end
                 end
-            end
-        end)
+            end)
+        end
     end
 end
 
@@ -1317,7 +1482,7 @@ buildMenu = function()
         end})
     TabESP:CreateLabel(T("esp_coming"))
 
-    -- AUTO FARM NẤM (1 NÚT DUY NHẤT)
+    -- AUTO FARM NẤM
     TabFarm:CreateSection("🍄 auto farm nấm")
     TabFarm:CreateToggle({
         Name = T("farm_toggle"),
@@ -1330,8 +1495,9 @@ buildMenu = function()
             saveFullConfig()
         end
     })
-    TabFarm:CreateLabel("💡 quét toàn bộ bản đồ — nhặt 1 lần rồi TP sang nấm khác.")
-    TabFarm:CreateLabel("💡 đủ 3/3 nấm sẽ tự chuyển sang khu vực khác.")
+    TabFarm:CreateLabel("💡 chỉ nhặt nấm màu ĐỎ / XANH / VÀNG")
+    TabFarm:CreateLabel("💡 bỏ qua oxy, rong biển và nấm trang trí")
+    TabFarm:CreateLabel("💡 đọc nhiệm vụ 'Search X shoom piles' — đủ sẽ báo + chuyển khu")
 
     -- MISC
     TabMisc:CreateSection("⚡ " .. T("sys_name"))
@@ -1459,11 +1625,7 @@ buildMenu = function()
     TabMisc:CreateButton({
         Name = "📱 tiktok: Nkhaj97",
         Callback = function()
-            Rayfield:Notify({
-                Title = "📢 " .. S.systemName,
-                Content = T("tiktok_update"),
-                Duration = 8
-            })
+            Rayfield:Notify({Title = "📢 " .. S.systemName, Content = T("tiktok_update"), Duration = 8})
         end
     })
     TabMisc:CreateButton({
