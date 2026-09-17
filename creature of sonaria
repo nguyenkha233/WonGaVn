@@ -1,5 +1,5 @@
 -- ============================================================
---  WonGaVn🇻🇳 Script
+--  WonGaVn🇻🇳 Script - V1
 --  tiktok: Nkhaj97 | discord: discord.gg/ry3buvjz5
 -- ============================================================
 local SCRIPT_URL = "https://raw.githubusercontent.com/nguyenkha233/WonGaVn/refs/heads/main/creature%20of%20sonaria"
@@ -100,8 +100,8 @@ local TXT = {
         tab_ab="🛡️ antiban", tab_combat="⚔️ combat", tab_esp="👁️ esp",
         tab_farm="🍄 auto farm", tab_misc="⚙️ misc", tab_util="🔒 phong ấn",
         ab_toggle="bật antiban", ab_warn="⚠️ antiban chỉ bảo vệ ~80%.",
-        combat_warn="⚠️ game combat — nguy cơ ban cao, dùng alt!",
-        speed_warn="⚠️ nên chọn 500-1000. dưới 100 rất chậm.",
+        combat_warn="⚠️ combat",
+        speed_warn="⚠️ nên chọn 500-1000. là khu vực lên cao sẽ lag.",
         hitbox="bật hitbox", hitbox_size="kích thước hitbox",
         aoe="bật aoe", aoe_range="bán kính aoe",
         esp_p="esp player", esp_m="esp nấm",
@@ -119,7 +119,7 @@ local TXT = {
         antivoid_toggle="bật anti-void",
         timestop_open="🪟 mở menu ngưng đông",
         timestop_hint="💡 menu riêng với nút bật/tắt và chỉnh tầm",
-        freecam_toggle="bật freecam", freecam_hint="💡 vuốt để xoay | chụm 2 ngón để zoom",
+        freecam_toggle="bật freecam", freecam_hint="💡 1 ngón kéo lên/xuống để zoom xa/gần",
         freecam_sensitivity="độ nhạy xoay",
         spam_toggle="spam chat", spam_msg="nội dung tin nhắn", spam_delay="delay spam",
         trade_toggle="auto trade", trade_view="📋 xem lịch sử", trade_clear="🗑️ xóa lịch sử",
@@ -158,7 +158,7 @@ local TXT = {
         antivoid_toggle="enable anti-void",
         timestop_open="🪟 open time stop menu",
         timestop_hint="💡 floating menu with toggle and range",
-        freecam_toggle="enable freecam", freecam_hint="💡 swipe to rotate | pinch to zoom",
+        freecam_toggle="enable freecam", freecam_hint="💡 1 finger drag up/down to zoom",
         freecam_sensitivity="rotation sensitivity",
         spam_toggle="spam chat", spam_msg="message", spam_delay="delay",
         trade_toggle="auto trade", trade_view="📋 history", trade_clear="🗑️ clear",
@@ -187,7 +187,7 @@ local TXT = {
         util_anti_afk="🟢 防挂机", util_join="👋 玩家提醒", util_noclip="👻 穿墙", util_fly="🕊️ 飞行", util_flyspeed="速度",
         portal_open_menu="🪟 传送门", antivoid_toggle="防掉落",
         timestop_open="🪟 时间停止菜单", timestop_hint="💡 浮动菜单带开关",
-        freecam_toggle="自由相机", freecam_hint="💡 滑动旋转 | 捏合缩放", freecam_sensitivity="旋转灵敏度",
+        freecam_toggle="自由相机", freecam_hint="💡 单指拖动缩放", freecam_sensitivity="旋转灵敏度",
         spam_toggle="刷屏", spam_msg="消息", spam_delay="延迟",
         trade_toggle="自动交易", trade_view="📋 历史", trade_clear="🗑️ 清除",
         seal_locked="🔒 封印未破", seal_hint="💡 点击下方。", seal_unlock="🔓 立即解锁",
@@ -210,7 +210,7 @@ local TXT = {
         util_anti_afk="🟢 アンチafk", util_join="👋 参加通知", util_noclip="👻 ノークリップ", util_fly="🕊️ フライ", util_flyspeed="速度",
         portal_open_menu="🪟 ポータル", antivoid_toggle="アンチボイド",
         timestop_open="🪟 時間停止メニュー", timestop_hint="💡 フローティングメニュー",
-        freecam_toggle="フリーカメラ", freecam_hint="💡 スワイプ回転 | ピンチズーム", freecam_sensitivity="回転感度",
+        freecam_toggle="フリーカメラ", freecam_hint="💡 1本指でズーム", freecam_sensitivity="回転感度",
         spam_toggle="スパム", spam_msg="メッセージ", spam_delay="間隔",
         trade_toggle="自動トレード", trade_view="📋 履歴", trade_clear="🗑️ 削除",
         seal_locked="🔒 封印中", seal_hint="💡 下のボタン。", seal_unlock="🔓 解除",
@@ -233,7 +233,7 @@ local TXT = {
         util_anti_afk="🟢 안티afk", util_join="👋 참가 알림", util_noclip="👻 노클립", util_fly="🕊️ 비행", util_flyspeed="속도",
         portal_open_menu="🪟 포탈", antivoid_toggle="안티보이드",
         timestop_open="🪟 시간 정지 메뉴", timestop_hint="💡 플로팅 메뉴",
-        freecam_toggle="프리캠", freecam_hint="💡 스와이프 회전 | 핀치 줌", freecam_sensitivity="회전 감도",
+        freecam_toggle="프리캠", freecam_hint="💡 1손가락 줌", freecam_sensitivity="회전 감도",
         spam_toggle="스팸", spam_msg="메시지", spam_delay="지연",
         trade_toggle="자동 거래", trade_view="📋 기록", trade_clear="🗑️ 삭제",
         seal_locked="🔒 봉인 중", seal_hint="💡 아래 버튼.", seal_unlock="🔓 지금 해제",
@@ -355,7 +355,6 @@ local function getPLine(key)
     return (p.lines[key] or PERSONALITIES.normal.lines[key] or key):gsub("%[NAME%]", S.systemName)
 end
 
--- INTRO
 local function showIntro(onDone)
     local parent = (gethui and gethui()) or game:GetService("CoreGui")
     for _, g in ipairs(parent:GetChildren()) do
@@ -424,7 +423,7 @@ local function showIntro(onDone)
 end
 
 -- ============================================================
---  AUTO FARM NẤM (đã cập nhật — nhặt 1 lần, không delay, tự chuyển khu)
+--  AUTO FARM NẤM — QUÉT TOÀN BỘ WORKSPACE (GetDescendants)
 -- ============================================================
 local farmThread = nil
 local collectRemotes = {}
@@ -447,43 +446,25 @@ local function isMushroomName(n)
     n = n:lower()
     return n:find("mushroom") ~= nil
         or n:find("shroom") ~= nil
+        or n:find("shoom") ~= nil
         or n:find("mushie") ~= nil
+end
+
+-- QUÉT TOÀN BỘ WORKSPACE — KHÔNG GIỚI HẠN ĐỘ SÂU
+local function findMushrooms()
+    local list = {}
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj:IsA("BasePart") and isMushroomName(obj.Name) then
+            table.insert(list, obj)
+        end
+    end
+    return list
 end
 
 local function getMushroomPos(m)
     if not m or not m.Parent then return nil end
     if m:IsA("BasePart") then return m.Position end
-    if m:IsA("Model") then
-        if m.PrimaryPart then return m.PrimaryPart.Position end
-        for _, d in ipairs(m:GetDescendants()) do
-            if d:IsA("BasePart") then return d.Position end
-        end
-    end
     return nil
-end
-
-local function findMushrooms()
-    local list = {}
-    local function scan(parent, depth)
-        if depth > 6 then return end
-        for _, obj in ipairs(parent:GetChildren()) do
-            if obj:IsA("BasePart") then
-                if isMushroomName(obj.Name) then
-                    table.insert(list, obj)
-                end
-            elseif obj:IsA("Model") then
-                if isMushroomName(obj.Name) then
-                    table.insert(list, obj)
-                elseif obj.PrimaryPart and isMushroomName(obj.PrimaryPart.Name) then
-                    table.insert(list, obj)
-                end
-            elseif obj:IsA("Folder") then
-                scan(obj, depth + 1)
-            end
-        end
-    end
-    scan(workspace, 0)
-    return list
 end
 
 local function collectMushroom(m)
@@ -491,7 +472,6 @@ local function collectMushroom(m)
     for _, r in ipairs(collectRemotes) do
         pcall(function() r:FireServer(m) end)
     end
-    -- fallback touch
     local c = LP.Character
     local hrp = c and c:FindFirstChild("HumanoidRootPart")
     if hrp and firetouchinterest and m:IsA("BasePart") then
@@ -502,12 +482,10 @@ local function collectMushroom(m)
     end
 end
 
--- Bộ đếm nấm đã nhặt (mục tiêu 3/3 rồi chuyển khu)
 local questCount = 0
 local collected = setmetatable({}, {__mode = "k"})
 
 local function pickNewArea(root)
-    -- dịch chuyển tới khu vực khác (xa vị trí hiện tại)
     local angle = math.random() * math.pi * 2
     local dist = 400 + math.random() * 400
     local curPos = root.Position
@@ -527,7 +505,6 @@ local function startAutoFarm()
             if not root then task.wait(0.5); continue end
 
             local mushrooms = findMushrooms()
-            -- lọc những nấm chưa nhặt
             local fresh = {}
             for _, m in ipairs(mushrooms) do
                 if not collected[m] then
@@ -540,7 +517,6 @@ local function startAutoFarm()
                 continue
             end
 
-            -- chọn nấm gần nhất
             local myPos = root.Position
             local best, bestD = nil, math.huge
             for _, m in ipairs(fresh) do
@@ -554,7 +530,6 @@ local function startAutoFarm()
             if best then
                 local pos = getMushroomPos(best)
                 if pos then
-                    -- tp tới nấm (bù 3 studs để không kẹt đất)
                     root.CFrame = CFrame.new(pos + Vector3.new(0, 3, 0))
                     task.wait(0.1)
                     collectMushroom(best)
@@ -562,7 +537,6 @@ local function startAutoFarm()
                     questCount = questCount + 1
                     task.wait(0.15)
 
-                    -- đủ 3/3 thì chuyển khu vực khác
                     if questCount >= 3 then
                         questCount = 0
                         pickNewArea(root)
@@ -584,7 +558,7 @@ local function stopAutoFarm()
 end
 
 -- ============================================================
---  ANTI-DEATH (tự đo máu thấp -> tp an toàn -> đợi hồi -> quay lại)
+--  ANTI-DEATH
 -- ============================================================
 local antiDeathThread = nil
 
@@ -604,7 +578,6 @@ local function startAntiDeath()
                 if not sentAway and hpPct <= threshold then
                     safeReturn = hrp.Position
                     h.PlatformStand = true
-                    -- tp lên trời xa map, an toàn
                     local farX = (math.random() > 0.5 and 1 or -1) * (3000 + math.random() * 1000)
                     local farZ = (math.random() > 0.5 and 1 or -1) * (3000 + math.random() * 1000)
                     hrp.CFrame = CFrame.new(Vector3.new(farX, 800, farZ))
@@ -618,7 +591,6 @@ local function startAntiDeath()
 
                 if sentAway then
                     if hpPct >= math.min(threshold + 30, 95) then
-                        -- hồi xong, quay lại
                         if safeReturn then
                             hrp.CFrame = CFrame.new(safeReturn + Vector3.new(0, 3, 0))
                         end
@@ -696,12 +668,15 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- FREECAM MOBILE
+-- ============================================================
+--  FREECAM — 1 NGÓN KÉO LÊN/XUỐNG ĐỂ ZOOM
+-- ============================================================
 local freecamActive = false
 local freecamYaw, freecamPitch = 0, 0
 local freecamZoom = 30
 local freecamCenter = nil
-local freecamLastTranslation = nil
+local freecamLastPan = nil
+local freecamLastTouchTime = 0
 
 local function startFreecam()
     if freecamActive then return end
@@ -714,10 +689,11 @@ local function startFreecam()
     freecamYaw = math.atan2(-cf.LookVector.X, -cf.LookVector.Z)
     freecamPitch = math.asin(math.clamp(cf.LookVector.Y, -1, 1))
     freecamZoom = 30
-    freecamLastTranslation = nil
+    freecamLastPan = nil
     cam.CameraSubject = nil
     cam.CameraType = Enum.CameraType.Scriptable
 end
+
 local function stopFreecam()
     if not freecamActive then return end
     freecamActive = false
@@ -728,30 +704,27 @@ local function stopFreecam()
     if h then cam.CameraSubject = h end
 end
 
+-- 1 ngón kéo: vừa xoay vừa zoom (ngang = xoay, dọc = zoom)
 UIS.TouchPan:Connect(function(touchPositions, totalTranslation, velocity, state)
     if not freecamActive then return end
     if state == Enum.UserInputState.Begin then
-        freecamLastTranslation = totalTranslation
+        freecamLastPan = totalTranslation
         return
     end
     if state == Enum.UserInputState.End or state == Enum.UserInputState.Cancel then
-        freecamLastTranslation = nil
+        freecamLastPan = nil
         return
     end
-    if not freecamLastTranslation then
-        freecamLastTranslation = totalTranslation
+    if not freecamLastPan then
+        freecamLastPan = totalTranslation
         return
     end
-    local delta = totalTranslation - freecamLastTranslation
-    freecamLastTranslation = totalTranslation
-    local sens = S.freecamSensitivity or 0.08
-    freecamYaw = freecamYaw - math.rad(delta.X * sens * 100)
-    freecamPitch = math.clamp(freecamPitch - math.rad(delta.Y * sens * 100), -math.rad(85), math.rad(85))
-end)
-
-UIS.TouchPinch:Connect(function(_, scale)
-    if not freecamActive then return end
-    freecamZoom = math.clamp(freecamZoom / scale, 5, 300)
+    local delta = totalTranslation - freecamLastPan
+    freecamLastPan = totalTranslation
+    -- NGANG = xoay camera
+    freecamYaw = freecamYaw - math.rad(delta.X * 0.25)
+    -- DỌC = zoom xa/gần
+    freecamZoom = math.clamp(freecamZoom + delta.Y * 1.5, 5, 300)
 end)
 
 UIS.InputChanged:Connect(function(input)
@@ -1344,7 +1317,7 @@ buildMenu = function()
         end})
     TabESP:CreateLabel(T("esp_coming"))
 
-    -- AUTO FARM NẤM (đã đơn giản hóa — 1 nút)
+    -- AUTO FARM NẤM (1 NÚT DUY NHẤT)
     TabFarm:CreateSection("🍄 auto farm nấm")
     TabFarm:CreateToggle({
         Name = T("farm_toggle"),
@@ -1357,8 +1330,8 @@ buildMenu = function()
             saveFullConfig()
         end
     })
-    TabFarm:CreateLabel("💡 tự động tìm nấm — nhặt 1 lần rồi tp sang nấm khác.")
-    TabFarm:CreateLabel("💡 nhặt đủ 3/3 sẽ tự động chuyển sang khu vực khác.")
+    TabFarm:CreateLabel("💡 quét toàn bộ bản đồ — nhặt 1 lần rồi TP sang nấm khác.")
+    TabFarm:CreateLabel("💡 đủ 3/3 nấm sẽ tự chuyển sang khu vực khác.")
 
     -- MISC
     TabMisc:CreateSection("⚡ " .. T("sys_name"))
@@ -1482,7 +1455,6 @@ buildMenu = function()
         TabMisc:CreateLabel("✅ phong ấn đã vỡ.")
     end
 
-    -- 📢 cập nhật
     TabMisc:CreateSection(T("update_section"))
     TabMisc:CreateButton({
         Name = "📱 tiktok: Nkhaj97",
@@ -1545,21 +1517,6 @@ buildMenu = function()
                 if v then startFreecam(); sysNotify("freecam_on")
                 else stopFreecam(); sysNotify("freecam_off") end
             end})
-        TabUtil:CreateInput({
-            Name = T("freecam_sensitivity"),
-            CurrentValue = tostring(S.freecamSensitivity),
-            PlaceholderText = "0.08",
-            RemoveTextAfterFocusLost = false,
-            Flag = "FreecamSens",
-            Callback = function(t)
-                local n = tonumber(t)
-                if n and n > 0 then
-                    S.freecamSensitivity = n
-                    saveFullConfig()
-                    Rayfield:Notify({Title = "🎥", Content = "độ nhạy: " .. n, Duration = 2})
-                end
-            end
-        })
         TabUtil:CreateLabel(T("freecam_hint"))
 
         TabUtil:CreateSection("🛡️ anti-void")
