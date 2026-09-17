@@ -1,5 +1,5 @@
 -- ============================================================
---  WonGaVn🇻🇳 Script 
+--  WonGaVn🇻🇳 Script - Auto Farm & Bite Aura
 --  tiktok: Nkhaj97 | discord: discord.gg/ry3buvjz5
 -- ============================================================
 local SCRIPT_URL = "https://raw.githubusercontent.com/nguyenkha233/WonGaVn/refs/heads/main/creature%20of%20sonaria"
@@ -31,6 +31,8 @@ _G.WGState = _G.WGState or {
     freecamSensitivity=0.08, freecamZoom=30,
     autoFarmOn=false, farmRange=300, farmDelay=0.4,
     biteAuraOn=false, biteAuraRange=40, biteAuraDamage=999999,
+    antiDeathOn=false, antiDeathPercent=50, antiDeathPos=nil,
+    voidShieldOn=false, voidShieldSize=20,
 }
 local S = _G.WGState
 
@@ -51,6 +53,8 @@ local function saveFullConfig()
             freecamSensitivity=S.freecamSensitivity,
             farmRange=S.farmRange, farmDelay=S.farmDelay,
             biteAuraRange=S.biteAuraRange, biteAuraDamage=S.biteAuraDamage,
+            antiDeathPercent=S.antiDeathPercent,
+            voidShieldSize=S.voidShieldSize,
         }))
     end)
 end
@@ -100,9 +104,9 @@ local TXT = {
     vi = {
         tab_ab="🛡️ antiban", tab_combat="⚔️ combat", tab_esp="👁️ esp",
         tab_farm="🍄 auto farm", tab_misc="⚙️ misc", tab_util="🔒 phong ấn",
-        ab_toggle="bật antiban", ab_warn="⚠️ antiban chỉ bảo vệ ~80% nên bot có thể quét nhé.",
-        combat_warn="⚠️ combat ",
-        speed_warn="⚠️ nên chọn 500-1000. là khu vực lên nữa sẽ lag.",
+        ab_toggle="bật antiban", ab_warn="⚠️ antiban chỉ bảo vệ ~80%.",
+        combat_warn="⚠️ game combat — nguy cơ ban cao, dùng alt!",
+        speed_warn="⚠️ nên chọn 500-1000. dưới 100 rất chậm.",
         hitbox="bật hitbox", hitbox_size="kích thước hitbox",
         aoe="bật aoe", aoe_range="bán kính aoe",
         esp_p="esp player", esp_m="esp nấm",
@@ -130,14 +134,12 @@ local TXT = {
         esp_coming="🚧 esp đang được cập nhật thêm.",
         tiktok_update="📢 script sẽ được cập nhật tại tiktok Nkhaj97",
         update_section="📢 cập nhật",
-        -- Auto Farm
         farm_toggle="🍄 bật auto farm nấm",
         farm_range="📡 tầm tìm nấm (studs)",
         farm_delay="⏱️ delay giữa các nấm (giây)",
         farm_status="📊 trạng thái farm",
         farm_no_mush="🍄 hết nấm trong tầm",
         farm_found="✅ đã tìm thấy nấm, bắt đầu nhặt",
-        -- Bite Aura
         bite_aura="💥 bật bite aura (tự động cắn)",
         bite_aura_range="📡 tầm bite aura (studs)",
         bite_aura_damage="💢 sát thương mỗi lần cắn",
@@ -433,7 +435,7 @@ local function showIntro(onDone)
 end
 
 -- ============================================================
---  FLOATING MENU STYLE (dùng chung)
+--  STYLE HELPERS
 -- ============================================================
 local function styleFloatingFrame(frame)
     frame.BackgroundColor3 = Color3.fromRGB(22, 20, 32)
@@ -519,9 +521,10 @@ local function makeDraggable(frame, handle)
 end
 
 -- ============================================================
---  AUTO FARM NẤM
+--  AUTO FARM NẤM (1 nút, TP từng nấm một)
 -- ============================================================
 local farmThread = nil
+local collectedMushrooms = {}
 
 local function isMushroom(part)
     if not part or not part.Name then return false end
@@ -542,9 +545,13 @@ local function findAllMushrooms(range)
         if depth > 8 then return end
         for _, obj in ipairs(parent:GetChildren()) do
             if obj:IsA("BasePart") and isMushroom(obj) then
-                local d2 = (obj.Position - myPos).Magnitude
-                if d2 * d2 <= rangeSq then
-                    table.insert(list, obj)
+                if not collectedMushrooms[obj] then
+                    local dx = obj.Position.X - myPos.X
+                    local dy = obj.Position.Y - myPos.Y
+                    local dz = obj.Position.Z - myPos.Z
+                    if dx*dx + dy*dy + dz*dz <= rangeSq then
+                        table.insert(list, obj)
+                    end
                 end
             elseif obj:IsA("Model") or obj:IsA("Folder") then
                 scan(obj, depth + 1)
@@ -572,6 +579,7 @@ local function tryCollect(part)
                or n:find("mush") or n:find("harvest") or n:find("grab") then
                 pcall(function() v:FireServer(part) end)
                 pcall(function() v:FireServer(part.Position) end)
+                pcall(function() v:FireServer(part, "collect") end)
             end
         end
     end
@@ -581,7 +589,7 @@ local function tryCollect(part)
         if hrp and firetouchinterest then
             pcall(function()
                 firetouchinterest(hrp, part, 0)
-                task.wait()
+                task.wait(0.1)
                 firetouchinterest(hrp, part, 1)
             end)
         end
@@ -590,6 +598,7 @@ end
 
 local function startAutoFarm()
     if farmThread then pcall(function() task.cancel(farmThread) end) end
+    collectedMushrooms = {}
     farmThread = task.spawn(function()
         while S.autoFarmOn do
             local mushrooms = findAllMushrooms(S.farmRange)
@@ -604,9 +613,10 @@ local function startAutoFarm()
                     if not S.autoFarmOn then break end
                     if not m.Parent then continue end
                     tpTo(m)
-                    task.wait(0.15)
+                    task.wait(0.25)
                     tryCollect(m)
-                    task.wait(S.farmDelay)
+                    collectedMushrooms[m] = true
+                    task.wait(0.55)
                 end
             else
                 task.wait(2)
@@ -620,6 +630,7 @@ local function stopAutoFarm()
         pcall(function() task.cancel(farmThread) end)
         farmThread = nil
     end
+    collectedMushrooms = {}
 end
 
 -- ============================================================
@@ -629,9 +640,9 @@ local attackRemotes = {}
 for _, v in pairs(RS:GetDescendants()) do
     if v:IsA("RemoteEvent") then
         local n = v.Name:lower()
-        if n:find("attack") or n:find("bite") or n:find("hit") or n:find("damage") then
+        if n:find("attack") or n:find("bite") or n:find("hit")
+           or n:find("damage") or n:find("deal") or n:find("combat") then
             table.insert(attackRemotes, v)
-            if #attackRemotes >= 3 then break end
         end
     end
 end
@@ -641,7 +652,6 @@ local biteAuraThread = nil
 local function startBiteAura()
     if biteAuraThread then pcall(function() task.cancel(biteAuraThread) end) end
     biteAuraThread = task.spawn(function()
-        local lastFire = 0
         while S.biteAuraOn do
             local c = LP.Character
             local root = c and c:FindFirstChild("HumanoidRootPart")
@@ -659,13 +669,13 @@ local function startBiteAura()
                                 local dy = r.Position.Y - myPos.Y
                                 local dz = r.Position.Z - myPos.Z
                                 if dx*dx + dy*dy + dz*dz <= rangeSq then
-                                    -- fire tất cả remote attack
                                     for _, rmt in ipairs(attackRemotes) do
                                         pcall(function() rmt:FireServer(pc) end)
-                                        pcall(function() rmt:FireServer(h) end)
+                                        pcall(function() rmt:FireServer(pc.Character) end)
+                                        pcall(function() rmt:FireServer(r) end)
                                         pcall(function() rmt:FireServer(pc, S.biteAuraDamage) end)
+                                        pcall(function() rmt:FireServer(r, S.biteAuraDamage) end)
                                     end
-                                    -- set HP trực tiếp (dự phòng)
                                     pcall(function()
                                         h.Health = h.Health - S.biteAuraDamage
                                     end)
@@ -675,7 +685,7 @@ local function startBiteAura()
                     end
                 end
             end
-            task.wait(0.1 + math.random() * 0.1)
+            task.wait(0.12 + math.random() * 0.08)
         end
     end)
 end
@@ -686,6 +696,72 @@ local function stopBiteAura()
         biteAuraThread = nil
     end
 end
+
+-- ============================================================
+--  ANTI-DEATH + VOID SHIELD
+-- ============================================================
+local lastSafePos = Vector3.new(0, 50, 0)
+local voidShieldPart = nil
+
+task.spawn(function()
+    local v = MY_VERSION
+    while _G.WGVersion == v do
+        local c = LP.Character
+        local hrp = c and c:FindFirstChild("HumanoidRootPart")
+        local hum = c and c:FindFirstChildOfClass("Humanoid")
+
+        if hrp and hum then
+            local pos = hrp.Position
+
+            if pos.Y > 5 and pos.Y < 5000 then
+                lastSafePos = pos
+            end
+
+            -- ANTI-DEATH
+            if S.antiDeathOn and hum.MaxHealth > 0 then
+                local pct = (hum.Health / hum.MaxHealth) * 100
+                if pct <= S.antiDeathPercent then
+                    local safe = S.antiDeathPos or lastSafePos
+                    hrp.CFrame = CFrame.new(safe + Vector3.new(0, 60, 0))
+                    pcall(function() hum.Health = hum.MaxHealth end)
+                    pcall(function()
+                        Rayfield:Notify({
+                            Title = "🛡️ " .. S.systemName,
+                            Content = "máu thấp! đã tele ra ngoài map.",
+                            Duration = 3
+                        })
+                    end)
+                    task.wait(1.5)
+                end
+            end
+
+            -- VOID SHIELD
+            if S.voidShieldOn then
+                if not voidShieldPart or not voidShieldPart.Parent then
+                    voidShieldPart = Instance.new("Part")
+                    voidShieldPart.Name = "WG_VoidShield"
+                    voidShieldPart.Anchored = true
+                    voidShieldPart.CanCollide = true
+                    voidShieldPart.CanTouch = true
+                    voidShieldPart.CanQuery = true
+                    voidShieldPart.Transparency = 0.55
+                    voidShieldPart.Color = Color3.fromRGB(100, 200, 255)
+                    voidShieldPart.Material = Enum.Material.ForceField
+                    voidShieldPart.Size = Vector3.new(S.voidShieldSize, 1, S.voidShieldSize)
+                    voidShieldPart.Parent = workspace
+                end
+                voidShieldPart.Size = Vector3.new(S.voidShieldSize, 1, S.voidShieldSize)
+                voidShieldPart.CFrame = CFrame.new(pos - Vector3.new(0, 3.5, 0))
+            else
+                if voidShieldPart then
+                    voidShieldPart:Destroy()
+                    voidShieldPart = nil
+                end
+            end
+        end
+        task.wait(0.15)
+    end
+end)
 
 -- ANTI-VOID
 task.spawn(function()
@@ -736,7 +812,7 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- FREECAM MOBILE (đã sửa)
+-- FREECAM MOBILE
 local freecamActive = false
 local freecamYaw, freecamPitch = 0, 0
 local freecamZoom = 30
@@ -1127,8 +1203,11 @@ local function applyMushroomESP()
             if obj:IsA("BasePart") then
                 local n = obj.Name:lower()
                 if n:find("mushroom") or n:find("shroom") or n:find("shoom") then
-                    local d2 = (obj.Position - myPos).Magnitude
-                    if d2 * d2 <= MAXD and count < MAXC then
+                    local dx = obj.Position.X - myPos.X
+                    local dy = obj.Position.Y - myPos.Y
+                    local dz = obj.Position.Z - myPos.Z
+                    local d2 = dx*dx + dy*dy + dz*dz
+                    if d2 <= MAXD and count < MAXC then
                         count = count + 1; current[obj] = true
                         if not mushroomESP[obj] then mushroomESP[obj] = makeESP(obj) end
                     end
@@ -1339,7 +1418,7 @@ buildMenu = function()
                 Rayfield:Notify({Title = "💥", Content = "aoe: " .. n, Duration = 2}) end
         end})
 
-    -- BITE AURA (trong tab Combat)
+    -- BITE AURA
     TabCombat:CreateSection("bite aura")
     TabCombat:CreateToggle({Name = T("bite_aura"), CurrentValue = S.biteAuraOn, Flag = "BiteAura",
         Callback = function(v)
@@ -1409,30 +1488,25 @@ buildMenu = function()
         end})
     TabESP:CreateLabel(T("esp_coming"))
 
-    -- AUTO FARM NẤM
+    -- AUTO FARM NẤM (1 NÚT)
     TabFarm:CreateSection("auto farm nấm")
-    TabFarm:CreateToggle({Name = T("farm_toggle"), CurrentValue = S.autoFarmOn, Flag = "AutoFarm",
+    TabFarm:CreateToggle({
+        Name = T("farm_toggle"),
+        CurrentValue = S.autoFarmOn,
+        Flag = "AutoFarm",
         Callback = function(v)
             S.autoFarmOn = v
-            if v then startAutoFarm(); sysNotify("farm_on")
-            else stopAutoFarm(); sysNotify("farm_off") end
+            if v then
+                startAutoFarm()
+                sysNotify("farm_on")
+            else
+                stopAutoFarm()
+                sysNotify("farm_off")
+            end
             saveFullConfig()
-        end})
-    TabFarm:CreateInput({Name = T("farm_range"), CurrentValue = tostring(S.farmRange),
-        PlaceholderText = "nhập số (mặc định 300)", RemoveTextAfterFocusLost = false, Flag = "FarmRange",
-        Callback = function(t)
-            local n = tonumber(t)
-            if n and n > 0 then S.farmRange = n; saveFullConfig()
-                Rayfield:Notify({Title = "📡", Content = "tầm farm: " .. n, Duration = 2}) end
-        end})
-    TabFarm:CreateInput({Name = T("farm_delay"), CurrentValue = tostring(S.farmDelay),
-        PlaceholderText = "0.4", RemoveTextAfterFocusLost = false, Flag = "FarmDelay",
-        Callback = function(t)
-            local n = tonumber(t)
-            if n and n > 0 then S.farmDelay = n; saveFullConfig()
-                Rayfield:Notify({Title = "⏱️", Content = "delay: " .. n .. "s", Duration = 2}) end
-        end})
-    TabFarm:CreateLabel("💡 tự động TP đến nấm và nhặt liên tục")
+        end
+    })
+    TabFarm:CreateLabel("💡 tự động TP đến nấm và nhặt liên tục (đã tối ưu)")
 
     -- MISC
     TabMisc:CreateSection("⚡ " .. T("sys_name"))
@@ -1515,6 +1589,74 @@ buildMenu = function()
         Suffix = "", CurrentValue = S.flySpeed, Flag = "FlySpeedMisc",
         Callback = function(v) S.flySpeed = v; saveFullConfig() end})
 
+    -- ========== ANTI-DEATH & VOID SHIELD ==========
+    TabMisc:CreateSection("🛡️ anti-death")
+    TabMisc:CreateToggle({
+        Name = "bật anti-death",
+        CurrentValue = S.antiDeathOn,
+        Flag = "AntiDeath",
+        Callback = function(v)
+            S.antiDeathOn = v
+            sysNotify(nil, v and "🛡️ anti-death đã bật" or "anti-death đã tắt")
+            saveFullConfig()
+        end
+    })
+    TabMisc:CreateSlider({
+        Name = "ngưỡng máu để tele (%)",
+        Range = {5, 95}, Increment = 5, Suffix = "%",
+        CurrentValue = S.antiDeathPercent,
+        Flag = "AntiDeathPct",
+        Callback = function(v)
+            S.antiDeathPercent = v
+            saveFullConfig()
+            Rayfield:Notify({Title = "🛡️", Content = "tele khi máu <= " .. v .. "%", Duration = 2})
+        end
+    })
+    TabMisc:CreateButton({
+        Name = "📌 đặt vị trí an toàn hiện tại",
+        Callback = function()
+            local c = LP.Character
+            local hrp = c and c:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                S.antiDeathPos = hrp.Position
+                saveFullConfig()
+                Rayfield:Notify({Title = "📌", Content = "đã lưu vị trí an toàn!", Duration = 3})
+            end
+        end
+    })
+    TabMisc:CreateButton({
+        Name = "🗑️ xóa vị trí đã lưu (dùng vị trí cuối)",
+        Callback = function()
+            S.antiDeathPos = nil
+            saveFullConfig()
+            Rayfield:Notify({Title = "🗑️", Content = "đã xóa vị trí an toàn", Duration = 2})
+        end
+    })
+    TabMisc:CreateLabel("💡 khi máu xuống dưới ngưỡng sẽ tự tele ra ngoài map")
+
+    TabMisc:CreateSection("🌊 void shield")
+    TabMisc:CreateToggle({
+        Name = "bật lá chắn chống rớt void",
+        CurrentValue = S.voidShieldOn,
+        Flag = "VoidShield",
+        Callback = function(v)
+            S.voidShieldOn = v
+            sysNotify(nil, v and "🌊 lá chắn đã bật" or "lá chắn đã tắt")
+            saveFullConfig()
+        end
+    })
+    TabMisc:CreateSlider({
+        Name = "kích thước lá chắn",
+        Range = {5, 100}, Increment = 5, Suffix = " studs",
+        CurrentValue = S.voidShieldSize,
+        Flag = "VoidShieldSize",
+        Callback = function(v)
+            S.voidShieldSize = v
+            saveFullConfig()
+        end
+    })
+    TabMisc:CreateLabel("💡 lá chắn tự động bám dưới chân sinh vật")
+
     TabMisc:CreateSection("⚡ " .. T("optimize"))
     TabMisc:CreateToggle({Name = T("optimize"), CurrentValue = S.optimizeOn, Flag = "Optimize",
         Callback = function(v)
@@ -1556,7 +1698,6 @@ buildMenu = function()
         TabMisc:CreateLabel("✅ phong ấn đã vỡ.")
     end
 
-    -- 📢 cập nhật
     TabMisc:CreateSection(T("update_section"))
     TabMisc:CreateButton({
         Name = "📱 tiktok: Nkhaj97",
