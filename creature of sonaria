@@ -1,5 +1,5 @@
 -- ============================================================
---  WonGaVn🇻🇳 Script - v1
+--  WonGaVn🇻🇳 Script
 --  tiktok: Nkhaj97 | discord: discord.gg/ry3buvjz5
 -- ============================================================
 local SCRIPT_URL = "https://raw.githubusercontent.com/nguyenkha233/WonGaVn/refs/heads/main/creature%20of%20sonaria"
@@ -29,8 +29,8 @@ _G.WGState = _G.WGState or {
     dragMenu=true, portalRange=8,
     timeStopOn=false, timeStopRange=50,
     freecamSensitivity=0.08, freecamZoom=30,
-    autoFarmOn=false, farmRange=300, farmDelay=0.4,
-    biteAuraOn=false, biteAuraRange=40, biteAuraDamage=999999,
+    autoFarmOn=false,
+    antiDeathOn=false, antiDeathThreshold=30,
 }
 local S = _G.WGState
 
@@ -49,8 +49,7 @@ local function saveFullConfig()
             spamChatMsg=S.spamChatMsg, spamChatDelay=S.spamChatDelay,
             bypassMode=S.bypassMode, playerJoinAlert=S.playerJoinAlert, dragMenu=S.dragMenu,
             freecamSensitivity=S.freecamSensitivity,
-            farmRange=S.farmRange, farmDelay=S.farmDelay,
-            biteAuraRange=S.biteAuraRange, biteAuraDamage=S.biteAuraDamage,
+            antiDeathThreshold=S.antiDeathThreshold,
         }))
     end)
 end
@@ -100,9 +99,9 @@ local TXT = {
     vi = {
         tab_ab="🛡️ antiban", tab_combat="⚔️ combat", tab_esp="👁️ esp",
         tab_farm="🍄 auto farm", tab_misc="⚙️ misc", tab_util="🔒 phong ấn",
-        ab_toggle="bật antiban", ab_warn="⚠️ antiban chỉ bảo vệ ~80% bot có thể nhé.",
-        combat_warn="⚠️ combat!",
-        speed_warn="⚠️ nên chọn 500-1000. là khu vực lên nữa sẽ lag.",
+        ab_toggle="bật antiban", ab_warn="⚠️ antiban chỉ bảo vệ ~80%.",
+        combat_warn="⚠️ game combat — nguy cơ ban cao, dùng alt!",
+        speed_warn="⚠️ nên chọn 500-1000. dưới 100 rất chậm.",
         hitbox="bật hitbox", hitbox_size="kích thước hitbox",
         aoe="bật aoe", aoe_range="bán kính aoe",
         esp_p="esp player", esp_m="esp nấm",
@@ -130,18 +129,13 @@ local TXT = {
         esp_coming="🚧 esp đang được cập nhật thêm.",
         tiktok_update="📢 script sẽ được cập nhật tại tiktok Nkhaj97",
         update_section="📢 cập nhật",
-        -- Auto Farm
         farm_toggle="🍄 bật auto farm nấm",
-        farm_range="📡 tầm tìm nấm (studs)",
-        farm_delay="⏱️ delay giữa các nấm (giây)",
         farm_status="📊 trạng thái farm",
         farm_no_mush="🍄 hết nấm trong tầm",
         farm_found="✅ đã tìm thấy nấm, bắt đầu nhặt",
-        -- Bite Aura
-        bite_aura="💥 bật bite aura (tự động cắn)",
-        bite_aura_range="📡 tầm bite aura (studs)",
-        bite_aura_damage="💢 sát thương mỗi lần cắn",
-        bite_aura_hint="💡 ai ở gần sẽ tự động bị cắn mà không cần bạn làm gì",
+        antideath_toggle="💀 bật anti-death (tự tránh chết)",
+        antideath_threshold="📊 ngưỡng máu kích hoạt (%)",
+        antideath_hint="💡 khi máu xuống dưới ngưỡng, tự dịch chuyển tới vị trí an toàn đợi hồi máu.",
     },
     us = {
         tab_ab="🛡️ antiban", tab_combat="⚔️ combat", tab_esp="👁️ esp",
@@ -174,15 +168,12 @@ local TXT = {
         tiktok_update="📢 script will be updated at tiktok Nkhaj97",
         update_section="📢 updates",
         farm_toggle="🍄 enable auto farm mushroom",
-        farm_range="📡 mushroom search range (studs)",
-        farm_delay="⏱️ delay between mushrooms (seconds)",
         farm_status="📊 farm status",
         farm_no_mush="🍄 no mushrooms in range",
         farm_found="✅ found mushrooms, start collecting",
-        bite_aura="💥 enable bite aura (auto bite)",
-        bite_aura_range="📡 bite aura range (studs)",
-        bite_aura_damage="💢 damage per bite",
-        bite_aura_hint="💡 anyone nearby will be auto-bitten without you doing anything",
+        antideath_toggle="💀 enable anti-death",
+        antideath_threshold="📊 HP threshold (%)",
+        antideath_hint="💡 when HP drops below, auto-move to safe spot and wait to heal.",
     },
     cn = {
         tab_ab="🛡️ 反封", tab_combat="⚔️ 战斗", tab_esp="👁️ esp",
@@ -202,10 +193,10 @@ local TXT = {
         seal_locked="🔒 封印未破", seal_hint="💡 点击下方。", seal_unlock="🔓 立即解锁",
         credit="WonGaVn🇻🇳 | Nkhaj97", testing_notif="⚠️ 测试中。", esp_coming="🚧 更新中。",
         tiktok_update="📢 脚本将在 tiktok Nkhaj97 更新", update_section="📢 更新",
-        farm_toggle="🍄 启用自动农场蘑菇", farm_range="📡 蘑菇搜索范围", farm_delay="⏱️ 间隔",
+        farm_toggle="🍄 启用自动农场蘑菇",
         farm_status="📊 状态", farm_no_mush="🍄 范围内无蘑菇", farm_found="✅ 找到蘑菇，开始收集",
-        bite_aura="💥 启用咬合光环", bite_aura_range="📡 光环范围", bite_aura_damage="💢 伤害",
-        bite_aura_hint="💡 附近的人会自动被咬",
+        antideath_toggle="💀 启用防死亡", antideath_threshold="📊 生命阈值(%)",
+        antideath_hint="💡 生命低于阈值时自动移动到安全位置等待恢复。",
     },
     jp = {
         tab_ab="🛡️ アンチban", tab_combat="⚔️ 戦闘", tab_esp="👁️ esp",
@@ -225,10 +216,10 @@ local TXT = {
         seal_locked="🔒 封印中", seal_hint="💡 下のボタン。", seal_unlock="🔓 解除",
         credit="WonGaVn🇻🇳 | Nkhaj97", testing_notif="⚠️ テスト中。", esp_coming="🚧 更新中。",
         tiktok_update="📢 スクリプトは tiktok Nkhaj97 で更新", update_section="📢 更新",
-        farm_toggle="🍄 自動ファーム有効", farm_range="📡 範囲", farm_delay="⏱️ 遅延",
+        farm_toggle="🍄 自動ファーム有効",
         farm_status="📊 状態", farm_no_mush="🍄 範囲内にキノコなし", farm_found="✅ キノコ発見",
-        bite_aura="💥 バイトオーラ", bite_aura_range="📡 範囲", bite_aura_damage="💢 ダメージ",
-        bite_aura_hint="💡 近くの人が自動的に噛まれます",
+        antideath_toggle="💀 アンチデス有効", antideath_threshold="📊 HP閾値(%)",
+        antideath_hint="💡 HPが閾値以下になると安全地帯に移動して回復を待ちます。",
     },
     kr = {
         tab_ab="🛡️ 안티밴", tab_combat="⚔️ 전투", tab_esp="👁️ esp",
@@ -248,10 +239,10 @@ local TXT = {
         seal_locked="🔒 봉인 중", seal_hint="💡 아래 버튼.", seal_unlock="🔓 지금 해제",
         credit="WonGaVn🇻🇳 | Nkhaj97", testing_notif="⚠️ 테스트 중.", esp_coming="🚧 업데이트 중.",
         tiktok_update="📢 스크립트는 tiktok Nkhaj97에서 업데이트", update_section="📢 업데이트",
-        farm_toggle="🍄 자동 파밍", farm_range="📡 범위", farm_delay="⏱️ 지연",
+        farm_toggle="🍄 자동 파밍",
         farm_status="📊 상태", farm_no_mush="🍄 범위 내 버섯 없음", farm_found="✅ 버섯 발견",
-        bite_aura="💥 바이트 오라", bite_aura_range="📡 범위", bite_aura_damage="💢 데미지",
-        bite_aura_hint="💡 근처 사람들이 자동으로 물립니다",
+        antideath_toggle="💀 안티데스 활성화", antideath_threshold="📊 HP 임계값(%)",
+        antideath_hint="💡 HP가 임계값 이하로 떨어지면 안전한 곳으로 이동해 회복을 기다립니다.",
     },
 }
 local function T(k)
@@ -277,7 +268,7 @@ local PERSONALITIES = {
         portal="cổng mở rồi.", timestop_on="ta ngưng đông thời gian.", timestop_off="thời gian tiếp tục.",
         freecam_on="camera tự do.", freecam_off="camera trở lại.",
         farm_on="ta bắt đầu nhặt nấm.", farm_off="ngừng nhặt nấm.",
-        bite_aura_on="ta tự động cắn kẻ địch.", bite_aura_off="ngừng cắn tự động." }},
+        antideath_on="ta bảo vệ ngươi.", antideath_off="ngừng bảo vệ." }},
     neko = { name="neko 🐱", lines={loaded="nya~ em tới rồi!", on="nyaa! bật rồi~", off="hức... tắt rồi...",
         unlock="nya! phong ấn vỡ rồi~", powerRelease="waaa~ sức mạnh tràn ra~",
         hitbox_on="nya~ đánh xa hơn nè!", hitbox_off="đánh gần lại~",
@@ -292,7 +283,7 @@ local PERSONALITIES = {
         timestop_on="nya~ em đóng băng mọi người!", timestop_off="tan băng rồi~",
         freecam_on="camera bay nè~", freecam_off="camera trở lại~",
         farm_on="nya~ em nhặt nấm nè!", farm_off="thôi nhặt~",
-        bite_aura_on="nya~ em tự động cắn nè!", bite_aura_off="thôi cắn~" }},
+        antideath_on="nya~ em bảo vệ chủ nhân!", antideath_off="thôi bảo vệ~" }},
     demon = { name="ác quỷ 😈", lines={loaded="ta tỉnh dậy...", on="triệu hồi thành công.", off="ta ngủ đây...",
         unlock="phong ấn vỡ!", powerRelease="hắc ám tuôn ra...",
         hitbox_on="vùng va chạm nở rộng.", hitbox_off="thu hồi.", aoe_on="sát thương lan nở rộ.", aoe_off="thu hồi.",
@@ -305,7 +296,7 @@ local PERSONALITIES = {
         timestop_on="ta đóng băng thời gian!", timestop_off="thời gian chảy lại.",
         freecam_on="nhãn thần mở.", freecam_off="nhãn thần đóng.",
         farm_on="ta thu hoạch nấm.", farm_off="ngừng thu hoạch.",
-        bite_aura_on="ta tự động nghiền nát kẻ địch.", bite_aura_off="thu hồi." }},
+        antideath_on="ta bảo hộ ngươi.", antideath_off="thu hồi." }},
     king = { name="vua 👑", lines={loaded="trẫm đã giáng trần.", on="triều đình khai mở.", off="trẫm thu hồi uy.",
         unlock="ngai vàng đã mở.", powerRelease="long uy chấn động!",
         hitbox_on="vùng va chạm mở rộng.", hitbox_off="trở lại.", aoe_on="sát thương lan khai mở.", aoe_off="thu hồi.",
@@ -318,7 +309,7 @@ local PERSONALITIES = {
         timestop_on="trẫm phong ấn thời gian!", timestop_off="thời gian trở lại.",
         freecam_on="thiên nhãn mở.", freecam_off="thiên nhãn khép.",
         farm_on="trẫm thu hoạch nấm.", farm_off="ngừng.",
-        bite_aura_on="trẫm tự động trừng phạt.", bite_aura_off="tha." }},
+        antideath_on="trẫm bảo hộ thần dân.", antideath_off="thu hồi." }},
     hacker = { name="hacker 💻", lines={loaded="đã xâm nhập.", on="bypass xong.", off="ẩn mình.",
         unlock="bẻ khóa thành công.", powerRelease="giải mã sức mạnh...",
         hitbox_on="patch hitbox.", hitbox_off="revert.", aoe_on="enable aoe.", aoe_off="disable aoe.",
@@ -331,7 +322,7 @@ local PERSONALITIES = {
         timestop_on="freeze server packets.", timestop_off="unfreeze.",
         freecam_on="camera exploit.", freecam_off="camera reset.",
         farm_on="auto collect nấm.", farm_off="ngừng.",
-        bite_aura_on="auto attack on.", bite_aura_off="auto attack off." }},
+        antideath_on="auto protect on.", antideath_off="auto protect off." }},
     god = { name="thần linh 🌌", lines={loaded="ta đã giáng thế.", on="thần uy khai mở.", off="thu hồi thần uy.",
         unlock="thiên môn đã mở.", powerRelease="linh khí trở về...",
         hitbox_on="vùng va chạm mở rộng.", hitbox_off="trở lại.", aoe_on="sát thương lan khai mở.", aoe_off="thu hồi.",
@@ -344,7 +335,7 @@ local PERSONALITIES = {
         timestop_on="ta ngưng đọng thời gian!", timestop_off="thời gian tiếp tục.",
         freecam_on="thần nhãn mở.", freecam_off="thần nhãn khép.",
         farm_on="ta thu hoạch vạn vật.", farm_off="ngừng.",
-        bite_aura_on="thần uy tự động.", bite_aura_off="thu hồi." }},
+        antideath_on="thần quang hộ thể.", antideath_off="thu hồi." }},
     pervert = { name="biến thái 🔞", lines={loaded="hừm... con mồi đâu~?", on="cơ thể ngươi thuộc về ta~", off="để dành sau~",
         unlock="phong ấn vỡ...", powerRelease="dục vọng trào dâng...",
         hitbox_on="ta chạm xa hơn~", hitbox_off="thu tay~", aoe_on="chạm nhiều người~", aoe_off="thu tay~",
@@ -357,7 +348,7 @@ local PERSONALITIES = {
         timestop_on="ta đóng băng ngươi~", timestop_off="tan băng~",
         freecam_on="ta nhìn ngươi~", freecam_off="thôi nhìn~",
         farm_on="ta gom nấm~", farm_off="thôi gom~",
-        bite_aura_on="ta tự động cắn ngươi~", bite_aura_off="tha~" }},
+        antideath_on="ta che chở ngươi~", antideath_off="buông~" }},
 }
 local function getPLine(key)
     local p = PERSONALITIES[S.personality] or PERSONALITIES.normal
@@ -433,120 +424,60 @@ local function showIntro(onDone)
 end
 
 -- ============================================================
---  FLOATING MENU STYLE (dùng chung)
--- ============================================================
-local function styleFloatingFrame(frame)
-    frame.BackgroundColor3 = Color3.fromRGB(22, 20, 32)
-    frame.BorderSizePixel = 0
-    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
-    local fs = Instance.new("UIStroke", frame)
-    fs.Color = Color3.fromRGB(130, 110, 200); fs.Thickness = 1.5; fs.Transparency = 0.35
-    local grad = Instance.new("UIGradient", frame)
-    grad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 28, 55)),
-        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(28, 32, 55)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 28, 55))})
-    grad.Rotation = 35
-end
-
-local function styleDragBar(dragBar, titleText)
-    dragBar.BackgroundColor3 = Color3.fromRGB(45, 35, 70)
-    dragBar.BorderSizePixel = 0
-    Instance.new("UICorner", dragBar).CornerRadius = UDim.new(0, 12)
-    local title = Instance.new("TextLabel", dragBar)
-    title.Size = UDim2.new(1, -50, 1, 0); title.Position = UDim2.new(0, 10, 0, 0)
-    title.BackgroundTransparency = 1
-    title.Text = titleText
-    title.TextColor3 = Color3.fromRGB(230, 215, 255)
-    title.Font = Enum.Font.GothamBold; title.TextSize = 11
-    title.TextXAlignment = Enum.TextXAlignment.Left
-    return title
-end
-
-local function makeMinCloseBtns(dragBar, onMin, onClose)
-    local minBtn = Instance.new("TextButton", dragBar)
-    minBtn.Size = UDim2.new(0, 18, 0, 18); minBtn.Position = UDim2.new(1, -42, 0, 4)
-    minBtn.BackgroundColor3 = Color3.fromRGB(255, 190, 100); minBtn.BorderSizePixel = 0
-    minBtn.Text = "−"; minBtn.TextColor3 = Color3.fromRGB(40,30,0)
-    minBtn.Font = Enum.Font.GothamBold; minBtn.TextSize = 13
-    Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 5)
-
-    local closeBtn = Instance.new("TextButton", dragBar)
-    closeBtn.Size = UDim2.new(0, 18, 0, 18); closeBtn.Position = UDim2.new(1, -20, 0, 4)
-    closeBtn.BackgroundColor3 = Color3.fromRGB(220, 80, 80); closeBtn.BorderSizePixel = 0
-    closeBtn.Text = "×"; closeBtn.TextColor3 = Color3.fromRGB(255,255,255)
-    closeBtn.Font = Enum.Font.GothamBold; closeBtn.TextSize = 15
-    Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 5)
-
-    minBtn.MouseButton1Click:Connect(onMin)
-    closeBtn.MouseButton1Click:Connect(onClose)
-    return minBtn, closeBtn
-end
-
-local function makeMiniIcon(gui, emoji, posY)
-    local btn = Instance.new("TextButton", gui)
-    btn.Size = UDim2.new(0, 36, 0, 36)
-    btn.Position = UDim2.new(0.02, 0, posY, 0)
-    btn.BackgroundColor3 = Color3.fromRGB(60, 45, 100)
-    btn.BorderSizePixel = 0; btn.Text = emoji
-    btn.TextColor3 = Color3.fromRGB(255,255,255)
-    btn.Font = Enum.Font.GothamBold; btn.TextSize = 17
-    btn.Visible = false
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 18)
-    local bs = Instance.new("UIStroke", btn)
-    bs.Color = Color3.fromRGB(180, 150, 255); bs.Thickness = 1.5
-    return btn
-end
-
-local function makeDraggable(frame, handle)
-    local dragging, dragStart, startPos = false, nil, nil
-    handle.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true; dragStart = input.Position; startPos = frame.Position
-        end
-    end)
-    UIS.InputChanged:Connect(function(input)
-        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-            local d = input.Position - dragStart
-            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + d.X, startPos.Y.Scale, startPos.Y.Offset + d.Y)
-        end
-    end)
-    UIS.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = false
-        end
-    end)
-end
-
--- ============================================================
---  AUTO FARM NẤM
+--  AUTO FARM NẤM (đã cập nhật — nhặt 1 lần, không delay, tự chuyển khu)
 -- ============================================================
 local farmThread = nil
+local collectRemotes = {}
 
-local function isMushroom(part)
-    if not part or not part.Name then return false end
-    local n = part.Name:lower()
-    return n:find("mushroom") or n:find("shroom") or n:find("shoom") or n:find("pile")
+task.spawn(function()
+    for _, v in pairs(RS:GetDescendants()) do
+        if v:IsA("RemoteEvent") or v:IsA("RemoteFunction") then
+            local n = v.Name:lower()
+            if n:find("collect") or n:find("pick") or n:find("interact")
+               or n:find("mush") or n:find("harvest") or n:find("grab")
+               or n:find("quest") or n:find("eat") then
+                table.insert(collectRemotes, v)
+            end
+        end
+    end
+end)
+
+local function isMushroomName(n)
+    if not n then return false end
+    n = n:lower()
+    return n:find("mushroom") ~= nil
+        or n:find("shroom") ~= nil
+        or n:find("mushie") ~= nil
 end
 
-local function findAllMushrooms(range)
-    local list = {}
-    local c = LP.Character
-    if not c then return list end
-    local root = c:FindFirstChild("HumanoidRootPart")
-    if not root then return list end
-    local myPos = root.Position
-    local rangeSq = range * range
+local function getMushroomPos(m)
+    if not m or not m.Parent then return nil end
+    if m:IsA("BasePart") then return m.Position end
+    if m:IsA("Model") then
+        if m.PrimaryPart then return m.PrimaryPart.Position end
+        for _, d in ipairs(m:GetDescendants()) do
+            if d:IsA("BasePart") then return d.Position end
+        end
+    end
+    return nil
+end
 
+local function findMushrooms()
+    local list = {}
     local function scan(parent, depth)
-        if depth > 8 then return end
+        if depth > 6 then return end
         for _, obj in ipairs(parent:GetChildren()) do
-            if obj:IsA("BasePart") and isMushroom(obj) then
-                local d2 = (obj.Position - myPos).Magnitude
-                if d2 * d2 <= rangeSq then
+            if obj:IsA("BasePart") then
+                if isMushroomName(obj.Name) then
                     table.insert(list, obj)
                 end
-            elseif obj:IsA("Model") or obj:IsA("Folder") then
+            elseif obj:IsA("Model") then
+                if isMushroomName(obj.Name) then
+                    table.insert(list, obj)
+                elseif obj.PrimaryPart and isMushroomName(obj.PrimaryPart.Name) then
+                    table.insert(list, obj)
+                end
+            elseif obj:IsA("Folder") then
                 scan(obj, depth + 1)
             end
         end
@@ -555,61 +486,91 @@ local function findAllMushrooms(range)
     return list
 end
 
-local function tpTo(part)
+local function collectMushroom(m)
+    if not m or not m.Parent then return end
+    for _, r in ipairs(collectRemotes) do
+        pcall(function() r:FireServer(m) end)
+    end
+    -- fallback touch
     local c = LP.Character
-    if not c then return end
-    local hrp = c:FindFirstChild("HumanoidRootPart")
-    if not hrp then return end
-    hrp.CFrame = CFrame.new(part.Position + Vector3.new(0, 3, 0))
+    local hrp = c and c:FindFirstChild("HumanoidRootPart")
+    if hrp and firetouchinterest and m:IsA("BasePart") then
+        pcall(function()
+            firetouchinterest(hrp, m, 0)
+            firetouchinterest(hrp, m, 1)
+        end)
+    end
 end
 
-local function tryCollect(part)
-    if not part or not part.Parent then return end
-    for _, v in pairs(RS:GetDescendants()) do
-        if v:IsA("RemoteEvent") then
-            local n = v.Name:lower()
-            if n:find("collect") or n:find("pick") or n:find("interact")
-               or n:find("mush") or n:find("harvest") or n:find("grab") then
-                pcall(function() v:FireServer(part) end)
-                pcall(function() v:FireServer(part.Position) end)
-            end
-        end
-    end
-    local c = LP.Character
-    if c then
-        local hrp = c:FindFirstChild("HumanoidRootPart")
-        if hrp and firetouchinterest then
-            pcall(function()
-                firetouchinterest(hrp, part, 0)
-                task.wait()
-                firetouchinterest(hrp, part, 1)
-            end)
-        end
-    end
+-- Bộ đếm nấm đã nhặt (mục tiêu 3/3 rồi chuyển khu)
+local questCount = 0
+local collected = setmetatable({}, {__mode = "k"})
+
+local function pickNewArea(root)
+    -- dịch chuyển tới khu vực khác (xa vị trí hiện tại)
+    local angle = math.random() * math.pi * 2
+    local dist = 400 + math.random() * 400
+    local curPos = root.Position
+    local newPos = Vector3.new(curPos.X + math.cos(angle) * dist, 100, curPos.Z + math.sin(angle) * dist)
+    root.CFrame = CFrame.new(newPos)
+    task.wait(0.5)
 end
 
 local function startAutoFarm()
     if farmThread then pcall(function() task.cancel(farmThread) end) end
+    questCount = 0
+    collected = setmetatable({}, {__mode = "k"})
     farmThread = task.spawn(function()
         while S.autoFarmOn do
-            local mushrooms = findAllMushrooms(S.farmRange)
-            if #mushrooms > 0 then
-                table.sort(mushrooms, function(a, b)
-                    local c = LP.Character
-                    local root = c and c:FindFirstChild("HumanoidRootPart")
-                    if not root then return false end
-                    return (a.Position - root.Position).Magnitude < (b.Position - root.Position).Magnitude
-                end)
-                for _, m in ipairs(mushrooms) do
-                    if not S.autoFarmOn then break end
-                    if not m.Parent then continue end
-                    tpTo(m)
+            local c = LP.Character
+            local root = c and c:FindFirstChild("HumanoidRootPart")
+            if not root then task.wait(0.5); continue end
+
+            local mushrooms = findMushrooms()
+            -- lọc những nấm chưa nhặt
+            local fresh = {}
+            for _, m in ipairs(mushrooms) do
+                if not collected[m] then
+                    table.insert(fresh, m)
+                end
+            end
+
+            if #fresh == 0 then
+                task.wait(1)
+                continue
+            end
+
+            -- chọn nấm gần nhất
+            local myPos = root.Position
+            local best, bestD = nil, math.huge
+            for _, m in ipairs(fresh) do
+                local p = getMushroomPos(m)
+                if p then
+                    local d = (p - myPos).Magnitude
+                    if d < bestD then best, bestD = m, d end
+                end
+            end
+
+            if best then
+                local pos = getMushroomPos(best)
+                if pos then
+                    -- tp tới nấm (bù 3 studs để không kẹt đất)
+                    root.CFrame = CFrame.new(pos + Vector3.new(0, 3, 0))
+                    task.wait(0.1)
+                    collectMushroom(best)
+                    collected[best] = true
+                    questCount = questCount + 1
                     task.wait(0.15)
-                    tryCollect(m)
-                    task.wait(S.farmDelay)
+
+                    -- đủ 3/3 thì chuyển khu vực khác
+                    if questCount >= 3 then
+                        questCount = 0
+                        pickNewArea(root)
+                        collected = setmetatable({}, {__mode = "k"})
+                    end
                 end
             else
-                task.wait(2)
+                task.wait(0.3)
             end
         end
     end)
@@ -623,67 +584,66 @@ local function stopAutoFarm()
 end
 
 -- ============================================================
---  BITE AURA
+--  ANTI-DEATH (tự đo máu thấp -> tp an toàn -> đợi hồi -> quay lại)
 -- ============================================================
-local attackRemotes = {}
-for _, v in pairs(RS:GetDescendants()) do
-    if v:IsA("RemoteEvent") then
-        local n = v.Name:lower()
-        if n:find("attack") or n:find("bite") or n:find("hit") or n:find("damage") then
-            table.insert(attackRemotes, v)
-            if #attackRemotes >= 3 then break end
-        end
-    end
-end
+local antiDeathThread = nil
 
-local biteAuraThread = nil
-
-local function startBiteAura()
-    if biteAuraThread then pcall(function() task.cancel(biteAuraThread) end) end
-    biteAuraThread = task.spawn(function()
-        local lastFire = 0
-        while S.biteAuraOn do
+local function startAntiDeath()
+    if antiDeathThread then pcall(function() task.cancel(antiDeathThread) end) end
+    antiDeathThread = task.spawn(function()
+        local safeReturn = nil
+        local sentAway = false
+        while S.antiDeathOn do
             local c = LP.Character
-            local root = c and c:FindFirstChild("HumanoidRootPart")
-            if root then
-                local myPos = root.Position
-                local rangeSq = S.biteAuraRange * S.biteAuraRange
-                for _, pl in ipairs(Players:GetPlayers()) do
-                    if pl ~= LP then
-                        local pc = pl.Character
-                        if pc then
-                            local h = pc:FindFirstChildOfClass("Humanoid")
-                            local r = pc:FindFirstChild("HumanoidRootPart")
-                            if h and r and h.Health > 0 then
-                                local dx = r.Position.X - myPos.X
-                                local dy = r.Position.Y - myPos.Y
-                                local dz = r.Position.Z - myPos.Z
-                                if dx*dx + dy*dy + dz*dz <= rangeSq then
-                                    -- fire tất cả remote attack
-                                    for _, rmt in ipairs(attackRemotes) do
-                                        pcall(function() rmt:FireServer(pc) end)
-                                        pcall(function() rmt:FireServer(h) end)
-                                        pcall(function() rmt:FireServer(pc, S.biteAuraDamage) end)
-                                    end
-                                    -- set HP trực tiếp (dự phòng)
-                                    pcall(function()
-                                        h.Health = h.Health - S.biteAuraDamage
-                                    end)
-                                end
-                            end
+            local h = c and c:FindFirstChildOfClass("Humanoid")
+            local hrp = c and c:FindFirstChild("HumanoidRootPart")
+            if h and hrp and h.Health > 0 then
+                local hpPct = (h.Health / math.max(h.MaxHealth, 1)) * 100
+                local threshold = S.antiDeathThreshold or 30
+
+                if not sentAway and hpPct <= threshold then
+                    safeReturn = hrp.Position
+                    h.PlatformStand = true
+                    -- tp lên trời xa map, an toàn
+                    local farX = (math.random() > 0.5 and 1 or -1) * (3000 + math.random() * 1000)
+                    local farZ = (math.random() > 0.5 and 1 or -1) * (3000 + math.random() * 1000)
+                    hrp.CFrame = CFrame.new(Vector3.new(farX, 800, farZ))
+                    hrp.Velocity = Vector3.zero
+                    sentAway = true
+                    pcall(function()
+                        Rayfield:Notify({Title = "💀 " .. S.systemName,
+                            Content = "máu thấp — đang trốn để hồi máu...", Duration = 4})
+                    end)
+                end
+
+                if sentAway then
+                    if hpPct >= math.min(threshold + 30, 95) then
+                        -- hồi xong, quay lại
+                        if safeReturn then
+                            hrp.CFrame = CFrame.new(safeReturn + Vector3.new(0, 3, 0))
                         end
+                        h.PlatformStand = false
+                        sentAway = false
+                        safeReturn = nil
+                        pcall(function()
+                            Rayfield:Notify({Title = "✅ " .. S.systemName,
+                                Content = "hồi máu xong — quay lại.", Duration = 3})
+                        end)
                     end
                 end
             end
-            task.wait(0.1 + math.random() * 0.1)
+            task.wait(0.3)
         end
     end)
 end
 
-local function stopBiteAura()
-    if biteAuraThread then
-        pcall(function() task.cancel(biteAuraThread) end)
-        biteAuraThread = nil
+local function stopAntiDeath()
+    if antiDeathThread then
+        pcall(function() task.cancel(antiDeathThread) end)
+        antiDeathThread = nil
+        local c = LP.Character
+        local h = c and c:FindFirstChildOfClass("Humanoid")
+        if h then h.PlatformStand = false end
     end
 end
 
@@ -691,7 +651,7 @@ end
 task.spawn(function()
     local v = MY_VERSION
     while _G.WGVersion == v do
-        if S.antivoidOn then
+        if S.antivoidOn and not S.antiDeathOn then
             local c = LP.Character
             local root = c and c:FindFirstChild("HumanoidRootPart")
             if root then
@@ -736,7 +696,7 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- FREECAM MOBILE (đã sửa)
+-- FREECAM MOBILE
 local freecamActive = false
 local freecamYaw, freecamPitch = 0, 0
 local freecamZoom = 30
@@ -1338,31 +1298,6 @@ buildMenu = function()
             if n and n > 0 then S.aoeRange = n; saveFullConfig()
                 Rayfield:Notify({Title = "💥", Content = "aoe: " .. n, Duration = 2}) end
         end})
-
-    -- BITE AURA (trong tab Combat)
-    TabCombat:CreateSection("bite aura")
-    TabCombat:CreateToggle({Name = T("bite_aura"), CurrentValue = S.biteAuraOn, Flag = "BiteAura",
-        Callback = function(v)
-            S.biteAuraOn = v
-            if v then startBiteAura(); sysNotify("bite_aura_on")
-            else stopBiteAura(); sysNotify("bite_aura_off") end
-            saveFullConfig()
-        end})
-    TabCombat:CreateInput({Name = T("bite_aura_range"), CurrentValue = tostring(S.biteAuraRange),
-        PlaceholderText = "nhập số", RemoveTextAfterFocusLost = false, Flag = "BiteAuraRange",
-        Callback = function(t)
-            local n = tonumber(t)
-            if n and n > 0 then S.biteAuraRange = n; saveFullConfig()
-                Rayfield:Notify({Title = "📡", Content = "tầm: " .. n, Duration = 2}) end
-        end})
-    TabCombat:CreateInput({Name = T("bite_aura_damage"), CurrentValue = tostring(S.biteAuraDamage),
-        PlaceholderText = "nhập số", RemoveTextAfterFocusLost = false, Flag = "BiteAuraDamage",
-        Callback = function(t)
-            local n = tonumber(t)
-            if n and n > 0 then S.biteAuraDamage = n; saveFullConfig()
-                Rayfield:Notify({Title = "💢", Content = "dame: " .. n, Duration = 2}) end
-        end})
-    TabCombat:CreateLabel(T("bite_aura_hint"))
     TabCombat:CreateSection("⚠️ cảnh báo")
     TabCombat:CreateLabel(T("combat_warn"))
     TabCombat:CreateLabel(T("speed_warn"))
@@ -1409,30 +1344,21 @@ buildMenu = function()
         end})
     TabESP:CreateLabel(T("esp_coming"))
 
-    -- AUTO FARM NẤM
-    TabFarm:CreateSection("auto farm nấm")
-    TabFarm:CreateToggle({Name = T("farm_toggle"), CurrentValue = S.autoFarmOn, Flag = "AutoFarm",
+    -- AUTO FARM NẤM (đã đơn giản hóa — 1 nút)
+    TabFarm:CreateSection("🍄 auto farm nấm")
+    TabFarm:CreateToggle({
+        Name = T("farm_toggle"),
+        CurrentValue = S.autoFarmOn,
+        Flag = "AutoFarm",
         Callback = function(v)
             S.autoFarmOn = v
             if v then startAutoFarm(); sysNotify("farm_on")
             else stopAutoFarm(); sysNotify("farm_off") end
             saveFullConfig()
-        end})
-    TabFarm:CreateInput({Name = T("farm_range"), CurrentValue = tostring(S.farmRange),
-        PlaceholderText = "nhập số (mặc định 300)", RemoveTextAfterFocusLost = false, Flag = "FarmRange",
-        Callback = function(t)
-            local n = tonumber(t)
-            if n and n > 0 then S.farmRange = n; saveFullConfig()
-                Rayfield:Notify({Title = "📡", Content = "tầm farm: " .. n, Duration = 2}) end
-        end})
-    TabFarm:CreateInput({Name = T("farm_delay"), CurrentValue = tostring(S.farmDelay),
-        PlaceholderText = "0.4", RemoveTextAfterFocusLost = false, Flag = "FarmDelay",
-        Callback = function(t)
-            local n = tonumber(t)
-            if n and n > 0 then S.farmDelay = n; saveFullConfig()
-                Rayfield:Notify({Title = "⏱️", Content = "delay: " .. n .. "s", Duration = 2}) end
-        end})
-    TabFarm:CreateLabel("💡 tự động TP đến nấm và nhặt liên tục")
+        end
+    })
+    TabFarm:CreateLabel("💡 tự động tìm nấm — nhặt 1 lần rồi tp sang nấm khác.")
+    TabFarm:CreateLabel("💡 nhặt đủ 3/3 sẽ tự động chuyển sang khu vực khác.")
 
     -- MISC
     TabMisc:CreateSection("⚡ " .. T("sys_name"))
@@ -1578,12 +1504,35 @@ buildMenu = function()
     TabMisc:CreateLabel(T("tiktok_update"))
     TabMisc:CreateLabel(T("credit"))
 
-    -- PHONG ẤN
+    -- PHONG ẤN / UTILITY
     if not S.utilityUnlocked then
         TabUtil:CreateSection("🔒 " .. T("seal_locked"))
         TabUtil:CreateLabel(T("seal_hint"))
         TabUtil:CreateButton({Name = T("seal_unlock"), Callback = function() pcall(doUnlock) end})
     else
+        TabUtil:CreateSection("💀 anti-death")
+        TabUtil:CreateToggle({
+            Name = T("antideath_toggle"),
+            CurrentValue = S.antiDeathOn,
+            Flag = "AntiDeath",
+            Callback = function(v)
+                S.antiDeathOn = v
+                if v then startAntiDeath(); sysNotify("antideath_on")
+                else stopAntiDeath(); sysNotify("antideath_off") end
+                saveFullConfig()
+            end
+        })
+        TabUtil:CreateSlider({
+            Name = T("antideath_threshold"),
+            Range = {10, 80},
+            Increment = 5,
+            Suffix = "%",
+            CurrentValue = S.antiDeathThreshold,
+            Flag = "AntiDeathThreshold",
+            Callback = function(v) S.antiDeathThreshold = v; saveFullConfig() end
+        })
+        TabUtil:CreateLabel(T("antideath_hint"))
+
         TabUtil:CreateSection("🔧 utility")
         TabUtil:CreateToggle({Name = T("util_anti_afk"), CurrentValue = S.antiAfkOn, Flag = "AntiAfk",
             Callback = function(v) S.antiAfkOn = v; sysNotify(v and "afk_on" or "afk_off") end})
