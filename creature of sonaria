@@ -1,5 +1,5 @@
 -- ============================================================
---  WonGaVn🇻🇳 Script - V2
+--  WonGaVn🇻🇳 Script - Shoom Farm + Antiban 85% + Logo + Anti-Lag
 --  tiktok: Nkhaj97 | discord: discord.gg/ry3buvjz5
 -- ============================================================
 local SCRIPT_URL = "https://raw.githubusercontent.com/nguyenkha233/WonGaVn/refs/heads/main/creature%20of%20sonaria"
@@ -15,6 +15,70 @@ local LP = Players.LocalPlayer
 
 _G.WGVersion = (_G.WGVersion or 0) + 1
 local MY_VERSION = _G.WGVersion
+
+-- ============================================================
+--  LOGO CONFIG
+-- ============================================================
+local LOGO_FILE = "WonGaVn_Logo.txt"
+local DEFAULT_LOGO = "rbxassetid://6675147490"
+
+local function loadLogoId()
+    local id = DEFAULT_LOGO
+    if readfile and isfile and isfile(LOGO_FILE) then
+        pcall(function()
+            local saved = readfile(LOGO_FILE)
+            if saved and #saved > 5 then id = saved end
+        end)
+    end
+    return id
+end
+
+local function saveLogoId(id)
+    if writefile then pcall(function() writefile(LOGO_FILE, id) end) end
+end
+
+_G.WGLogoId = loadLogoId()
+
+local function injectLogoIntoLoading()
+    task.spawn(function()
+        for attempt = 1, 40 do
+            local parent = (gethui and gethui()) or game:GetService("CoreGui")
+            local rayGui = nil
+            for _, g in ipairs(parent:GetChildren()) do
+                if g:IsA("ScreenGui") then
+                    local nm = g.Name:lower()
+                    if nm:find("rayfield") or nm:find("sirius") then
+                        rayGui = g; break
+                    end
+                end
+            end
+            if rayGui then
+                local existing = rayGui:FindFirstChild("WG_CustomLogo")
+                if existing then existing:Destroy() end
+                local logo = Instance.new("ImageLabel")
+                logo.Name = "WG_CustomLogo"
+                logo.Size = UDim2.new(0, 140, 0, 140)
+                logo.Position = UDim2.new(0.5, -70, 0.5, -200)
+                logo.BackgroundTransparency = 1
+                logo.Image = _G.WGLogoId
+                logo.ZIndex = 999999
+                logo.Parent = rayGui
+                task.spawn(function()
+                    local t = 0
+                    while logo.Parent do
+                        t = t + 0.05
+                        pcall(function()
+                            logo.ImageTransparency = 0.1 + 0.1 * math.sin(t)
+                        end)
+                        task.wait(0.05)
+                    end
+                end)
+                return
+            end
+            task.wait(0.25)
+        end
+    end)
+end
 
 _G.WGState = _G.WGState or {
     lang = "vi",
@@ -36,10 +100,7 @@ _G.WGState = _G.WGState or {
 local S = _G.WGState
 
 _G.WGAntibanSettings = _G.WGAntibanSettings or {
-    checkRole = true,
-    checkRoles = {"Owner", "Admin", "Moderator", "Developer", "Staff"},
-    minRank = 200,
-    protectPlayer = "WonGa2k10",
+    protectPlayer = "NikePro2004",
 }
 
 local CONFIG_FILE = "WonGaVn_Config.json"
@@ -107,10 +168,9 @@ local TXT = {
     vi = {
         tab_ab="🛡️ antiban", tab_combat="⚔️ combat", tab_esp="👁️ esp",
         tab_farm="🍄 auto farm", tab_misc="⚙️ misc", tab_util="🔒 phong ấn",
-        ab_toggle="bật antiban", ab_warn="",
-        ab_warn2="🛡️ antiban nâng cao 85% — bot có thể quét nhưng rất khó.",
-        combat_warn="⚠️ combat!",
-        speed_warn="⚠️ nên chọn 500-1000. là khu vưc lên nữa sẽ lag.",
+        ab_toggle="bật antiban", ab_warn_pro="🛡️ antiban 85% — bot có thể quét nhưng rất khó.",
+        combat_warn="⚠️ game combat — nguy cơ ban cao, dùng alt!",
+        speed_warn="⚠️ nên chọn 500-1000. dưới 100 rất chậm.",
         hitbox="bật hitbox", hitbox_size="kích thước hitbox",
         aoe="bật aoe", aoe_range="bán kính aoe",
         esp_p="esp player", esp_m="esp shoom",
@@ -125,7 +185,7 @@ local TXT = {
         util_anti_afk="🟢 anti afk", util_join="👋 thông báo người vào",
         util_noclip="👻 noclip", util_fly="🕊️ fly", util_flyspeed="tốc độ bay",
         antivoid_toggle="bật anti-void",
-        freecam_toggle="bật freecam (ScriptBlox)",
+        freecam_toggle="bật freecam",
         freecam_hint="💡 PC: chuột phải xoay + WASD bay | Mobile: nửa phải xoay, nửa trái joystick",
         spam_toggle="spam chat", spam_msg="nội dung tin nhắn", spam_delay="delay spam",
         trade_toggle="auto trade", trade_view="📋 xem lịch sử", trade_clear="🗑️ xóa lịch sử",
@@ -141,13 +201,11 @@ local TXT = {
         antideath_hint="💡 máu thấp → TP xa map 8000-12000 studs đợi hồi.",
         antilag_toggle="🚀 siêu giảm lag + chống rung màn hình",
         antilag_hint="💡 tắt rung camera, particle, decal, shadow — chống đơ.",
-        no_shake="📳 chống rung màn hình",
     },
     us = {
         tab_ab="🛡️ antiban", tab_combat="⚔️ combat", tab_esp="👁️ esp",
         tab_farm="🍄 auto farm", tab_misc="⚙️ misc", tab_util="🔒 seal",
-        ab_toggle="enable antiban", ab_warn="⚠️ basic antiban ~80%.",
-        ab_warn2="🛡️ advanced antiban 85% — bots can scan but very hard.",
+        ab_toggle="enable antiban", ab_warn_pro="🛡️ antiban 85% — bots can scan but very hard.",
         combat_warn="⚠️ combat game — high ban risk, use alt!",
         speed_warn="⚠️ pick 500-1000.",
         hitbox="enable hitbox", hitbox_size="hitbox size",
@@ -162,7 +220,7 @@ local TXT = {
         util_anti_afk="🟢 anti afk", util_join="👋 player join alert",
         util_noclip="👻 noclip", util_fly="🕊️ fly", util_flyspeed="fly speed",
         antivoid_toggle="enable anti-void",
-        freecam_toggle="enable freecam (ScriptBlox)",
+        freecam_toggle="enable freecam",
         freecam_hint="💡 PC: right mouse + WASD | Mobile: right rotate, left joystick",
         spam_toggle="spam chat", spam_msg="message", spam_delay="delay",
         trade_toggle="auto trade", trade_view="📋 history", trade_clear="🗑️ clear",
@@ -177,13 +235,11 @@ local TXT = {
         antideath_hint="💡 low HP → TP far 8000-12000 studs to heal.",
         antilag_toggle="🚀 ultra anti-lag + no screen shake",
         antilag_hint="💡 disable camera shake, particles, decal, shadow.",
-        no_shake="📳 no screen shake",
     },
     cn = {
         tab_ab="🛡️ 反封", tab_combat="⚔️ 战斗", tab_esp="👁️ esp",
         tab_farm="🍄 自动农场", tab_misc="⚙️ 杂项", tab_util="🔒 封印",
-        ab_toggle="启用反封", ab_warn="⚠️ 基础反封 ~80%。",
-        ab_warn2="🛡️ 高级反封 85% — 机器人可扫描但非常困难。",
+        ab_toggle="启用反封", ab_warn_pro="🛡️ 反封 85% — 机器人可扫描但非常困难。",
         combat_warn="⚠️ 战斗游戏！", speed_warn="⚠️ 500-1000。",
         hitbox="命中框", hitbox_size="大小", aoe="范围", aoe_range="半径",
         esp_p="esp玩家", esp_m="esp蘑菇", esp_info="esp显示", esp_info_opts="关闭,显示名称",
@@ -203,13 +259,11 @@ local TXT = {
         antideath_hint="💡 生命低于阈值时自动移动到安全位置。",
         antilag_toggle="🚀 超级防卡 + 不晃屏",
         antilag_hint="💡 禁用相机震动、粒子、贴花、阴影。",
-        no_shake="📳 不晃屏",
     },
     jp = {
         tab_ab="🛡️ アンチban", tab_combat="⚔️ 戦闘", tab_esp="👁️ esp",
         tab_farm="🍄 自動ファーム", tab_misc="⚙️ その他", tab_util="🔒 封印",
-        ab_toggle="アンチban", ab_warn="⚠️ 基本 ~80%。",
-        ab_warn2="🛡️ 高度アンチban 85% — botスキャン可能だが非常に困難。",
+        ab_toggle="アンチban", ab_warn_pro="🛡️ アンチban 85% — botスキャン可能だが非常に困難。",
         combat_warn="⚠️ 戦闘ゲーム！", speed_warn="⚠️ 500-1000。",
         hitbox="ヒットボックス", hitbox_size="サイズ", aoe="範囲", aoe_range="半径",
         esp_p="espプレイヤー", esp_m="espキノコ", esp_info="esp表示", esp_info_opts="オフ,名前",
@@ -229,13 +283,11 @@ local TXT = {
         antideath_hint="💡 HP低下時に安全地帯へ移動。",
         antilag_toggle="🚀 超アンチラグ + 画面振動なし",
         antilag_hint="💡 カメラシェイク、パーティクル、デカール、影を無効化。",
-        no_shake="📳 画面振動なし",
     },
     kr = {
         tab_ab="🛡️ 안티밴", tab_combat="⚔️ 전투", tab_esp="👁️ esp",
         tab_farm="🍄 자동 파밍", tab_misc="⚙️ 기타", tab_util="🔒 봉인",
-        ab_toggle="안티밴", ab_warn="⚠️ 기본 ~80%.",
-        ab_warn2="🛡️ 고급 안티밴 85% — 봇 스캔 가능하지만 매우 어려움.",
+        ab_toggle="안티밴", ab_warn_pro="🛡️ 안티밴 85% — 봇 스캔 가능하지만 매우 어려움.",
         combat_warn="⚠️ 전투 게임!", speed_warn="⚠️ 500-1000.",
         hitbox="히트박스", hitbox_size="크기", aoe="범위", aoe_range="반경",
         esp_p="esp 플레이어", esp_m="esp 버섯", esp_info="esp", esp_info_opts="끄기,이름",
@@ -255,7 +307,6 @@ local TXT = {
         antideath_hint="💡 HP 낮으면 안전한 곳으로 이동.",
         antilag_toggle="🚀 초강력 안티랙 + 화면 흔들림 없음",
         antilag_hint="💡 카메라 흔들림, 파티클, 데칼, 그림자 비활성화.",
-        no_shake="📳 화면 흔들림 없음",
     },
 }
 local function T(k)
@@ -327,7 +378,7 @@ local PERSONALITIES = {
         unlock="bẻ khóa thành công.", powerRelease="giải mã sức mạnh...",
         hitbox_on="patch hitbox.", hitbox_off="revert.", aoe_on="enable aoe.", aoe_off="disable aoe.",
         esp_p_on="sniffing player.", esp_p_off="ngừng sniff.", esp_m_on="scan shoom xong.", esp_m_off="ngừng scan.",
-        fly_on="vượt firewall.", fly_off="land.", noclip_on="xuyên mọi layer.", noclip_off="collision lại.",
+        fly_on="vượt firewall.", fly_off="land.", noclip_on="xuyền mọi layer.", noclip_off="collision lại.",
         afk_on="bypass idle.", afk_off="ngừng.", antivoid_on="firewall bật.", antivoid_off="tắt firewall.",
         optimize_on="đã tối ưu.", optimize_off="revert.", antilag_on="boost FPS.", antilag_off="reset.",
         join_on="log player join.", join_off="ngừng log.",
@@ -845,7 +896,7 @@ RunService.RenderStepped:Connect(function()
 end)
 
 -- ============================================================
---  FREECAM (ScriptBlox)
+--  FREECAM
 -- ============================================================
 local freecamActive = false
 local freecamConnections = {}
@@ -973,7 +1024,7 @@ local function stopFreecam()
 end
 
 -- ============================================================
---  SIÊU GIẢM LAG + CHỐNG RUNG MÀN HÌNH
+--  OPTIMIZE + ANTI-LAG + CHỐNG RUNG MÀN HÌNH
 -- ============================================================
 local optimizeLoopThread = nil
 local antiLagLoopThread = nil
@@ -1002,10 +1053,8 @@ local function applyOptimize()
     end)
 end
 
--- Chống rung màn hình — kill CameraShake, Eathquake, Blur, Bloom, SunRays, DOF
 local function applyAntiLag()
     pcall(function()
-        -- Tắt mọi hiệu ứng làm rung/đổi màn hình
         for _, effect in ipairs(Lighting:GetChildren()) do
             if effect:IsA("BlurEffect")
                or effect:IsA("BloomEffect")
@@ -1016,13 +1065,10 @@ local function applyAntiLag()
                 effect.Enabled = false
             end
         end
-
-        -- Giữ giờ cố định để tránh hiệu ứng ngày/đêm gây lag
         Lighting.ClockTime = 14
         Lighting.FogEnd = 100000
         Lighting.GlobalShadows = false
 
-        -- Xóa Decal / Texture toàn map
         for _, v in ipairs(workspace:GetDescendants()) do
             if v:IsA("Decal") or v:IsA("Texture") then
                 v.Transparency = 1
@@ -1036,7 +1082,6 @@ local function applyAntiLag()
             end
         end
 
-        -- Xóa hết terrain decoration
         pcall(function()
             workspace.Terrain.Decoration = false
             workspace.Terrain.WaterWaveSize = 0
@@ -1045,21 +1090,17 @@ local function applyAntiLag()
             workspace.Terrain.WaterTransparency = 1
         end)
 
-        -- Giảm chất lượng render
         pcall(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Level01 end)
         pcall(function() settings().Rendering.MeshPartDetailLevel = Enum.MeshPartDetailLevel.Level01 end)
     end)
 end
 
--- Chống rung camera vĩnh viễn
 local function killCameraShake()
     if shakeConnection then shakeConnection:Disconnect() end
     local cam = workspace.CurrentCamera
     shakeConnection = RunService.RenderStepped:Connect(function()
         pcall(function()
-            cam.CFrame = cam.CFrame * CFrame.new(0, 0, 0)
             cam.FieldOfView = 70
-            cam.CameraSubject = cam.CameraSubject
         end)
     end)
 end
@@ -1124,7 +1165,7 @@ local function setupTradeHooks()
 end
 
 -- ============================================================
---  ANTIBAN (CŨ + NÂNG CAO 85%)
+--  ANTIBAN (cũ + Bansby)
 -- ============================================================
 local BLOCK = {report=true,ban=true,kick=true,vote=true,cheat=true,anticheat=true,detect=true,flag=true,suspicious=true,scan=true,check=true}
 
@@ -1135,75 +1176,6 @@ local function isBlocked(a)
     return false
 end
 
--- checkRankAll (thêm mới)
-local function checkRankAll()
-    for _, v in ipairs(Players:GetChildren()) do
-        if v ~= LP and v:IsInGroup(game.CreatorId) then
-            local ok1, rank = pcall(function() return v:GetRoleInGroup(game.CreatorId) end)
-            local ok2, rankNum = pcall(function() return v:GetRankInGroup(game.CreatorId) end)
-            if ok1 and _G.WGAntibanSettings.checkRole and rank then
-                if table.find(_G.WGAntibanSettings.checkRoles, rank) then
-                    pcall(function()
-                        Rayfield:Notify({Title = "🛡️ ANTIBAN 85%",
-                            Content = "⚠️ phát hiện staff: " .. v.Name .. " | " .. rank, Duration = 5})
-                    end)
-                    task.wait(0.5)
-                    pcall(function()
-                        LP:Kick(v.Name .. " is in the game | Rank: " .. rank .. " | Anti-Ban Check-Roles")
-                    end)
-                    return
-                end
-            end
-            if ok2 and rankNum and _G.WGAntibanSettings.minRank and rankNum >= _G.WGAntibanSettings.minRank then
-                pcall(function()
-                    Rayfield:Notify({Title = "🛡️ ANTIBAN 85%",
-                        Content = "⚠️ staff cấp cao: " .. v.Name .. " | Rank: " .. tostring(rankNum), Duration = 5})
-                end)
-                task.wait(0.5)
-                pcall(function()
-                    LP:Kick(v.Name .. " is in the game | Rank: " .. tostring(rankNum) .. " | Anti-Ban Rank")
-                end)
-                return
-            end
-        end
-    end
-end
-
--- hookPlayerAddedAntiban (thêm mới)
-local function hookPlayerAddedAntiban()
-    Players.PlayerAdded:Connect(function(player)
-        task.wait(1)
-        if player:IsInGroup(game.CreatorId) then
-            local ok1, rank = pcall(function() return player:GetRoleInGroup(game.CreatorId) end)
-            local ok2, rankNum = pcall(function() return player:GetRankInGroup(game.CreatorId) end)
-            if ok1 and _G.WGAntibanSettings.checkRole and rank then
-                if table.find(_G.WGAntibanSettings.checkRoles, rank) then
-                    pcall(function()
-                        Rayfield:Notify({Title = "🛡️ ANTIBAN 85%",
-                            Content = "⚠️ staff " .. player.Name .. " vừa vào (" .. rank .. ")", Duration = 5})
-                    end)
-                    task.wait(0.5)
-                    pcall(function()
-                        LP:Kick(player.Name .. " joined | Rank: " .. rank .. " | Anti-Ban Check-Roles")
-                    end)
-                    return
-                end
-            end
-            if ok2 and rankNum and _G.WGAntibanSettings.minRank and rankNum >= _G.WGAntibanSettings.minRank then
-                pcall(function()
-                    Rayfield:Notify({Title = "🛡️ ANTIBAN 85%",
-                        Content = "⚠️ staff cấp cao " .. player.Name .. " vừa vào", Duration = 5})
-                end)
-                task.wait(0.5)
-                pcall(function()
-                    LP:Kick(player.Name .. " joined | Rank: " .. tostring(rankNum) .. " | Anti-Ban Rank")
-                end)
-            end
-        end
-    end)
-end
-
--- startBansbyProtection (thêm mới)
 local function startBansbyProtection()
     task.spawn(function()
         local respawntime = 90
@@ -1254,7 +1226,6 @@ local function enableAntiban()
     if antibanDone then return end
     antibanDone = true
 
-    -- ANTIBAN CŨ (giữ nguyên)
     local mt = getrawmetatable and getrawmetatable(game)
     if mt and newcclosure and setreadonly then
         setreadonly(mt, false)
@@ -1274,16 +1245,6 @@ local function enableAntiban()
     end
     warn = function() end
 
-    -- ANTIBAN NÂNG CAO 85% (thêm mới)
-    task.spawn(function()
-        while _G.WGVersion == MY_VERSION do
-            if S.antibanOn ~= false then
-                pcall(checkRankAll)
-            end
-            task.wait(5)
-        end
-    end)
-    pcall(hookPlayerAddedAntiban)
     pcall(startBansbyProtection)
 end
 
@@ -1709,60 +1670,18 @@ buildMenu = function()
     local TabMisc = Window:CreateTab(T("tab_misc"), nil)
     local TabUtil = Window:CreateTab(T("tab_util"), nil)
 
-    -- ANTIBAN (cũ + mới)
-    TabAB:CreateSection("antiban")
+    -- ANTIBAN
+    TabAB:CreateSection("🛡️ antiban")
     TabAB:CreateToggle({Name = T("ab_toggle"), CurrentValue = S.antibanOn ~= false, Flag = "Antiban",
         Callback = function(v)
             S.antibanOn = v
             if v then enableAntiban(); sysNotify("on") else sysNotify("off") end
             saveFullConfig()
         end})
-    TabAB:CreateLabel(T("ab_warn"))
-    TabAB:CreateLabel(T("ab_warn2"))
-
-    TabAB:CreateSection("👮 chống staff trong game")
-    TabAB:CreateToggle({
-        Name = "🔍 bật check role staff",
-        CurrentValue = _G.WGAntibanSettings.checkRole,
-        Flag = "AntibanCheckRole",
-        Callback = function(v) _G.WGAntibanSettings.checkRole = v end
-    })
-    TabAB:CreateInput({
-        Name = "📝 danh sách role cần kick",
-        CurrentValue = table.concat(_G.WGAntibanSettings.checkRoles, ", "),
-        PlaceholderText = "Owner, Admin, Moderator",
-        RemoveTextAfterFocusLost = false,
-        Flag = "AntibanRolesInput",
-        Callback = function(t)
-            if t and #t > 0 then
-                local roles = {}
-                for role in t:gmatch("[^,]+") do
-                    local trimmed = role:match("^%s*(.-)%s*$")
-                    if #trimmed > 0 then table.insert(roles, trimmed) end
-                end
-                if #roles > 0 then
-                    _G.WGAntibanSettings.checkRoles = roles
-                    Rayfield:Notify({Title = "🛡️", Content = "đã lưu " .. #roles .. " role", Duration = 2})
-                end
-            end
-        end
-    })
-    TabAB:CreateInput({
-        Name = "🔢 rank tối thiểu để kick (0-255)",
-        CurrentValue = tostring(_G.WGAntibanSettings.minRank),
-        PlaceholderText = "200",
-        RemoveTextAfterFocusLost = false,
-        Flag = "AntibanMinRank",
-        Callback = function(t)
-            local n = tonumber(t)
-            if n and n >= 0 and n <= 255 then
-                _G.WGAntibanSettings.minRank = n
-                Rayfield:Notify({Title = "🛡️", Content = "rank tối thiểu: " .. n, Duration = 2})
-            end
-        end
-    })
+    TabAB:CreateLabel(T("ab_warn_pro"))
 
     TabAB:CreateSection("🛡️ bảo vệ player (Bansby)")
+    TabAB:CreateLabel("🧪 bản thử nghiệm — có thể không hoạt động")
     TabAB:CreateInput({
         Name = "👤 tên player cần bảo vệ",
         CurrentValue = _G.WGAntibanSettings.protectPlayer,
@@ -1777,26 +1696,6 @@ buildMenu = function()
         end
     })
     TabAB:CreateLabel("💡 nếu player này rời server → kick toàn bộ player khác")
-
-    TabAB:CreateSection("⚡ thủ công")
-    TabAB:CreateButton({
-        Name = "🔍 quét staff ngay",
-        Callback = function()
-            pcall(checkRankAll)
-            Rayfield:Notify({Title = "🛡️", Content = "đã quét xong", Duration = 2})
-        end
-    })
-    TabAB:CreateButton({
-        Name = "🚨 kick toàn bộ server",
-        Callback = function()
-            for _, p in ipairs(Players:GetChildren()) do
-                if p ~= LP then
-                    pcall(function() p:Kick("WonGaVn ANTIBAN trigger") end)
-                end
-            end
-            Rayfield:Notify({Title = "🛡️", Content = "đã kick toàn bộ server", Duration = 3})
-        end
-    })
 
     -- COMBAT
     TabCombat:CreateSection("hitbox")
@@ -2012,6 +1911,78 @@ buildMenu = function()
             sysNotify(nil, v and "🖱️ bật kéo menu" or "🔒 khóa menu"); saveFullConfig()
         end})
 
+    -- LOGO
+    TabMisc:CreateSection("🎨 logo script")
+    TabMisc:CreateInput({
+        Name = "🖼️ logo ID",
+        CurrentValue = _G.WGLogoId,
+        PlaceholderText = "rbxassetid://6675147490",
+        RemoveTextAfterFocusLost = false,
+        Flag = "LogoIdInput",
+        Callback = function(t)
+            if t and #t > 5 then
+                if not t:find("rbxassetid://") then
+                    t = "rbxassetid://" .. t:gsub("%D", "")
+                end
+                _G.WGLogoId = t
+                saveLogoId(t)
+                Rayfield:Notify({Title = "🎨",
+                    Content = "đã lưu logo — khởi động lại để áp dụng",
+                    Duration = 4})
+            end
+        end
+    })
+    TabMisc:CreateLabel("💡 logo mặc định: WonGaVn | nhập ID khác để đổi")
+    TabMisc:CreateButton({
+        Name = "🎨 xem trước logo",
+        Callback = function()
+            task.spawn(function()
+                local parent = (gethui and gethui()) or game:GetService("CoreGui")
+                local existing = parent:FindFirstChild("WG_LogoPreview")
+                if existing then existing:Destroy() end
+
+                local preview = Instance.new("ScreenGui")
+                preview.Name = "WG_LogoPreview"
+                preview.ResetOnSpawn = false
+                preview.IgnoreGuiInset = true
+                preview.DisplayOrder = 9999999
+                preview.Parent = parent
+
+                local bg = Instance.new("Frame", preview)
+                bg.Size = UDim2.new(0, 180, 0, 180)
+                bg.Position = UDim2.new(0.5, -90, 0.5, -90)
+                bg.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+                bg.BorderSizePixel = 0
+                Instance.new("UICorner", bg).CornerRadius = UDim.new(0, 16)
+                local stroke = Instance.new("UIStroke", bg)
+                stroke.Color = Color3.fromRGB(120, 180, 255)
+                stroke.Thickness = 2
+                stroke.Transparency = 0.3
+
+                local img = Instance.new("ImageLabel", bg)
+                img.Size = UDim2.new(1, -20, 1, -20)
+                img.Position = UDim2.new(0, 10, 0, 10)
+                img.BackgroundTransparency = 1
+                img.Image = _G.WGLogoId
+
+                task.wait(3)
+                preview:Destroy()
+            end)
+        end
+    })
+    TabMisc:CreateButton({
+        Name = "♻️ khôi phục logo mặc định",
+        Callback = function()
+            _G.WGLogoId = DEFAULT_LOGO
+            if writefile and delfile and isfile and isfile(LOGO_FILE) then
+                pcall(function() delfile(LOGO_FILE) end)
+            end
+            Rayfield:Notify({Title = "🎨",
+                Content = "đã khôi phục logo WonGaVn",
+                Duration = 3})
+        end
+    })
+
     TabMisc:CreateSection("🔒 phong ấn")
     if not S.utilityUnlocked then
         TabMisc:CreateButton({Name = T("unlock_misc"), Callback = function() pcall(doUnlock) end})
@@ -2072,7 +2043,7 @@ buildMenu = function()
         TabUtil:CreateToggle({Name = T("util_join"), CurrentValue = S.playerJoinAlert, Flag = "PlayerJoin",
             Callback = function(v) S.playerJoinAlert = v; saveFullConfig() end})
 
-        TabUtil:CreateSection("🎥 freecam (ScriptBlox)")
+        TabUtil:CreateSection("🎥 freecam")
         TabUtil:CreateToggle({Name = T("freecam_toggle"), CurrentValue = false, Flag = "FreecamToggle",
             Callback = function(v)
                 if v then startFreecam(); sysNotify("freecam_on")
@@ -2135,6 +2106,9 @@ local function startMain()
     if not ok or not Rayfield then
         warn("[wongavn] không load được rayfield: " .. tostring(err)); return
     end
+
+    task.spawn(injectLogoIntoLoading)
+
     task.wait(0.5)
 
     local ok2, err2 = pcall(buildMenu)
