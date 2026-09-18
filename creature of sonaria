@@ -107,7 +107,7 @@ local TXT = {
     vi = {
         tab_ab="🛡️ antiban", tab_combat="⚔️ combat", tab_esp="👁️ esp",
         tab_farm="🍄 auto farm", tab_misc="⚙️ misc", tab_util="🔒 phong ấn",
-        ab_toggle="bật antiban", ab_warn="⚠️ antiban ~80%.",
+        ab_toggle="bật antiban", ab_warn="",
         ab_warn2="🛡️ antiban nâng cao 85% — bot có thể quét nhưng rất khó.",
         combat_warn="⚠️ combat!",
         speed_warn="⚠️ nên chọn 500-1000. là khu vưc lên nữa sẽ lag.",
