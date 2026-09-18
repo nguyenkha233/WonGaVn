@@ -1,5 +1,5 @@
 -- ============================================================
---  WonGaVn🇻🇳 Script - Shoom Farm + Antiban 85% + Anti-Lag
+--  WonGaVn🇻🇳 Script - V2
 --  tiktok: Nkhaj97 | discord: discord.gg/ry3buvjz5
 -- ============================================================
 local SCRIPT_URL = "https://raw.githubusercontent.com/nguyenkha233/WonGaVn/refs/heads/main/creature%20of%20sonaria"
@@ -39,7 +39,7 @@ _G.WGAntibanSettings = _G.WGAntibanSettings or {
     checkRole = true,
     checkRoles = {"Owner", "Admin", "Moderator", "Developer", "Staff"},
     minRank = 200,
-    protectPlayer = "NikePro2004",
+    protectPlayer = "WonGa2k10",
 }
 
 local CONFIG_FILE = "WonGaVn_Config.json"
@@ -107,10 +107,10 @@ local TXT = {
     vi = {
         tab_ab="🛡️ antiban", tab_combat="⚔️ combat", tab_esp="👁️ esp",
         tab_farm="🍄 auto farm", tab_misc="⚙️ misc", tab_util="🔒 phong ấn",
-        ab_toggle="bật antiban", ab_warn="⚠️ antiban cơ bản ~80%.",
+        ab_toggle="bật antiban", ab_warn="⚠️ antiban ~80%.",
         ab_warn2="🛡️ antiban nâng cao 85% — bot có thể quét nhưng rất khó.",
-        combat_warn="⚠️ game combat — nguy cơ ban cao, dùng alt!",
-        speed_warn="⚠️ nên chọn 500-1000. dưới 100 rất chậm.",
+        combat_warn="⚠️ combat!",
+        speed_warn="⚠️ nên chọn 500-1000. là khu vưc lên nữa sẽ lag.",
         hitbox="bật hitbox", hitbox_size="kích thước hitbox",
         aoe="bật aoe", aoe_range="bán kính aoe",
         esp_p="esp player", esp_m="esp shoom",
