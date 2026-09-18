@@ -1,5 +1,5 @@
 -- ============================================================
---  WonGaVn🇻🇳 Script - V1
+--  WonGaVn🇻🇳 Script - Shoom Farm + Antiban 85% + Anti-Lag
 --  tiktok: Nkhaj97 | discord: discord.gg/ry3buvjz5
 -- ============================================================
 local SCRIPT_URL = "https://raw.githubusercontent.com/nguyenkha233/WonGaVn/refs/heads/main/creature%20of%20sonaria"
@@ -27,11 +27,20 @@ _G.WGState = _G.WGState or {
     playerJoinAlert=true, flyOn=false, flySpeed=50, noclipOn=false,
     antivoidOn=false, antivoidSafe=Vector3.new(0,50,0),
     dragMenu=true,
-    freecamSensitivity=0.08,
     autoFarmOn=false,
     antiDeathOn=false, antiDeathThreshold=30,
+    optimizeOn=false,
+    antiLagOn=false,
+    antibanOn=true,
 }
 local S = _G.WGState
+
+_G.WGAntibanSettings = _G.WGAntibanSettings or {
+    checkRole = true,
+    checkRoles = {"Owner", "Admin", "Moderator", "Developer", "Staff"},
+    minRank = 200,
+    protectPlayer = "NikePro2004",
+}
 
 local CONFIG_FILE = "WonGaVn_Config.json"
 local function saveFullConfig()
@@ -47,8 +56,8 @@ local function saveFullConfig()
             flySpeed=S.flySpeed,
             spamChatMsg=S.spamChatMsg, spamChatDelay=S.spamChatDelay,
             bypassMode=S.bypassMode, playerJoinAlert=S.playerJoinAlert, dragMenu=S.dragMenu,
-            freecamSensitivity=S.freecamSensitivity,
             antiDeathThreshold=S.antiDeathThreshold,
+            antibanOn=S.antibanOn,
         }))
     end)
 end
@@ -98,12 +107,13 @@ local TXT = {
     vi = {
         tab_ab="🛡️ antiban", tab_combat="⚔️ combat", tab_esp="👁️ esp",
         tab_farm="🍄 auto farm", tab_misc="⚙️ misc", tab_util="🔒 phong ấn",
-        ab_toggle="bật antiban", ab_warn="⚠️ antiban chỉ bảo vệ ~80% bot có thể quét.",
-        combat_warn="⚠️ combat !",
-        speed_warn="⚠️ nên chọn 500-1000. khu vực lên nữa sẽ lag.",
+        ab_toggle="bật antiban", ab_warn="⚠️ antiban cơ bản ~80%.",
+        ab_warn2="🛡️ antiban nâng cao 85% — bot có thể quét nhưng rất khó.",
+        combat_warn="⚠️ game combat — nguy cơ ban cao, dùng alt!",
+        speed_warn="⚠️ nên chọn 500-1000. dưới 100 rất chậm.",
         hitbox="bật hitbox", hitbox_size="kích thước hitbox",
         aoe="bật aoe", aoe_range="bán kính aoe",
-        esp_p="esp player", esp_m="esp nấm",
+        esp_p="esp player", esp_m="esp shoom",
         esp_info="hiển thị esp", esp_info_opts="tắt,hiện tên",
         sys_name="tên hệ thống", sys_personality="tính cách",
         walk_slider="tốc độ chạy", jump_slider="lực nhảy",
@@ -115,8 +125,8 @@ local TXT = {
         util_anti_afk="🟢 anti afk", util_join="👋 thông báo người vào",
         util_noclip="👻 noclip", util_fly="🕊️ fly", util_flyspeed="tốc độ bay",
         antivoid_toggle="bật anti-void",
-        freecam_toggle="bật freecam", freecam_hint="💡 1 ngón kéo lên/xuống để zoom",
-        freecam_sensitivity="độ nhạy xoay",
+        freecam_toggle="bật freecam (ScriptBlox)",
+        freecam_hint="💡 PC: chuột phải xoay + WASD bay | Mobile: nửa phải xoay, nửa trái joystick",
         spam_toggle="spam chat", spam_msg="nội dung tin nhắn", spam_delay="delay spam",
         trade_toggle="auto trade", trade_view="📋 xem lịch sử", trade_clear="🗑️ xóa lịch sử",
         seal_locked="🔒 phong ấn chưa vỡ", seal_hint="💡 bấm nút bên dưới để mở khóa.",
@@ -125,20 +135,24 @@ local TXT = {
         esp_coming="🚧 esp đang được cập nhật thêm.",
         tiktok_update="📢 script sẽ được cập nhật tại tiktok Nkhaj97",
         update_section="📢 cập nhật",
-        farm_toggle="🍄 bật auto farm nấm",
-        antideath_toggle="💀 bật anti-death (tự tránh chết)",
+        farm_toggle="🍄 bật auto farm shoom pile",
+        antideath_toggle="💀 bật anti-death",
         antideath_threshold="📊 ngưỡng máu kích hoạt (%)",
-        antideath_hint="💡 khi máu xuống dưới ngưỡng, tự dịch chuyển tới vị trí an toàn đợi hồi máu.",
+        antideath_hint="💡 máu thấp → TP xa map 8000-12000 studs đợi hồi.",
+        antilag_toggle="🚀 siêu giảm lag + chống rung màn hình",
+        antilag_hint="💡 tắt rung camera, particle, decal, shadow — chống đơ.",
+        no_shake="📳 chống rung màn hình",
     },
     us = {
         tab_ab="🛡️ antiban", tab_combat="⚔️ combat", tab_esp="👁️ esp",
         tab_farm="🍄 auto farm", tab_misc="⚙️ misc", tab_util="🔒 seal",
-        ab_toggle="enable antiban", ab_warn="⚠️ antiban protects ~80%.",
+        ab_toggle="enable antiban", ab_warn="⚠️ basic antiban ~80%.",
+        ab_warn2="🛡️ advanced antiban 85% — bots can scan but very hard.",
         combat_warn="⚠️ combat game — high ban risk, use alt!",
         speed_warn="⚠️ pick 500-1000.",
         hitbox="enable hitbox", hitbox_size="hitbox size",
         aoe="enable aoe", aoe_range="aoe range",
-        esp_p="esp player", esp_m="esp mushroom",
+        esp_p="esp player", esp_m="esp shoom",
         esp_info="esp display", esp_info_opts="off,show name",
         sys_name="system name", sys_personality="personality",
         walk_slider="walk speed", jump_slider="jump power", inf_jump="infinite jump",
@@ -148,24 +162,29 @@ local TXT = {
         util_anti_afk="🟢 anti afk", util_join="👋 player join alert",
         util_noclip="👻 noclip", util_fly="🕊️ fly", util_flyspeed="fly speed",
         antivoid_toggle="enable anti-void",
-        freecam_toggle="enable freecam", freecam_hint="💡 1 finger drag up/down to zoom",
-        freecam_sensitivity="rotation sensitivity",
+        freecam_toggle="enable freecam (ScriptBlox)",
+        freecam_hint="💡 PC: right mouse + WASD | Mobile: right rotate, left joystick",
         spam_toggle="spam chat", spam_msg="message", spam_delay="delay",
         trade_toggle="auto trade", trade_view="📋 history", trade_clear="🗑️ clear",
         seal_locked="🔒 seal not broken", seal_hint="💡 click button below.",
         seal_unlock="🔓 unlock now", credit="script by WonGaVn🇻🇳 | tiktok: Nkhaj97",
         testing_notif="⚠️ script is in testing phase.", esp_coming="🚧 esp updating.",
-        tiktok_update="📢 script will be updated at tiktok Nkhaj97",
+        tiktok_update="📢 script updated at tiktok Nkhaj97",
         update_section="📢 updates",
-        farm_toggle="🍄 enable auto farm mushroom",
+        farm_toggle="🍄 enable auto farm shoom pile",
         antideath_toggle="💀 enable anti-death",
         antideath_threshold="📊 HP threshold (%)",
-        antideath_hint="💡 when HP drops below, auto-move to safe spot and wait to heal.",
+        antideath_hint="💡 low HP → TP far 8000-12000 studs to heal.",
+        antilag_toggle="🚀 ultra anti-lag + no screen shake",
+        antilag_hint="💡 disable camera shake, particles, decal, shadow.",
+        no_shake="📳 no screen shake",
     },
     cn = {
         tab_ab="🛡️ 反封", tab_combat="⚔️ 战斗", tab_esp="👁️ esp",
         tab_farm="🍄 自动农场", tab_misc="⚙️ 杂项", tab_util="🔒 封印",
-        ab_toggle="启用反封", ab_warn="⚠️ 约80%保护。", combat_warn="⚠️ 战斗游戏！", speed_warn="⚠️ 500-1000。",
+        ab_toggle="启用反封", ab_warn="⚠️ 基础反封 ~80%。",
+        ab_warn2="🛡️ 高级反封 85% — 机器人可扫描但非常困难。",
+        combat_warn="⚠️ 战斗游戏！", speed_warn="⚠️ 500-1000。",
         hitbox="命中框", hitbox_size="大小", aoe="范围", aoe_range="半径",
         esp_p="esp玩家", esp_m="esp蘑菇", esp_info="esp显示", esp_info_opts="关闭,显示名称",
         sys_name="系统名", sys_personality="性格", walk_slider="速度", jump_slider="跳跃", inf_jump="无限跳跃",
@@ -173,20 +192,25 @@ local TXT = {
         unlock_misc="🔓 解锁封印", unlock_hint="解锁后重启。",
         util_anti_afk="🟢 防挂机", util_join="👋 玩家提醒", util_noclip="👻 穿墙", util_fly="🕊️ 飞行", util_flyspeed="速度",
         antivoid_toggle="防掉落",
-        freecam_toggle="自由相机", freecam_hint="💡 单指拖动缩放", freecam_sensitivity="旋转灵敏度",
+        freecam_toggle="自由相机", freecam_hint="💡 PC:右键+WASD | 手机:右侧旋转",
         spam_toggle="刷屏", spam_msg="消息", spam_delay="延迟",
         trade_toggle="自动交易", trade_view="📋 历史", trade_clear="🗑️ 清除",
         seal_locked="🔒 封印未破", seal_hint="💡 点击下方。", seal_unlock="🔓 立即解锁",
         credit="WonGaVn🇻🇳 | Nkhaj97", testing_notif="⚠️ 测试中。", esp_coming="🚧 更新中。",
         tiktok_update="📢 脚本将在 tiktok Nkhaj97 更新", update_section="📢 更新",
-        farm_toggle="🍄 启用自动农场蘑菇",
+        farm_toggle="🍄 启用自动农场",
         antideath_toggle="💀 启用防死亡", antideath_threshold="📊 生命阈值(%)",
-        antideath_hint="💡 生命低于阈值时自动移动到安全位置等待恢复。",
+        antideath_hint="💡 生命低于阈值时自动移动到安全位置。",
+        antilag_toggle="🚀 超级防卡 + 不晃屏",
+        antilag_hint="💡 禁用相机震动、粒子、贴花、阴影。",
+        no_shake="📳 不晃屏",
     },
     jp = {
         tab_ab="🛡️ アンチban", tab_combat="⚔️ 戦闘", tab_esp="👁️ esp",
         tab_farm="🍄 自動ファーム", tab_misc="⚙️ その他", tab_util="🔒 封印",
-        ab_toggle="アンチban", ab_warn="⚠️ 約80%。", combat_warn="⚠️ 戦闘ゲーム！", speed_warn="⚠️ 500-1000。",
+        ab_toggle="アンチban", ab_warn="⚠️ 基本 ~80%。",
+        ab_warn2="🛡️ 高度アンチban 85% — botスキャン可能だが非常に困難。",
+        combat_warn="⚠️ 戦闘ゲーム！", speed_warn="⚠️ 500-1000。",
         hitbox="ヒットボックス", hitbox_size="サイズ", aoe="範囲", aoe_range="半径",
         esp_p="espプレイヤー", esp_m="espキノコ", esp_info="esp表示", esp_info_opts="オフ,名前",
         sys_name="システム名", sys_personality="性格", walk_slider="速度", jump_slider="ジャンプ", inf_jump="無限ジャンプ",
@@ -194,20 +218,25 @@ local TXT = {
         unlock_misc="🔓 封印解除", unlock_hint="解除後再起動。",
         util_anti_afk="🟢 アンチafk", util_join="👋 参加通知", util_noclip="👻 ノークリップ", util_fly="🕊️ フライ", util_flyspeed="速度",
         antivoid_toggle="アンチボイド",
-        freecam_toggle="フリーカメラ", freecam_hint="💡 1本指でズーム", freecam_sensitivity="回転感度",
+        freecam_toggle="フリーカメラ", freecam_hint="💡 PC:右クリック+WASD | モバイル:右側回転",
         spam_toggle="スパム", spam_msg="メッセージ", spam_delay="間隔",
         trade_toggle="自動トレード", trade_view="📋 履歴", trade_clear="🗑️ 削除",
         seal_locked="🔒 封印中", seal_hint="💡 下のボタン。", seal_unlock="🔓 解除",
         credit="WonGaVn🇻🇳 | Nkhaj97", testing_notif="⚠️ テスト中。", esp_coming="🚧 更新中。",
-        tiktok_update="📢 スクリプトは tiktok Nkhaj97 で更新", update_section="📢 更新",
+        tiktok_update="📢 tiktok Nkhaj97 で更新", update_section="📢 更新",
         farm_toggle="🍄 自動ファーム有効",
         antideath_toggle="💀 アンチデス有効", antideath_threshold="📊 HP閾値(%)",
-        antideath_hint="💡 HPが閾値以下になると安全地帯に移動して回復を待ちます。",
+        antideath_hint="💡 HP低下時に安全地帯へ移動。",
+        antilag_toggle="🚀 超アンチラグ + 画面振動なし",
+        antilag_hint="💡 カメラシェイク、パーティクル、デカール、影を無効化。",
+        no_shake="📳 画面振動なし",
     },
     kr = {
         tab_ab="🛡️ 안티밴", tab_combat="⚔️ 전투", tab_esp="👁️ esp",
         tab_farm="🍄 자동 파밍", tab_misc="⚙️ 기타", tab_util="🔒 봉인",
-        ab_toggle="안티밴", ab_warn="⚠️ 약 80%.", combat_warn="⚠️ 전투 게임!", speed_warn="⚠️ 500-1000.",
+        ab_toggle="안티밴", ab_warn="⚠️ 기본 ~80%.",
+        ab_warn2="🛡️ 고급 안티밴 85% — 봇 스캔 가능하지만 매우 어려움.",
+        combat_warn="⚠️ 전투 게임!", speed_warn="⚠️ 500-1000.",
         hitbox="히트박스", hitbox_size="크기", aoe="범위", aoe_range="반경",
         esp_p="esp 플레이어", esp_m="esp 버섯", esp_info="esp", esp_info_opts="끄기,이름",
         sys_name="시스템", sys_personality="성격", walk_slider="속도", jump_slider="점프", inf_jump="무한 점프",
@@ -215,15 +244,18 @@ local TXT = {
         unlock_misc="🔓 봉인 해제", unlock_hint="해제 후 재시작.",
         util_anti_afk="🟢 안티afk", util_join="👋 참가 알림", util_noclip="👻 노클립", util_fly="🕊️ 비행", util_flyspeed="속도",
         antivoid_toggle="안티보이드",
-        freecam_toggle="프리캠", freecam_hint="💡 1손가락 줌", freecam_sensitivity="회전 감도",
+        freecam_toggle="프리캠", freecam_hint="💡 PC:우클릭+WASD | 모바일:오른쪽 회전",
         spam_toggle="스팸", spam_msg="메시지", spam_delay="지연",
         trade_toggle="자동 거래", trade_view="📋 기록", trade_clear="🗑️ 삭제",
         seal_locked="🔒 봉인 중", seal_hint="💡 아래 버튼.", seal_unlock="🔓 지금 해제",
         credit="WonGaVn🇻🇳 | Nkhaj97", testing_notif="⚠️ 테스트 중.", esp_coming="🚧 업데이트 중.",
-        tiktok_update="📢 스크립트는 tiktok Nkhaj97에서 업데이트", update_section="📢 업데이트",
+        tiktok_update="📢 tiktok Nkhaj97에서 업데이트", update_section="📢 업데이트",
         farm_toggle="🍄 자동 파밍",
         antideath_toggle="💀 안티데스 활성화", antideath_threshold="📊 HP 임계값(%)",
-        antideath_hint="💡 HP가 임계값 이하로 떨어지면 안전한 곳으로 이동해 회복을 기다립니다.",
+        antideath_hint="💡 HP 낮으면 안전한 곳으로 이동.",
+        antilag_toggle="🚀 초강력 안티랙 + 화면 흔들림 없음",
+        antilag_hint="💡 카메라 흔들림, 파티클, 데칼, 그림자 비활성화.",
+        no_shake="📳 화면 흔들림 없음",
     },
 }
 local function T(k)
@@ -237,75 +269,81 @@ local PERSONALITIES = {
         hitbox_on="vùng va chạm mở rộng.", hitbox_off="hitbox trở lại.",
         aoe_on="sát thương lan đã bật.", aoe_off="tắt sát thương lan.",
         esp_p_on="thiên nhãn player đã mở.", esp_p_off="đóng thiên nhãn.",
-        esp_m_on="thiên nhãn nấm đã mở.", esp_m_off="đóng thiên nhãn nấm.",
+        esp_m_on="thiên nhãn shoom đã mở.", esp_m_off="đóng thiên nhãn shoom.",
         fly_on="bay lên nào.", fly_off="hạ cánh.", noclip_on="xuyên vật thể.", noclip_off="va chạm lại.",
         afk_on="ta canh chừng.", afk_off="anti-afk tắt.",
         antivoid_on="ta đỡ ngươi.", antivoid_off="anti-void tắt.",
         optimize_on="ta dọn đồ họa.", optimize_off="đồ họa trở lại.",
+        antilag_on="ta làm mượt mọi thứ.", antilag_off="trả lại.",
         join_on="ta để ý.", join_off="ngừng theo dõi.",
         spam_on="spam chat bật.", spam_off="ngừng spam.",
         trade_on="ta theo dõi giao dịch.", trade_off="ngừng.",
         infjump_on="nhảy vô hạn.", infjump_off="nhảy bình thường.",
         freecam_on="camera tự do.", freecam_off="camera trở lại.",
-        farm_on="ta bắt đầu nhặt nấm.", farm_off="ngừng nhặt nấm.",
+        farm_on="ta bắt đầu nhặt shoom.", farm_off="ngừng nhặt shoom.",
         antideath_on="ta bảo vệ ngươi.", antideath_off="ngừng bảo vệ." }},
     neko = { name="neko 🐱", lines={loaded="nya~ em tới rồi!", on="nyaa! bật rồi~", off="hức... tắt rồi...",
         unlock="nya! phong ấn vỡ rồi~", powerRelease="waaa~ sức mạnh tràn ra~",
         hitbox_on="nya~ đánh xa hơn nè!", hitbox_off="đánh gần lại~",
         aoe_on="đánh lan nè~", aoe_off="ngừng đánh lan~",
         esp_p_on="nya~ em thấy mọi người!", esp_p_off="em nhắm mắt~",
-        esp_m_on="nya~ em thấy nấm!", esp_m_off="không thấy nấm nữa~",
+        esp_m_on="nya~ em thấy shoom!", esp_m_off="không thấy shoom nữa~",
         fly_on="bay lên nào~", fly_off="đáp xuống~", noclip_on="xuyên tường nè~", noclip_off="không xuyên nữa~",
         afk_on="em canh nè~", afk_off="thôi canh~", antivoid_on="em ôm chủ nhân~", antivoid_off="buông tay~",
-        optimize_on="em dọn máy nè~", optimize_off="trả lại~", join_on="em để ý~", join_off="thôi~",
+        optimize_on="em dọn máy nè~", optimize_off="trả lại~", antilag_on="em làm mượt nè~", antilag_off="thôi~",
+        join_on="em để ý~", join_off="thôi~",
         spam_on="nyaa spam~", spam_off="ngừng~", trade_on="em xem giao dịch~", trade_off="thôi~",
         infjump_on="nhảy cao nè~", infjump_off="thường~",
         freecam_on="camera bay nè~", freecam_off="camera trở lại~",
-        farm_on="nya~ em nhặt nấm nè!", farm_off="thôi nhặt~",
+        farm_on="nya~ em nhặt shoom nè!", farm_off="thôi nhặt~",
         antideath_on="nya~ em bảo vệ chủ nhân!", antideath_off="thôi bảo vệ~" }},
     demon = { name="ác quỷ 😈", lines={loaded="ta tỉnh dậy...", on="triệu hồi thành công.", off="ta ngủ đây...",
         unlock="phong ấn vỡ!", powerRelease="hắc ám tuôn ra...",
         hitbox_on="vùng va chạm nở rộng.", hitbox_off="thu hồi.", aoe_on="sát thương lan nở rộ.", aoe_off="thu hồi.",
-        esp_p_on="ta thấy linh hồn.", esp_p_off="nhắm mắt.", esp_m_on="ta thấy nấm.", esp_m_off="nhắm mắt.",
+        esp_p_on="ta thấy linh hồn.", esp_p_off="nhắm mắt.", esp_m_on="ta thấy shoom.", esp_m_off="nhắm mắt.",
         fly_on="bay trên xác ngươi.", fly_off="đáp.", noclip_on="cõi âm không cản.", noclip_off="va chạm lại.",
         afk_on="ta canh.", afk_off="ta lơ.", antivoid_on="vực sâu không nuốt.", antivoid_off="buông tha.",
-        optimize_on="nuốt gánh nặng...", optimize_off="nhả ra.", join_on="ta thấy kẻ đến.", join_off="nhắm mắt.",
+        optimize_on="nuốt gánh nặng...", optimize_off="nhả ra.", antilag_on="ta hút lag.", antilag_off="nhả ra.",
+        join_on="ta thấy kẻ đến.", join_off="nhắm mắt.",
         spam_on="nổ tung chat.", spam_off="im lặng.", trade_on="theo dõi giao dịch.", trade_off="ngừng.",
         infjump_on="nhảy vô tận.", infjump_off="bình thường.",
         freecam_on="nhãn thần mở.", freecam_off="nhãn thần đóng.",
-        farm_on="ta thu hoạch nấm.", farm_off="ngừng thu hoạch.",
+        farm_on="ta thu hoạch shoom.", farm_off="ngừng thu hoạch.",
         antideath_on="ta bảo hộ ngươi.", antideath_off="thu hồi." }},
     king = { name="vua 👑", lines={loaded="trẫm đã giáng trần.", on="triều đình khai mở.", off="trẫm thu hồi uy.",
         unlock="ngai vàng đã mở.", powerRelease="long uy chấn động!",
         hitbox_on="vùng va chạm mở rộng.", hitbox_off="trở lại.", aoe_on="sát thương lan khai mở.", aoe_off="thu hồi.",
-        esp_p_on="trẫm thấy thần dân.", esp_p_off="nhắm mắt.", esp_m_on="trẫm thấy nấm.", esp_m_off="nhắm mắt.",
+        esp_p_on="trẫm thấy thần dân.", esp_p_off="nhắm mắt.", esp_m_on="trẫm thấy shoom.", esp_m_off="nhắm mắt.",
         fly_on="ngự không phi hành.", fly_off="đáp đất.", noclip_on="chướng ngại không cản.", noclip_off="va chạm lại.",
         afk_on="trẫm canh ngươi.", afk_off="trẫm lơ.", antivoid_on="kết giới bảo vệ.", antivoid_off="thu kết giới.",
-        optimize_on="trẫm tinh giản.", optimize_off="trả lại.", join_on="trẫm để ý.", join_off="thôi.",
+        optimize_on="trẫm tinh giản.", optimize_off="trả lại.", antilag_on="trẫm tịnh hóa.", antilag_off="trả lại.",
+        join_on="trẫm để ý.", join_off="thôi.",
         spam_on="khải hoàn spam.", spam_off="ngừng.", trade_on="trẫm theo dõi.", trade_off="ngừng.",
         infjump_on="nhảy vô hạn.", infjump_off="bình thường.",
         freecam_on="thiên nhãn mở.", freecam_off="thiên nhãn khép.",
-        farm_on="trẫm thu hoạch nấm.", farm_off="ngừng.",
+        farm_on="trẫm thu hoạch shoom.", farm_off="ngừng.",
         antideath_on="trẫm bảo hộ thần dân.", antideath_off="thu hồi." }},
     hacker = { name="hacker 💻", lines={loaded="đã xâm nhập.", on="bypass xong.", off="ẩn mình.",
         unlock="bẻ khóa thành công.", powerRelease="giải mã sức mạnh...",
         hitbox_on="patch hitbox.", hitbox_off="revert.", aoe_on="enable aoe.", aoe_off="disable aoe.",
-        esp_p_on="sniffing player.", esp_p_off="ngừng sniff.", esp_m_on="scan nấm xong.", esp_m_off="ngừng scan.",
+        esp_p_on="sniffing player.", esp_p_off="ngừng sniff.", esp_m_on="scan shoom xong.", esp_m_off="ngừng scan.",
         fly_on="vượt firewall.", fly_off="land.", noclip_on="xuyên mọi layer.", noclip_off="collision lại.",
         afk_on="bypass idle.", afk_off="ngừng.", antivoid_on="firewall bật.", antivoid_off="tắt firewall.",
-        optimize_on="đã tối ưu.", optimize_off="revert.", join_on="log player join.", join_off="ngừng log.",
+        optimize_on="đã tối ưu.", optimize_off="revert.", antilag_on="boost FPS.", antilag_off="reset.",
+        join_on="log player join.", join_off="ngừng log.",
         spam_on="spam packet.", spam_off="ngừng.", trade_on="monitor trade.", trade_off="ngừng.",
         infjump_on="enable inf jump.", infjump_off="disable.",
         freecam_on="camera exploit.", freecam_off="camera reset.",
-        farm_on="auto collect nấm.", farm_off="ngừng.",
+        farm_on="auto collect shoom.", farm_off="ngừng.",
         antideath_on="auto protect on.", antideath_off="auto protect off." }},
     god = { name="thần linh 🌌", lines={loaded="ta đã giáng thế.", on="thần uy khai mở.", off="thu hồi thần uy.",
         unlock="thiên môn đã mở.", powerRelease="linh khí trở về...",
         hitbox_on="vùng va chạm mở rộng.", hitbox_off="trở lại.", aoe_on="sát thương lan khai mở.", aoe_off="thu hồi.",
-        esp_p_on="thiên nhãn khai mở.", esp_p_off="thiên nhãn khép.", esp_m_on="ta thấy nấm.", esp_m_off="nhắm mắt.",
+        esp_p_on="thiên nhãn khai mở.", esp_p_off="thiên nhãn khép.", esp_m_on="ta thấy shoom.", esp_m_off="nhắm mắt.",
         fly_on="đằng vân giá vũ.", fly_off="đáp đất.", noclip_on="xuyên cõi hư không.", noclip_off="trở lại.",
         afk_on="ta hộ ngươi.", afk_off="ngừng hộ.", antivoid_on="thần quang phong ấn.", antivoid_off="thu quang.",
-        optimize_on="thần lực thanh lọc.", optimize_off="trả lại.", join_on="ta thấy hết.", join_off="nhắm mắt.",
+        optimize_on="thần lực thanh lọc.", optimize_off="trả lại.", antilag_on="thần lực tịnh hóa.", antilag_off="trả lại.",
+        join_on="ta thấy hết.", join_off="nhắm mắt.",
         spam_on="thần ngôn tràn ra.", spam_off="ngừng.", trade_on="ta theo dõi.", trade_off="ngừng.",
         infjump_on="nhảy vô hạn.", infjump_off="bình thường.",
         freecam_on="thần nhãn mở.", freecam_off="thần nhãn khép.",
@@ -314,14 +352,15 @@ local PERSONALITIES = {
     pervert = { name="biến thái 🔞", lines={loaded="hừm... con mồi đâu~?", on="cơ thể ngươi thuộc về ta~", off="để dành sau~",
         unlock="phong ấn vỡ...", powerRelease="dục vọng trào dâng...",
         hitbox_on="ta chạm xa hơn~", hitbox_off="thu tay~", aoe_on="chạm nhiều người~", aoe_off="thu tay~",
-        esp_p_on="ta thấy cơ thể ngươi~", esp_p_off="nhắm mắt~", esp_m_on="ta thấy nấm~", esp_m_off="thôi~",
+        esp_p_on="ta thấy cơ thể ngươi~", esp_p_off="nhắm mắt~", esp_m_on="ta thấy shoom~", esp_m_off="thôi~",
         fly_on="bay cùng ta~", fly_off="đáp~", noclip_on="xuyên qua mọi thứ~", noclip_off="va chạm~",
         afk_on="ta giữ ngươi~", afk_off="buông~", antivoid_on="ta giữ ngươi~", antivoid_off="buông~",
-        optimize_on="cởi bỏ lớp áo~", optimize_off="mặc lại~", join_on="ta để ý ngươi~", join_off="thôi~",
+        optimize_on="cởi bỏ lớp áo~", optimize_off="mặc lại~", antilag_on="ta vuốt mượt~", antilag_off="thôi~",
+        join_on="ta để ý ngươi~", join_off="thôi~",
         spam_on="ta rên nhiều~", spam_off="im~", trade_on="ta xem ngươi~", trade_off="thôi~",
         infjump_on="nhảy cao~", infjump_off="thường~",
         freecam_on="ta nhìn ngươi~", freecam_off="thôi nhìn~",
-        farm_on="ta gom nấm~", farm_off="thôi gom~",
+        farm_on="ta gom shoom~", farm_off="thôi gom~",
         antideath_on="ta che chở ngươi~", antideath_off="buông~" }},
 }
 local function getPLine(key)
@@ -397,7 +436,7 @@ local function showIntro(onDone)
 end
 
 -- ============================================================
---  NHẬN DIỆN NẤM SIÊU KỸ (đỏ/xanh/vàng, loại bỏ oxy + trang trí)
+--  AUTO FARM SHOOM PILE
 -- ============================================================
 local farmThread = nil
 local collectRemotes = {}
@@ -407,8 +446,7 @@ task.spawn(function()
         if v:IsA("RemoteEvent") or v:IsA("RemoteFunction") then
             local n = v.Name:lower()
             if n:find("collect") or n:find("pick") or n:find("interact")
-               or n:find("mush") or n:find("shoom") or n:find("shroom")
-               or n:find("harvest") or n:find("grab")
+               or n:find("shoom") or n:find("harvest") or n:find("grab")
                or n:find("quest") or n:find("eat") or n:find("forage") then
                 table.insert(collectRemotes, v)
             end
@@ -416,71 +454,82 @@ task.spawn(function()
     end
 end)
 
--- Từ khóa LOẠI TRỪ (oxy, rong biển, nấm trang trí...)
-local EXCLUDE_KW = {
-    "oxy", "oxygen", "bubble", "kelp", "coral", "seaweed", "algae",
-    "decor", "decoration", "prop", "fake", "grass", "tree", "rock",
-    "flower", "leaf", "leaves", "plant", "vine", "bush", "crystal",
-    "waypoint", "spawn", "portal", "sign", "lamp", "light",
-}
--- Từ khóa PHẢI CÓ (nấm)
-local SHROOM_KW = {"shoom", "shroom", "mushroom", "mushie", "fungus"}
-
-local function nameHasAny(str, list)
-    if not str then return false end
-    str = str:lower()
-    for _, k in ipairs(list) do
-        if str:find(k, 1, true) then return true end
-    end
-    return false
+local function nameIsShoomPile(name)
+    if not name then return false end
+    local n = name:lower()
+    return n:find("shoom pile", 1, true) ~= nil
+        or n:find("shoompile", 1, true) ~= nil
+        or n:find("shoom_pile", 1, true) ~= nil
+        or n:find("silver shoom", 1, true) ~= nil
+        or n:find("gold shoom", 1, true) ~= nil
 end
 
--- Kiểm tra cây có phải nấm collectible không
+local function getColorType(color)
+    if not color then return nil end
+    local r, g, b = color.R, color.G, color.B
+    if r > 0.6 and g < 0.45 and b < 0.45 then return "red" end
+    if b > 0.55 and r < 0.55 and g < 0.75 then return "blue" end
+    if r > 0.7 and g > 0.55 and b < 0.45 then return "gold" end
+    return nil
+end
+
+local function getPartColor(obj)
+    if obj:IsA("BasePart") then return obj.Color end
+    for _, p in ipairs(obj:GetDescendants()) do
+        if p:IsA("BasePart") then return p.Color end
+    end
+    return nil
+end
+
+local function getShroomSize(obj)
+    if obj:IsA("BasePart") then return obj.Size end
+    local ok, ext = pcall(function() return obj:GetExtentsSize() end)
+    if not ok then return nil end
+    return ext
+end
+
 local function detectShroom(obj)
-    if not obj or not obj.Parent then return false end
-    if not (obj:IsA("BasePart") or obj:IsA("Model")) then return false end
+    if not obj or not obj.Parent then return false, nil end
+    if not (obj:IsA("BasePart") or obj:IsA("Model")) then return false, nil end
 
-    -- 1. Loại trừ theo tên của chính nó và tất cả cha (5 cấp)
-    local cur = obj
-    local depth = 0
-    while cur and cur ~= workspace and depth < 5 do
-        if nameHasAny(cur.Name, EXCLUDE_KW) then return false end
-        cur = cur.Parent
-        depth = depth + 1
+    local matched = nameIsShoomPile(obj.Name)
+    if not matched and obj.Parent then
+        matched = nameIsShoomPile(obj.Parent.Name)
     end
+    if not matched then return false, nil end
 
-    -- 2. BẮT BUỘC tên phải chứa từ khóa nấm
-    if not nameHasAny(obj.Name, SHROOM_KW) then return false end
+    local sz = getShroomSize(obj)
+    if not sz then return false, nil end
+    if sz.X < 8 or sz.Z < 8 or sz.Y < 3 then return false, nil end
 
-    -- 3. Kích thước phải đủ lớn (nấm collectible to)
-    local sz
-    if obj:IsA("BasePart") then
-        sz = obj.Size
+    local nameLower = obj.Name:lower()
+    local colorType = nil
+    if nameLower:find("silver", 1, true) then colorType = "blue"
+    elseif nameLower:find("gold", 1, true) then colorType = "gold"
     else
-        local ok, ext = pcall(function() return obj:GetExtentsSize() end)
-        if not ok then return false end
-        sz = ext
+        local col = getPartColor(obj)
+        colorType = getColorType(col) or "red"
     end
-    if sz.X < 8 or sz.Z < 8 or sz.Y < 3 then return false end
 
-    -- 4. Phải nằm trên bề mặt (Y > -100) — loại bỏ nấm/oxy dưới biển sâu
-    local pos
-    if obj:IsA("BasePart") then pos = obj.Position
-    else
-        local pp = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
-        if pp then pos = pp.Position end
-    end
-    if pos and pos.Y < -100 then return false end
-
-    return true
+    return true, colorType
 end
 
 local function findShrooms()
     local list = {}
+    local seen = {}
     for _, obj in ipairs(workspace:GetDescendants()) do
         if (obj:IsA("BasePart") or obj:IsA("Model")) and obj.Parent then
-            if detectShroom(obj) then
-                table.insert(list, obj)
+            local ok, ctype = detectShroom(obj)
+            if ok then
+                local rootObj = obj
+                if obj:IsA("BasePart") and obj.Parent and obj.Parent:IsA("Model")
+                   and nameIsShoomPile(obj.Parent.Name) then
+                    rootObj = obj.Parent
+                end
+                if not seen[rootObj] then
+                    seen[rootObj] = true
+                    table.insert(list, {obj = rootObj, colorType = ctype})
+                end
             end
         end
     end
@@ -498,20 +547,15 @@ end
 
 local function collectShroom(obj)
     if not obj or not obj.Parent then return end
-
-    -- Fire tất cả remote collect
     for _, r in ipairs(collectRemotes) do
         pcall(function() r:FireServer(obj) end)
     end
-
-    -- Fire touch với mọi BasePart bên trong
     local c = LP.Character
     local hrp = c and c:FindFirstChild("HumanoidRootPart")
     if hrp and firetouchinterest then
         if obj:IsA("BasePart") then
             pcall(function()
                 firetouchinterest(hrp, obj, 0)
-                task.wait()
                 firetouchinterest(hrp, obj, 1)
             end)
         elseif obj:IsA("Model") then
@@ -519,15 +563,12 @@ local function collectShroom(obj)
                 if p:IsA("BasePart") then
                     pcall(function()
                         firetouchinterest(hrp, p, 0)
-                        task.wait()
                         firetouchinterest(hrp, p, 1)
                     end)
                 end
             end
         end
     end
-
-    -- ProximityPrompt nếu có
     local prompt = obj:FindFirstChildOfClass("ProximityPrompt")
     if not prompt and obj:IsA("Model") then
         prompt = obj:FindFirstChildWhichIsA("ProximityPrompt", true)
@@ -537,53 +578,32 @@ local function collectShroom(obj)
     end
 end
 
--- Đọc quest "Search X shoom piles" từ PlayerGui
-local function readShroomQuest()
-    local bestCur, bestTotal = nil, nil
-    for _, gui in ipairs(LP.PlayerGui:GetDescendants()) do
-        if gui:IsA("TextLabel") or gui:IsA("TextButton") then
-            local txt = (gui.Text or ""):lower()
-            if txt:find("shoom", 1, true) or txt:find("shroom", 1, true)
-               or txt:find("mushroom", 1, true) or txt:find("pile", 1, true) then
-                local cur, total = txt:match("(%d+)%s*/%s*(%d+)")
-                if cur and total then
-                    cur, total = tonumber(cur), tonumber(total)
-                    if cur and total and cur >= 0 and total > 0 then
-                        bestCur, bestTotal = cur, total
-                        if cur < total then return cur, total end
-                    end
-                end
-            end
-        end
-    end
-    return bestCur, bestTotal
-end
-
 local questCount = 0
 local collected = setmetatable({}, {__mode = "k"})
 
-local function markCluster(mushroom)
-    if not mushroom or not mushroom.Parent then return end
-    local pos = getShroomPos(mushroom)
-    if not pos then return end
-    for _, obj in ipairs(workspace:GetDescendants()) do
-        if (obj:IsA("BasePart") or obj:IsA("Model")) and obj.Parent and detectShroom(obj) then
-            local p = getShroomPos(obj)
-            if p and (p - pos).Magnitude <= 80 then
-                collected[obj] = true
-            end
-        end
+local function safeTp(root, pos)
+    local c = LP.Character
+    local h = c and c:FindFirstChildOfClass("Humanoid")
+    if h then
+        h:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+        h:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+    end
+    root.AssemblyLinearVelocity = Vector3.zero
+    root.CFrame = CFrame.new(pos + Vector3.new(0, 2.5, 0))
+    task.wait(0.1)
+    if h then
+        h:ChangeState(Enum.HumanoidStateType.Running)
+        task.wait(0.03)
+        h:ChangeState(Enum.HumanoidStateType.Landed)
     end
 end
 
 local function pickNewArea(root)
-    -- TP tới khu vực khác cách xa 600-1000 studs, cùng độ cao 50
     local angle = math.random() * math.pi * 2
-    local dist = 600 + math.random() * 400
+    local dist = 700 + math.random() * 500
     local curPos = root.Position
     local newPos = Vector3.new(curPos.X + math.cos(angle) * dist, 50, curPos.Z + math.sin(angle) * dist)
-    root.CFrame = CFrame.new(newPos)
-    task.wait(0.5)
+    safeTp(root, newPos)
 end
 
 local function startAutoFarm()
@@ -591,93 +611,78 @@ local function startAutoFarm()
     questCount = 0
     collected = setmetatable({}, {__mode = "k"})
     farmThread = task.spawn(function()
-        local lastQuestCur, lastQuestTotal = nil, nil
         local emptyAreaCount = 0
+        local MAX_EMPTY = 5
 
         while S.autoFarmOn do
             local c = LP.Character
             local root = c and c:FindFirstChild("HumanoidRootPart")
-            if not root then task.wait(0.5); continue end
+            if not root then task.wait(1); continue end
 
-            -- Đọc quest
-            local qCur, qTotal = readShroomQuest()
-            if qCur and qTotal and qCur ~= lastQuestCur then
-                lastQuestCur, lastQuestTotal = qCur, qTotal
-                if qCur >= qTotal then
-                    pcall(function()
-                        Rayfield:Notify({Title = "🎉 " .. S.systemName,
-                            Content = "nhiệm vụ nấm HOÀN THÀNH ("..qCur.."/"..qTotal..")!",
-                            Duration = 6})
-                    end)
-                end
-            end
-
-            local shrooms = findShrooms()
+            local shroomList = findShrooms()
             local fresh = {}
-            for _, m in ipairs(shrooms) do
-                if not collected[m] then
-                    table.insert(fresh, m)
+            for _, item in ipairs(shroomList) do
+                if not collected[item.obj] then
+                    table.insert(fresh, item)
                 end
             end
 
             if #fresh == 0 then
                 emptyAreaCount = emptyAreaCount + 1
-                if emptyAreaCount >= 3 then
+                if emptyAreaCount >= MAX_EMPTY then
                     emptyAreaCount = 0
                     pcall(function()
                         Rayfield:Notify({Title = "🍄 " .. S.systemName,
-                            Content = "đã nhặt hết nấm khu vực này — chuyển khu khác...",
+                            Content = "hết shoom piles khu này — chuyển khu...",
                             Duration = 4})
                     end)
-                    pickNewArea(root)
+                    if root then pickNewArea(root) end
                     collected = setmetatable({}, {__mode = "k"})
                     questCount = 0
                 end
-                task.wait(1)
+                task.wait(2)
                 continue
             end
 
             emptyAreaCount = 0
             local myPos = root.Position
-            local best, bestD = nil, math.huge
-            for _, m in ipairs(fresh) do
-                local p = getShroomPos(m)
+            local bestItem, bestD = nil, math.huge
+            for _, item in ipairs(fresh) do
+                local p = getShroomPos(item.obj)
                 if p then
                     local d = (p - myPos).Magnitude
-                    if d < bestD then best, bestD = m, d end
+                    if d < bestD then bestItem, bestD = item, d end
                 end
             end
 
-            if best then
-                local pos = getShroomPos(best)
-                if pos then
-                    root.CFrame = CFrame.new(pos + Vector3.new(0, 3, 0))
+            if bestItem then
+                local pos = getShroomPos(bestItem.obj)
+                if pos and pos.Y > -50 then
+                    safeTp(root, pos)
                     task.wait(0.15)
-                    collectShroom(best)
-                    task.wait(0.2)
-                    markCluster(best)
+                    collectShroom(bestItem.obj)
+                    task.wait(0.15)
+                    collected[bestItem.obj] = true
                     questCount = questCount + 1
 
-                    -- Check quest mới
-                    local newCur = select(1, readShroomQuest())
-                    if newCur and lastQuestTotal and newCur >= lastQuestTotal then
-                        pcall(function()
-                            Rayfield:Notify({Title = "✅ " .. S.systemName,
-                                Content = "hoàn thành nhiệm vụ nấm khu này!",
-                                Duration = 5})
-                        end)
-                        lastQuestCur = newCur
-                        questCount = 0
-                        pickNewArea(root)
-                        collected = setmetatable({}, {__mode = "k"})
-                    elseif questCount >= 3 then
+                    local label = bestItem.colorType or "red"
+                    local emoji = label == "blue" and "🔵" or (label == "gold" and "🟡" or "🔴")
+                    pcall(function()
+                        Rayfield:Notify({Title = "🍄 " .. S.systemName,
+                            Content = emoji .. " shoom " .. label:upper() .. " ("..questCount.."/3)",
+                            Duration = 1.5})
+                    end)
+
+                    if questCount >= 3 then
                         questCount = 0
                         pickNewArea(root)
                         collected = setmetatable({}, {__mode = "k"})
                     end
+                else
+                    collected[bestItem.obj] = true
                 end
             else
-                task.wait(0.3)
+                task.wait(0.5)
             end
         end
     end)
@@ -691,7 +696,7 @@ local function stopAutoFarm()
 end
 
 -- ============================================================
---  ANTI-DEATH (TP xa map, tránh khu spam)
+--  ANTI-DEATH
 -- ============================================================
 local antiDeathThread = nil
 
@@ -735,7 +740,7 @@ local function startAntiDeath()
                     safeReturn = hrp.Position
                     h.PlatformStand = true
                     hrp.CFrame = CFrame.new(findSafeSpot())
-                    hrp.Velocity = Vector3.zero
+                    hrp.AssemblyLinearVelocity = Vector3.zero
                     sentAway = true
                     pcall(function()
                         Rayfield:Notify({Title = "💀 " .. S.systemName,
@@ -758,7 +763,7 @@ local function startAntiDeath()
 
                     if nearEnemy and hpPct < 95 then
                         hrp.CFrame = CFrame.new(findSafeSpot())
-                        hrp.Velocity = Vector3.zero
+                        hrp.AssemblyLinearVelocity = Vector3.zero
                     end
 
                     if hpPct >= math.min(threshold + 30, 95) and not nearEnemy then
@@ -840,85 +845,251 @@ RunService.RenderStepped:Connect(function()
 end)
 
 -- ============================================================
---  FREECAM — 1 NGÓN: NGANG = XOAY, DỌC = ZOOM
+--  FREECAM (ScriptBlox)
 -- ============================================================
 local freecamActive = false
-local freecamYaw, freecamPitch = 0, 0
-local freecamZoom = 30
-local freecamCenter = nil
-local freecamLastPan = nil
+local freecamConnections = {}
 
 local function startFreecam()
     if freecamActive then return end
     freecamActive = true
+
     local cam = workspace.CurrentCamera
-    local c = LP.Character
-    local hrp = c and c:FindFirstChild("HumanoidRootPart")
-    freecamCenter = hrp and hrp.Position or Vector3.zero
-    local cf = cam.CFrame
-    freecamYaw = math.atan2(-cf.LookVector.X, -cf.LookVector.Z)
-    freecamPitch = math.asin(math.clamp(cf.LookVector.Y, -1, 1))
-    freecamZoom = 30
-    freecamLastPan = nil
-    cam.CameraSubject = nil
+    local onMobile = not UIS.KeyboardEnabled
+    local keysDown = {}
+    local rotating = false
+    local touchPos = nil
+
     cam.CameraType = Enum.CameraType.Scriptable
+
+    local speed = 5 / 10
+    local sens = 0.3
+    if onMobile then sens = sens * 2 end
+
+    table.insert(freecamConnections, RunService.RenderStepped:Connect(function()
+        if rotating then
+            local delta = UIS:GetMouseDelta()
+            local cf = cam.CFrame
+            local yAngle = cf:ToEulerAngles(Enum.RotationOrder.YZX)
+            local newAmount = math.deg(yAngle) + delta.Y
+            if newAmount > 65 or newAmount < -65 then
+                if not (yAngle < 0 and delta.Y < 0) and not (yAngle > 0 and delta.Y > 0) then
+                    delta = Vector2.new(delta.X, 0)
+                end
+            end
+            cf *= CFrame.Angles(-math.rad(delta.Y), 0, 0)
+            cf = CFrame.Angles(0, -math.rad(delta.X), 0) * (cf - cf.Position) + cf.Position
+            cf = CFrame.lookAt(cf.Position, cf.Position + cf.LookVector)
+            if delta ~= Vector2.new(0, 0) then cam.CFrame = cam.CFrame:Lerp(cf, sens) end
+            UIS.MouseBehavior = Enum.MouseBehavior.LockCurrentPosition
+        else
+            UIS.MouseBehavior = Enum.MouseBehavior.Default
+        end
+
+        if keysDown["Enum.KeyCode.W"] then cam.CFrame *= CFrame.new(0, 0, -speed) end
+        if keysDown["Enum.KeyCode.A"] then cam.CFrame *= CFrame.new(-speed, 0, 0) end
+        if keysDown["Enum.KeyCode.S"] then cam.CFrame *= CFrame.new(0, 0, speed) end
+        if keysDown["Enum.KeyCode.D"] then cam.CFrame *= CFrame.new(speed, 0, 0) end
+        if keysDown["Enum.KeyCode.Space"] then cam.CFrame *= CFrame.new(0, speed, 0) end
+        if keysDown["Enum.KeyCode.LeftShift"] then cam.CFrame *= CFrame.new(0, -speed, 0) end
+    end))
+
+    local validKeys = {"Enum.KeyCode.W","Enum.KeyCode.A","Enum.KeyCode.S","Enum.KeyCode.D","Enum.KeyCode.Space","Enum.KeyCode.LeftShift"}
+
+    table.insert(freecamConnections, UIS.InputBegan:Connect(function(Input)
+        for _, key in pairs(validKeys) do
+            if key == tostring(Input.KeyCode) then keysDown[key] = true end
+        end
+        if Input.UserInputType == Enum.UserInputType.MouseButton2
+           or (Input.UserInputType == Enum.UserInputType.Touch
+               and UIS:GetMouseLocation().X > cam.ViewportSize.X / 2) then
+            rotating = true
+        end
+        if Input.UserInputType == Enum.UserInputType.Touch then
+            if Input.Position.X < cam.ViewportSize.X / 2 then
+                touchPos = Input.Position
+            end
+        end
+    end))
+
+    table.insert(freecamConnections, UIS.InputEnded:Connect(function(Input)
+        for key in pairs(keysDown) do
+            if key == tostring(Input.KeyCode) then keysDown[key] = false end
+        end
+        if Input.UserInputType == Enum.UserInputType.MouseButton2
+           or (Input.UserInputType == Enum.UserInputType.Touch
+               and UIS:GetMouseLocation().X > cam.ViewportSize.X / 2) then
+            rotating = false
+        end
+        if Input.UserInputType == Enum.UserInputType.Touch and touchPos then
+            if Input.Position.X < cam.ViewportSize.X / 2 then
+                touchPos = nil
+                keysDown["Enum.KeyCode.W"] = false
+                keysDown["Enum.KeyCode.A"] = false
+                keysDown["Enum.KeyCode.S"] = false
+                keysDown["Enum.KeyCode.D"] = false
+            end
+        end
+    end))
+
+    table.insert(freecamConnections, UIS.TouchMoved:Connect(function(input)
+        if touchPos then
+            if input.Position.X < cam.ViewportSize.X / 2 then
+                if input.Position.Y < touchPos.Y then
+                    keysDown["Enum.KeyCode.W"] = true
+                    keysDown["Enum.KeyCode.S"] = false
+                else
+                    keysDown["Enum.KeyCode.W"] = false
+                    keysDown["Enum.KeyCode.S"] = true
+                end
+                if input.Position.X < (touchPos.X - 15) then
+                    keysDown["Enum.KeyCode.A"] = true
+                    keysDown["Enum.KeyCode.D"] = false
+                elseif input.Position.X > (touchPos.X + 15) then
+                    keysDown["Enum.KeyCode.A"] = false
+                    keysDown["Enum.KeyCode.D"] = true
+                else
+                    keysDown["Enum.KeyCode.A"] = false
+                    keysDown["Enum.KeyCode.D"] = false
+                end
+            end
+        end
+    end))
 end
 
 local function stopFreecam()
     if not freecamActive then return end
     freecamActive = false
+    for _, c in ipairs(freecamConnections) do
+        pcall(function() c:Disconnect() end)
+    end
+    freecamConnections = {}
     local cam = workspace.CurrentCamera
     cam.CameraType = Enum.CameraType.Custom
     local c = LP.Character
     local h = c and c:FindFirstChildOfClass("Humanoid")
     if h then cam.CameraSubject = h end
+    UIS.MouseBehavior = Enum.MouseBehavior.Default
 end
 
-UIS.TouchPan:Connect(function(touchPositions, totalTranslation, velocity, state)
-    if not freecamActive then return end
-    if state == Enum.UserInputState.Begin then
-        freecamLastPan = totalTranslation
-        return
-    end
-    if state == Enum.UserInputState.End or state == Enum.UserInputState.Cancel then
-        freecamLastPan = nil
-        return
-    end
-    if not freecamLastPan then
-        freecamLastPan = totalTranslation
-        return
-    end
-    local delta = totalTranslation - freecamLastPan
-    freecamLastPan = totalTranslation
-    freecamYaw = freecamYaw - math.rad(delta.X * 0.25)
-    freecamZoom = math.clamp(freecamZoom + delta.Y * 1.5, 5, 300)
-end)
+-- ============================================================
+--  SIÊU GIẢM LAG + CHỐNG RUNG MÀN HÌNH
+-- ============================================================
+local optimizeLoopThread = nil
+local antiLagLoopThread = nil
+local shakeConnection = nil
 
-UIS.InputChanged:Connect(function(input)
-    if not freecamActive then return end
-    if input.UserInputType == Enum.UserInputType.MouseMovement then
-        if UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
-            local d = input.Delta
-            freecamYaw = freecamYaw - math.rad(d.X * 0.35)
-            freecamPitch = math.clamp(freecamPitch - math.rad(d.Y * 0.35), -math.rad(85), math.rad(85))
+local function applyOptimize()
+    pcall(function()
+        Lighting.GlobalShadows = false
+        Lighting.FogEnd = 9e9
+        Lighting.Brightness = 1
+        Lighting.EnvironmentDiffuseScale = 0
+        Lighting.EnvironmentSpecularScale = 0
+        Lighting.Outlines = false
+        pcall(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Level01 end)
+        for _, v in ipairs(workspace:GetDescendants()) do
+            if v:IsA("ParticleEmitter") or v:IsA("Trail")
+               or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles")
+               or v:IsA("Beam") then
+                v.Enabled = false
+            elseif v:IsA("Decal") or v:IsA("Texture") then
+                v.Transparency = 1
+            elseif v:IsA("BasePart") and v.Material ~= Enum.Material.SmoothPlastic then
+                v.Material = Enum.Material.SmoothPlastic
+            end
         end
-    elseif input.UserInputType == Enum.UserInputType.MouseWheel then
-        freecamZoom = math.clamp(freecamZoom - input.Position.Z * 3, 5, 300)
-    end
-end)
+    end)
+end
 
-RunService.RenderStepped:Connect(function()
-    if not freecamActive then return end
+-- Chống rung màn hình — kill CameraShake, Eathquake, Blur, Bloom, SunRays, DOF
+local function applyAntiLag()
+    pcall(function()
+        -- Tắt mọi hiệu ứng làm rung/đổi màn hình
+        for _, effect in ipairs(Lighting:GetChildren()) do
+            if effect:IsA("BlurEffect")
+               or effect:IsA("BloomEffect")
+               or effect:IsA("ColorCorrectionEffect")
+               or effect:IsA("DepthOfFieldEffect")
+               or effect:IsA("SunRaysEffect")
+               or effect:IsA("Atmosphere") then
+                effect.Enabled = false
+            end
+        end
+
+        -- Giữ giờ cố định để tránh hiệu ứng ngày/đêm gây lag
+        Lighting.ClockTime = 14
+        Lighting.FogEnd = 100000
+        Lighting.GlobalShadows = false
+
+        -- Xóa Decal / Texture toàn map
+        for _, v in ipairs(workspace:GetDescendants()) do
+            if v:IsA("Decal") or v:IsA("Texture") then
+                v.Transparency = 1
+            elseif v:IsA("ParticleEmitter") or v:IsA("Trail")
+                or v:IsA("Smoke") or v:IsA("Fire")
+                or v:IsA("Sparkles") or v:IsA("Beam") then
+                v.Enabled = false
+            elseif v:IsA("BasePart") then
+                v.CastShadow = false
+                v.Material = Enum.Material.SmoothPlastic
+            end
+        end
+
+        -- Xóa hết terrain decoration
+        pcall(function()
+            workspace.Terrain.Decoration = false
+            workspace.Terrain.WaterWaveSize = 0
+            workspace.Terrain.WaterWaveSpeed = 0
+            workspace.Terrain.WaterReflectance = 0
+            workspace.Terrain.WaterTransparency = 1
+        end)
+
+        -- Giảm chất lượng render
+        pcall(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Level01 end)
+        pcall(function() settings().Rendering.MeshPartDetailLevel = Enum.MeshPartDetailLevel.Level01 end)
+    end)
+end
+
+-- Chống rung camera vĩnh viễn
+local function killCameraShake()
+    if shakeConnection then shakeConnection:Disconnect() end
     local cam = workspace.CurrentCamera
-    local c = LP.Character
-    local hrp = c and c:FindFirstChild("HumanoidRootPart")
-    if hrp then freecamCenter = hrp.Position end
-    if not freecamCenter then return end
-    local rotation = CFrame.Angles(0, freecamYaw, 0) * CFrame.Angles(freecamPitch, 0, 0)
-    cam.CFrame = CFrame.new(freecamCenter) * rotation * CFrame.new(0, 0, freecamZoom)
-end)
+    shakeConnection = RunService.RenderStepped:Connect(function()
+        pcall(function()
+            cam.CFrame = cam.CFrame * CFrame.new(0, 0, 0)
+            cam.FieldOfView = 70
+            cam.CameraSubject = cam.CameraSubject
+        end)
+    end)
+end
 
--- TRADE
+local function startOptimizeLoop()
+    if optimizeLoopThread then return end
+    optimizeLoopThread = task.spawn(function()
+        while S.optimizeOn do
+            pcall(applyOptimize)
+            task.wait(2)
+        end
+        optimizeLoopThread = nil
+    end)
+end
+
+local function startAntiLagLoop()
+    if antiLagLoopThread then return end
+    antiLagLoopThread = task.spawn(function()
+        while S.antiLagOn do
+            pcall(applyAntiLag)
+            pcall(killCameraShake)
+            task.wait(1.5)
+        end
+        antiLagLoopThread = nil
+    end)
+end
+
+-- ============================================================
+--  TRADE
+-- ============================================================
 local TRADE_FILE = "WonGaVn_Trades.json"
 local function saveTrades()
     if not writefile then return end
@@ -952,18 +1123,138 @@ local function setupTradeHooks()
     end
 end
 
--- ANTIBAN
+-- ============================================================
+--  ANTIBAN (CŨ + NÂNG CAO 85%)
+-- ============================================================
 local BLOCK = {report=true,ban=true,kick=true,vote=true,cheat=true,anticheat=true,detect=true,flag=true,suspicious=true,scan=true,check=true}
+
 local function isBlocked(a)
     if type(a) ~= "string" then return false end
     local s = a:lower()
     for k in pairs(BLOCK) do if s:find(k) then return true end end
     return false
 end
+
+-- checkRankAll (thêm mới)
+local function checkRankAll()
+    for _, v in ipairs(Players:GetChildren()) do
+        if v ~= LP and v:IsInGroup(game.CreatorId) then
+            local ok1, rank = pcall(function() return v:GetRoleInGroup(game.CreatorId) end)
+            local ok2, rankNum = pcall(function() return v:GetRankInGroup(game.CreatorId) end)
+            if ok1 and _G.WGAntibanSettings.checkRole and rank then
+                if table.find(_G.WGAntibanSettings.checkRoles, rank) then
+                    pcall(function()
+                        Rayfield:Notify({Title = "🛡️ ANTIBAN 85%",
+                            Content = "⚠️ phát hiện staff: " .. v.Name .. " | " .. rank, Duration = 5})
+                    end)
+                    task.wait(0.5)
+                    pcall(function()
+                        LP:Kick(v.Name .. " is in the game | Rank: " .. rank .. " | Anti-Ban Check-Roles")
+                    end)
+                    return
+                end
+            end
+            if ok2 and rankNum and _G.WGAntibanSettings.minRank and rankNum >= _G.WGAntibanSettings.minRank then
+                pcall(function()
+                    Rayfield:Notify({Title = "🛡️ ANTIBAN 85%",
+                        Content = "⚠️ staff cấp cao: " .. v.Name .. " | Rank: " .. tostring(rankNum), Duration = 5})
+                end)
+                task.wait(0.5)
+                pcall(function()
+                    LP:Kick(v.Name .. " is in the game | Rank: " .. tostring(rankNum) .. " | Anti-Ban Rank")
+                end)
+                return
+            end
+        end
+    end
+end
+
+-- hookPlayerAddedAntiban (thêm mới)
+local function hookPlayerAddedAntiban()
+    Players.PlayerAdded:Connect(function(player)
+        task.wait(1)
+        if player:IsInGroup(game.CreatorId) then
+            local ok1, rank = pcall(function() return player:GetRoleInGroup(game.CreatorId) end)
+            local ok2, rankNum = pcall(function() return player:GetRankInGroup(game.CreatorId) end)
+            if ok1 and _G.WGAntibanSettings.checkRole and rank then
+                if table.find(_G.WGAntibanSettings.checkRoles, rank) then
+                    pcall(function()
+                        Rayfield:Notify({Title = "🛡️ ANTIBAN 85%",
+                            Content = "⚠️ staff " .. player.Name .. " vừa vào (" .. rank .. ")", Duration = 5})
+                    end)
+                    task.wait(0.5)
+                    pcall(function()
+                        LP:Kick(player.Name .. " joined | Rank: " .. rank .. " | Anti-Ban Check-Roles")
+                    end)
+                    return
+                end
+            end
+            if ok2 and rankNum and _G.WGAntibanSettings.minRank and rankNum >= _G.WGAntibanSettings.minRank then
+                pcall(function()
+                    Rayfield:Notify({Title = "🛡️ ANTIBAN 85%",
+                        Content = "⚠️ staff cấp cao " .. player.Name .. " vừa vào", Duration = 5})
+                end)
+                task.wait(0.5)
+                pcall(function()
+                    LP:Kick(player.Name .. " joined | Rank: " .. tostring(rankNum) .. " | Anti-Ban Rank")
+                end)
+            end
+        end
+    end)
+end
+
+-- startBansbyProtection (thêm mới)
+local function startBansbyProtection()
+    task.spawn(function()
+        local respawntime = 90
+        local protect = _G.WGAntibanSettings.protectPlayer
+        if not protect or #protect < 1 then return end
+
+        while _G.WGVersion == MY_VERSION do
+            if S.antibanOn ~= false then
+                local found = Players:FindFirstChild(protect)
+                if not found then
+                    local m = Instance.new("Message")
+                    m.Parent = workspace
+                    m.Text = protect .. " is banned, the server will be removed..."
+                    task.wait(3)
+                    m.Text = "Unban " .. protect .. " or remove your script!"
+                    task.wait(3)
+                    local cancelled = false
+                    for i = respawntime, 0, -1 do
+                        if Players:FindFirstChild(protect) then
+                            cancelled = true
+                            break
+                        end
+                        if _G.WGVersion ~= MY_VERSION then
+                            cancelled = true
+                            break
+                        end
+                        m.Text = protect .. " không quay lại trong [" .. i .. "] server sẽ sập!"
+                        task.wait(1)
+                    end
+                    if cancelled then
+                        m:Destroy()
+                    else
+                        for _, p in ipairs(Players:GetChildren()) do
+                            if p ~= LP then
+                                pcall(function() p:Kick("Server protected by WonGaVn ANTIBAN") end)
+                            end
+                        end
+                    end
+                end
+            end
+            task.wait(3)
+        end
+    end)
+end
+
 local antibanDone = false
 local function enableAntiban()
     if antibanDone then return end
     antibanDone = true
+
+    -- ANTIBAN CŨ (giữ nguyên)
     local mt = getrawmetatable and getrawmetatable(game)
     if mt and newcclosure and setreadonly then
         setreadonly(mt, false)
@@ -982,6 +1273,18 @@ local function enableAntiban()
         setreadonly(mt, true)
     end
     warn = function() end
+
+    -- ANTIBAN NÂNG CAO 85% (thêm mới)
+    task.spawn(function()
+        while _G.WGVersion == MY_VERSION do
+            if S.antibanOn ~= false then
+                pcall(checkRankAll)
+            end
+            task.wait(5)
+        end
+    end)
+    pcall(hookPlayerAddedAntiban)
+    pcall(startBansbyProtection)
 end
 
 -- LOOPS
@@ -1152,8 +1455,8 @@ local mushroomESP = {}
 local function makeESP(part)
     local hl = Instance.new("Highlight")
     hl.Name = "WG_ESP_HL"; hl.FillTransparency = 1
-    hl.OutlineColor = Color3.fromRGB(255, 255, 255)
-    hl.OutlineTransparency = 0.35
+    hl.OutlineColor = Color3.fromRGB(255, 200, 60)
+    hl.OutlineTransparency = 0.2
     hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
     hl.Adornee = part; hl.Parent = part
     return hl
@@ -1222,16 +1525,19 @@ local function applyMushroomESP()
     local count = 0; local current = {}
     for _, obj in ipairs(workspace:GetDescendants()) do
         if count >= MAXC then break end
-        if (obj:IsA("BasePart") or obj:IsA("Model")) and obj.Parent and detectShroom(obj) then
-            local p = getShroomPos(obj)
-            if p then
-                local d2 = (p - myPos).Magnitude
-                if d2 * d2 <= MAXD then
-                    count = count + 1
-                    local target = obj:IsA("BasePart") and obj or (obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart"))
-                    if target then
-                        current[target] = true
-                        if not mushroomESP[target] then mushroomESP[target] = makeESP(target) end
+        if (obj:IsA("BasePart") or obj:IsA("Model")) and obj.Parent then
+            local ok = detectShroom(obj)
+            if ok then
+                local p = getShroomPos(obj)
+                if p then
+                    local d2 = (p - myPos).Magnitude
+                    if d2 * d2 <= MAXD then
+                        count = count + 1
+                        local target = obj:IsA("BasePart") and obj or (obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart"))
+                        if target then
+                            current[target] = true
+                            if not mushroomESP[target] then mushroomESP[target] = makeESP(target) end
+                        end
                     end
                 end
             end
@@ -1403,11 +1709,94 @@ buildMenu = function()
     local TabMisc = Window:CreateTab(T("tab_misc"), nil)
     local TabUtil = Window:CreateTab(T("tab_util"), nil)
 
-    -- ANTIBAN
+    -- ANTIBAN (cũ + mới)
     TabAB:CreateSection("antiban")
-    TabAB:CreateToggle({Name = T("ab_toggle"), CurrentValue = true, Flag = "Antiban",
-        Callback = function(v) if v then enableAntiban(); sysNotify("on") else sysNotify("off") end end})
+    TabAB:CreateToggle({Name = T("ab_toggle"), CurrentValue = S.antibanOn ~= false, Flag = "Antiban",
+        Callback = function(v)
+            S.antibanOn = v
+            if v then enableAntiban(); sysNotify("on") else sysNotify("off") end
+            saveFullConfig()
+        end})
     TabAB:CreateLabel(T("ab_warn"))
+    TabAB:CreateLabel(T("ab_warn2"))
+
+    TabAB:CreateSection("👮 chống staff trong game")
+    TabAB:CreateToggle({
+        Name = "🔍 bật check role staff",
+        CurrentValue = _G.WGAntibanSettings.checkRole,
+        Flag = "AntibanCheckRole",
+        Callback = function(v) _G.WGAntibanSettings.checkRole = v end
+    })
+    TabAB:CreateInput({
+        Name = "📝 danh sách role cần kick",
+        CurrentValue = table.concat(_G.WGAntibanSettings.checkRoles, ", "),
+        PlaceholderText = "Owner, Admin, Moderator",
+        RemoveTextAfterFocusLost = false,
+        Flag = "AntibanRolesInput",
+        Callback = function(t)
+            if t and #t > 0 then
+                local roles = {}
+                for role in t:gmatch("[^,]+") do
+                    local trimmed = role:match("^%s*(.-)%s*$")
+                    if #trimmed > 0 then table.insert(roles, trimmed) end
+                end
+                if #roles > 0 then
+                    _G.WGAntibanSettings.checkRoles = roles
+                    Rayfield:Notify({Title = "🛡️", Content = "đã lưu " .. #roles .. " role", Duration = 2})
+                end
+            end
+        end
+    })
+    TabAB:CreateInput({
+        Name = "🔢 rank tối thiểu để kick (0-255)",
+        CurrentValue = tostring(_G.WGAntibanSettings.minRank),
+        PlaceholderText = "200",
+        RemoveTextAfterFocusLost = false,
+        Flag = "AntibanMinRank",
+        Callback = function(t)
+            local n = tonumber(t)
+            if n and n >= 0 and n <= 255 then
+                _G.WGAntibanSettings.minRank = n
+                Rayfield:Notify({Title = "🛡️", Content = "rank tối thiểu: " .. n, Duration = 2})
+            end
+        end
+    })
+
+    TabAB:CreateSection("🛡️ bảo vệ player (Bansby)")
+    TabAB:CreateInput({
+        Name = "👤 tên player cần bảo vệ",
+        CurrentValue = _G.WGAntibanSettings.protectPlayer,
+        PlaceholderText = "NikePro2004",
+        RemoveTextAfterFocusLost = false,
+        Flag = "AntibanProtectName",
+        Callback = function(t)
+            if t and #t > 0 then
+                _G.WGAntibanSettings.protectPlayer = t
+                Rayfield:Notify({Title = "🛡️", Content = "đang bảo vệ: " .. t, Duration = 3})
+            end
+        end
+    })
+    TabAB:CreateLabel("💡 nếu player này rời server → kick toàn bộ player khác")
+
+    TabAB:CreateSection("⚡ thủ công")
+    TabAB:CreateButton({
+        Name = "🔍 quét staff ngay",
+        Callback = function()
+            pcall(checkRankAll)
+            Rayfield:Notify({Title = "🛡️", Content = "đã quét xong", Duration = 2})
+        end
+    })
+    TabAB:CreateButton({
+        Name = "🚨 kick toàn bộ server",
+        Callback = function()
+            for _, p in ipairs(Players:GetChildren()) do
+                if p ~= LP then
+                    pcall(function() p:Kick("WonGaVn ANTIBAN trigger") end)
+                end
+            end
+            Rayfield:Notify({Title = "🛡️", Content = "đã kick toàn bộ server", Duration = 3})
+        end
+    })
 
     -- COMBAT
     TabCombat:CreateSection("hitbox")
@@ -1482,8 +1871,8 @@ buildMenu = function()
         end})
     TabESP:CreateLabel(T("esp_coming"))
 
-    -- AUTO FARM NẤM
-    TabFarm:CreateSection("🍄 auto farm nấm")
+    -- AUTO FARM
+    TabFarm:CreateSection("🍄 auto farm shoom pile")
     TabFarm:CreateToggle({
         Name = T("farm_toggle"),
         CurrentValue = S.autoFarmOn,
@@ -1495,9 +1884,9 @@ buildMenu = function()
             saveFullConfig()
         end
     })
-    TabFarm:CreateLabel("💡 chỉ nhặt nấm màu ĐỎ / XANH / VÀNG")
-    TabFarm:CreateLabel("💡 bỏ qua oxy, rong biển và nấm trang trí")
-    TabFarm:CreateLabel("💡 đọc nhiệm vụ 'Search X shoom piles' — đủ sẽ báo + chuyển khu")
+    TabFarm:CreateLabel("🔴 Red Shoom Pile   → 5-13 shooms")
+    TabFarm:CreateLabel("🔵 Silver Shoom Pile → 10-30 shooms + token")
+    TabFarm:CreateLabel("🟡 Gold Shoom Pile   → nhiều shooms + material")
 
     -- MISC
     TabMisc:CreateSection("⚡ " .. T("sys_name"))
@@ -1580,13 +1969,23 @@ buildMenu = function()
         Suffix = "", CurrentValue = S.flySpeed, Flag = "FlySpeedMisc",
         Callback = function(v) S.flySpeed = v; saveFullConfig() end})
 
-    TabMisc:CreateSection("⚡ " .. T("optimize"))
+    TabMisc:CreateSection("⚡ optimize & chống lag")
     TabMisc:CreateToggle({Name = T("optimize"), CurrentValue = S.optimizeOn, Flag = "Optimize",
         Callback = function(v)
             S.optimizeOn = v
-            if v then pcall(function() Lighting.GlobalShadows = false; Lighting.FogEnd = 100000 end) end
-            sysNotify(v and "optimize_on" or "optimize_off")
+            if v then startOptimizeLoop(); sysNotify("optimize_on")
+            else sysNotify("optimize_off") end
         end})
+    TabMisc:CreateToggle({Name = T("antilag_toggle"), CurrentValue = S.antiLagOn, Flag = "AntiLag",
+        Callback = function(v)
+            S.antiLagOn = v
+            if v then startAntiLagLoop(); sysNotify("antilag_on")
+            else
+                sysNotify("antilag_off")
+                if shakeConnection then shakeConnection:Disconnect(); shakeConnection = nil end
+            end
+        end})
+    TabMisc:CreateLabel(T("antilag_hint"))
 
     TabMisc:CreateSection("🎨 giao diện")
     TabMisc:CreateToggle({Name = T("effects_toggle"), CurrentValue = S.effects ~= false, Flag = "Effects",
@@ -1638,7 +2037,7 @@ buildMenu = function()
     TabMisc:CreateLabel(T("tiktok_update"))
     TabMisc:CreateLabel(T("credit"))
 
-    -- PHONG ẤN / UTILITY
+    -- PHONG ẤN
     if not S.utilityUnlocked then
         TabUtil:CreateSection("🔒 " .. T("seal_locked"))
         TabUtil:CreateLabel(T("seal_hint"))
@@ -1673,7 +2072,7 @@ buildMenu = function()
         TabUtil:CreateToggle({Name = T("util_join"), CurrentValue = S.playerJoinAlert, Flag = "PlayerJoin",
             Callback = function(v) S.playerJoinAlert = v; saveFullConfig() end})
 
-        TabUtil:CreateSection("🎥 freecam")
+        TabUtil:CreateSection("🎥 freecam (ScriptBlox)")
         TabUtil:CreateToggle({Name = T("freecam_toggle"), CurrentValue = false, Flag = "FreecamToggle",
             Callback = function(v)
                 if v then startFreecam(); sysNotify("freecam_on")
