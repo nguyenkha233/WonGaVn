@@ -100,7 +100,8 @@ _G.WGState = _G.WGState or {
 local S = _G.WGState
 
 _G.WGAntibanSettings = _G.WGAntibanSettings or {
-    protectPlayer = "NikePro2004",
+    protectPlayer = "wongavnx",
+    bansbyOn = false,
 }
 
 local CONFIG_FILE = "WonGaVn_Config.json"
@@ -119,6 +120,7 @@ local function saveFullConfig()
             bypassMode=S.bypassMode, playerJoinAlert=S.playerJoinAlert, dragMenu=S.dragMenu,
             antiDeathThreshold=S.antiDeathThreshold,
             antibanOn=S.antibanOn,
+            bansbyOn=_G.WGAntibanSettings.bansbyOn,
         }))
     end)
 end
@@ -128,6 +130,9 @@ local function loadFullConfig()
         if isfile(CONFIG_FILE) then
             local d = HttpService:JSONDecode(readfile(CONFIG_FILE))
             for k, v in pairs(d) do S[k] = v end
+            if d.bansbyOn ~= nil then
+                _G.WGAntibanSettings.bansbyOn = d.bansbyOn
+            end
         end
     end)
 end
@@ -169,8 +174,8 @@ local TXT = {
         tab_ab="🛡️ antiban", tab_combat="⚔️ combat", tab_esp="👁️ esp",
         tab_farm="🍄 auto farm", tab_misc="⚙️ misc", tab_util="🔒 phong ấn",
         ab_toggle="bật antiban", ab_warn_pro="🛡️ antiban 85% — bot có thể quét nhưng rất khó.",
-        combat_warn="⚠️ game combat khuyên nên bật mức thấp lên nữa rất lag",
-        speed_warn="⚠️ nên chọn 500-1000. là khu vực lên nữa sẽ lag.",
+        combat_warn="⚠️ game combat — khuyên anh em nên dùng mức thấp lên",
+        speed_warn="⚠️ nên chọn 500-1000. là khu vực lên lữa sẽ lag",
         hitbox="bật hitbox", hitbox_size="kích thước hitbox",
         aoe="bật aoe", aoe_range="bán kính aoe",
         esp_p="esp player", esp_m="esp shoom",
@@ -378,7 +383,7 @@ local PERSONALITIES = {
         unlock="bẻ khóa thành công.", powerRelease="giải mã sức mạnh...",
         hitbox_on="patch hitbox.", hitbox_off="revert.", aoe_on="enable aoe.", aoe_off="disable aoe.",
         esp_p_on="sniffing player.", esp_p_off="ngừng sniff.", esp_m_on="scan shoom xong.", esp_m_off="ngừng scan.",
-        fly_on="vượt firewall.", fly_off="land.", noclip_on="xuyền mọi layer.", noclip_off="collision lại.",
+        fly_on="vượt firewall.", fly_off="land.", noclip_on="xuyên mọi layer.", noclip_off="collision lại.",
         afk_on="bypass idle.", afk_off="ngừng.", antivoid_on="firewall bật.", antivoid_off="tắt firewall.",
         optimize_on="đã tối ưu.", optimize_off="revert.", antilag_on="boost FPS.", antilag_off="reset.",
         join_on="log player join.", join_off="ngừng log.",
@@ -1024,7 +1029,7 @@ local function stopFreecam()
 end
 
 -- ============================================================
---  OPTIMIZE + ANTI-LAG + CHỐNG RUNG MÀN HÌNH
+--  OPTIMIZE + ANTI-LAG + CHỐNG RUNG
 -- ============================================================
 local optimizeLoopThread = nil
 local antiLagLoopThread = nil
@@ -1099,9 +1104,7 @@ local function killCameraShake()
     if shakeConnection then shakeConnection:Disconnect() end
     local cam = workspace.CurrentCamera
     shakeConnection = RunService.RenderStepped:Connect(function()
-        pcall(function()
-            cam.FieldOfView = 70
-        end)
+        pcall(function() cam.FieldOfView = 70 end)
     end)
 end
 
@@ -1165,7 +1168,7 @@ local function setupTradeHooks()
 end
 
 -- ============================================================
---  ANTIBAN (cũ + Bansby)
+--  ANTIBAN + BANSBY (có toggle)
 -- ============================================================
 local BLOCK = {report=true,ban=true,kick=true,vote=true,cheat=true,anticheat=true,detect=true,flag=true,suspicious=true,scan=true,check=true}
 
@@ -1179,38 +1182,38 @@ end
 local function startBansbyProtection()
     task.spawn(function()
         local respawntime = 90
-        local protect = _G.WGAntibanSettings.protectPlayer
-        if not protect or #protect < 1 then return end
-
         while _G.WGVersion == MY_VERSION do
-            if S.antibanOn ~= false then
-                local found = Players:FindFirstChild(protect)
-                if not found then
-                    local m = Instance.new("Message")
-                    m.Parent = workspace
-                    m.Text = protect .. " is banned, the server will be removed..."
-                    task.wait(3)
-                    m.Text = "Unban " .. protect .. " or remove your script!"
-                    task.wait(3)
-                    local cancelled = false
-                    for i = respawntime, 0, -1 do
-                        if Players:FindFirstChild(protect) then
-                            cancelled = true
-                            break
+            if S.antibanOn ~= false and _G.WGAntibanSettings.bansbyOn then
+                local protect = _G.WGAntibanSettings.protectPlayer
+                if protect and #protect > 0 then
+                    local found = Players:FindFirstChild(protect)
+                    if not found then
+                        local m = Instance.new("Message")
+                        m.Parent = workspace
+                        m.Text = protect .. " is banned, the server will be removed..."
+                        task.wait(3)
+                        m.Text = "Unban " .. protect .. " or remove your script!"
+                        task.wait(3)
+                        local cancelled = false
+                        for i = respawntime, 0, -1 do
+                            if Players:FindFirstChild(protect) then
+                                cancelled = true
+                                break
+                            end
+                            if _G.WGVersion ~= MY_VERSION or not _G.WGAntibanSettings.bansbyOn then
+                                cancelled = true
+                                break
+                            end
+                            m.Text = protect .. " không quay lại trong [" .. i .. "] server sẽ sập!"
+                            task.wait(1)
                         end
-                        if _G.WGVersion ~= MY_VERSION then
-                            cancelled = true
-                            break
-                        end
-                        m.Text = protect .. " không quay lại trong [" .. i .. "] server sẽ sập!"
-                        task.wait(1)
-                    end
-                    if cancelled then
-                        m:Destroy()
-                    else
-                        for _, p in ipairs(Players:GetChildren()) do
-                            if p ~= LP then
-                                pcall(function() p:Kick("Server protected by WonGaVn ANTIBAN") end)
+                        if cancelled then
+                            m:Destroy()
+                        else
+                            for _, p in ipairs(Players:GetChildren()) do
+                                if p ~= LP then
+                                    pcall(function() p:Kick("Server protected by WonGaVn ANTIBAN") end)
+                                end
                             end
                         end
                     end
@@ -1682,10 +1685,29 @@ buildMenu = function()
 
     TabAB:CreateSection("🛡️ bảo vệ player (Bansby)")
     TabAB:CreateLabel("🧪 bản thử nghiệm — có thể không hoạt động")
+    TabAB:CreateToggle({
+        Name = "🔛 bật bảo vệ player",
+        CurrentValue = _G.WGAntibanSettings.bansbyOn,
+        Flag = "BansbyToggle",
+        Callback = function(v)
+            _G.WGAntibanSettings.bansbyOn = v
+            if v then
+                Rayfield:Notify({Title = "🛡️", Content = "đã bật Bansby", Duration = 3})
+            else
+                Rayfield:Notify({Title = "🛡️", Content = "đã tắt Bansby", Duration = 3})
+                pcall(function()
+                    for _, m in ipairs(workspace:GetChildren()) do
+                        if m:IsA("Message") then m:Destroy() end
+                    end
+                end)
+            end
+            saveFullConfig()
+        end
+    })
     TabAB:CreateInput({
         Name = "👤 tên player cần bảo vệ",
         CurrentValue = _G.WGAntibanSettings.protectPlayer,
-        PlaceholderText = "NikePro2004",
+        PlaceholderText = "wongavnx",
         RemoveTextAfterFocusLost = false,
         Flag = "AntibanProtectName",
         Callback = function(t)
