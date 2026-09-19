@@ -174,11 +174,11 @@ local TXT = {
         tab_ab="🛡️ antiban", tab_combat="⚔️ combat", tab_esp="👁️ esp",
         tab_farm="🍄 auto farm", tab_misc="⚙️ misc", tab_util="🔒 phong ấn",
         ab_toggle="bật antiban", ab_warn_pro="🛡️ antiban 85% — bot có thể quét nhưng rất khó.",
-        combat_warn="⚠️ game combat — khuyên anh em nên dùng mức thấp lên",
-        speed_warn="⚠️ nên chọn 500-1000. là khu vực lên lữa sẽ lag",
+        combat_warn="⚠️ game combat — khuyên nên dùng mức thấp!",
+        speed_warn="⚠️ nên chọn 500-1000. là khu vực lên cao sẽ lag.",
         hitbox="bật hitbox", hitbox_size="kích thước hitbox",
         aoe="bật aoe", aoe_range="bán kính aoe",
-        esp_p="esp player", esp_m="esp shoom",
+        esp_p="esp player", esp_m="esp shoom (màu theo loại)",
         esp_info="hiển thị esp", esp_info_opts="tắt,hiện tên",
         sys_name="tên hệ thống", sys_personality="tính cách",
         walk_slider="tốc độ chạy", jump_slider="lực nhảy",
@@ -215,7 +215,7 @@ local TXT = {
         speed_warn="⚠️ pick 500-1000.",
         hitbox="enable hitbox", hitbox_size="hitbox size",
         aoe="enable aoe", aoe_range="aoe range",
-        esp_p="esp player", esp_m="esp shoom",
+        esp_p="esp player", esp_m="esp shoom (color by type)",
         esp_info="esp display", esp_info_opts="off,show name",
         sys_name="system name", sys_personality="personality",
         walk_slider="walk speed", jump_slider="jump power", inf_jump="infinite jump",
@@ -247,7 +247,7 @@ local TXT = {
         ab_toggle="启用反封", ab_warn_pro="🛡️ 反封 85% — 机器人可扫描但非常困难。",
         combat_warn="⚠️ 战斗游戏！", speed_warn="⚠️ 500-1000。",
         hitbox="命中框", hitbox_size="大小", aoe="范围", aoe_range="半径",
-        esp_p="esp玩家", esp_m="esp蘑菇", esp_info="esp显示", esp_info_opts="关闭,显示名称",
+        esp_p="esp玩家", esp_m="esp蘑菇 (按颜色)", esp_info="esp显示", esp_info_opts="关闭,显示名称",
         sys_name="系统名", sys_personality="性格", walk_slider="速度", jump_slider="跳跃", inf_jump="无限跳跃",
         optimize="自动优化", effects_toggle="菜单特效", drag_menu="允许拖动", lang="语言",
         unlock_misc="🔓 解锁封印", unlock_hint="解锁后重启。",
@@ -271,7 +271,7 @@ local TXT = {
         ab_toggle="アンチban", ab_warn_pro="🛡️ アンチban 85% — botスキャン可能だが非常に困難。",
         combat_warn="⚠️ 戦闘ゲーム！", speed_warn="⚠️ 500-1000。",
         hitbox="ヒットボックス", hitbox_size="サイズ", aoe="範囲", aoe_range="半径",
-        esp_p="espプレイヤー", esp_m="espキノコ", esp_info="esp表示", esp_info_opts="オフ,名前",
+        esp_p="espプレイヤー", esp_m="espキノコ (色別)", esp_info="esp表示", esp_info_opts="オフ,名前",
         sys_name="システム名", sys_personality="性格", walk_slider="速度", jump_slider="ジャンプ", inf_jump="無限ジャンプ",
         optimize="自動最適化", effects_toggle="メニュー効果", drag_menu="ドラッグ", lang="言語",
         unlock_misc="🔓 封印解除", unlock_hint="解除後再起動。",
@@ -295,7 +295,7 @@ local TXT = {
         ab_toggle="안티밴", ab_warn_pro="🛡️ 안티밴 85% — 봇 스캔 가능하지만 매우 어려움.",
         combat_warn="⚠️ 전투 게임!", speed_warn="⚠️ 500-1000.",
         hitbox="히트박스", hitbox_size="크기", aoe="범위", aoe_range="반경",
-        esp_p="esp 플레이어", esp_m="esp 버섯", esp_info="esp", esp_info_opts="끄기,이름",
+        esp_p="esp 플레이어", esp_m="esp 버섯 (색상별)", esp_info="esp", esp_info_opts="끄기,이름",
         sys_name="시스템", sys_personality="성격", walk_slider="속도", jump_slider="점프", inf_jump="무한 점프",
         optimize="자동 최적화", effects_toggle="메뉴 효과", drag_menu="드래그", lang="언어",
         unlock_misc="🔓 봉인 해제", unlock_hint="해제 후 재시작.",
@@ -510,6 +510,25 @@ task.spawn(function()
     end
 end)
 
+local MAP_REGIONS = {
+    {name = "Flower Cove",       x = 2200,  z = 500},
+    {name = "Forgotten Shores",  x = 2600,  z = 1200},
+    {name = "Volcano Island",    x = 2400,  z = -2200},
+    {name = "Jungle",            x = -2000, z = -1800},
+    {name = "Pride Rocks",       x = -2200, z = -800},
+    {name = "Desert",            x = -1800, z = 2000},
+    {name = "Tundra",            x = -2400, z = 2600},
+    {name = "Swamp Hollow",      x = -600,  z = 1800},
+    {name = "Redwoods",          x = 200,   z = -1000},
+    {name = "Mesa",              x = 800,   z = 500},
+    {name = "Mountains",         x = -500,  z = -2000},
+    {name = "Central Rockfaces", x = -800,  z = 500},
+    {name = "Coral Reef",        x = -1500, z = -2600},
+    {name = "Seaweed Depths",    x = 1000,  z = -2600},
+    {name = "Rocky Drop",        x = 1600,  z = -1600},
+    {name = "Grassy Shoal",      x = 0,     z = 2600},
+}
+
 local function nameIsShoomPile(name)
     if not name then return false end
     local n = name:lower()
@@ -634,8 +653,68 @@ local function collectShroom(obj)
     end
 end
 
-local questCount = 0
+local function readShroomQuest()
+    for _, gui in ipairs(LP.PlayerGui:GetDescendants()) do
+        if gui:IsA("TextLabel") or gui:IsA("TextButton") then
+            local txt = (gui.Text or ""):lower()
+            if txt:find("shoom", 1, true) or txt:find("shroom", 1, true)
+               or txt:find("pile", 1, true) then
+                local cur, total = txt:match("(%d+)%s*/%s*(%d+)")
+                if cur and total then
+                    cur, total = tonumber(cur), tonumber(total)
+                    if cur and total and total > 0 and cur >= 0 then
+                        return cur, total
+                    end
+                end
+            end
+        end
+    end
+    return nil, nil
+end
+
+local function clusterShrooms(shrooms, clusterDist)
+    clusterDist = clusterDist or 350
+    local clusters = {}
+    local used = {}
+    for _, item in ipairs(shrooms) do
+        if not used[item.obj] then
+            local p1 = getShroomPos(item.obj)
+            if p1 then
+                local cluster = {item}
+                used[item.obj] = true
+                for _, other in ipairs(shrooms) do
+                    if not used[other.obj] then
+                        local p2 = getShroomPos(other.obj)
+                        if p2 and (p1 - p2).Magnitude <= clusterDist then
+                            table.insert(cluster, other)
+                            used[other.obj] = true
+                        end
+                    end
+                end
+                table.insert(clusters, {members = cluster, center = p1})
+            end
+        end
+    end
+    return clusters
+end
+
 local collected = setmetatable({}, {__mode = "k"})
+local shroomStats = {red = 0, blue = 0, gold = 0}
+local lastNotifyTime = 0
+
+local function updateShroomNotify()
+    local now = tick()
+    if now - lastNotifyTime < 0.8 then return end
+    lastNotifyTime = now
+    local total = shroomStats.red + shroomStats.blue + shroomStats.gold
+    pcall(function()
+        Rayfield:Notify({
+            Title = "🍄 " .. S.systemName,
+            Content = "🔴 " .. shroomStats.red .. " | 🔵 " .. shroomStats.blue .. " | 🟡 " .. shroomStats.gold .. " | tổng: " .. total,
+            Duration = 2
+        })
+    end)
+end
 
 local function safeTp(root, pos)
     local c = LP.Character
@@ -654,26 +733,59 @@ local function safeTp(root, pos)
     end
 end
 
-local function pickNewArea(root)
-    local angle = math.random() * math.pi * 2
-    local dist = 700 + math.random() * 500
-    local curPos = root.Position
-    local newPos = Vector3.new(curPos.X + math.cos(angle) * dist, 50, curPos.Z + math.sin(angle) * dist)
-    safeTp(root, newPos)
+local function getHpPercent()
+    local c = LP.Character
+    local h = c and c:FindFirstChildOfClass("Humanoid")
+    if h and h.MaxHealth > 0 then
+        return (h.Health / h.MaxHealth) * 100
+    end
+    return 100
+end
+
+local function waitForHeal(minHp, maxWait)
+    local waited = 0
+    while getHpPercent() < minHp and waited < (maxWait or 15) do
+        if not S.autoFarmOn then return end
+        task.wait(0.5)
+        waited = waited + 0.5
+    end
 end
 
 local function startAutoFarm()
     if farmThread then pcall(function() task.cancel(farmThread) end) end
-    questCount = 0
     collected = setmetatable({}, {__mode = "k"})
+    shroomStats = {red = 0, blue = 0, gold = 0}
     farmThread = task.spawn(function()
-        local emptyAreaCount = 0
-        local MAX_EMPTY = 5
-
+        local regionIndex = 1
         while S.autoFarmOn do
             local c = LP.Character
             local root = c and c:FindFirstChild("HumanoidRootPart")
             if not root then task.wait(1); continue end
+
+            local qCur, qTotal = readShroomQuest()
+            if qCur and qTotal and qCur >= qTotal then
+                pcall(function()
+                    Rayfield:Notify({Title = "✅ " .. S.systemName,
+                        Content = "nhiệm vụ hoàn thành " .. qCur .. "/" .. qTotal .. " — chuyển khu!",
+                        Duration = 5})
+                end)
+                regionIndex = regionIndex + 1
+                if regionIndex > #MAP_REGIONS then regionIndex = 1 end
+                local region = MAP_REGIONS[regionIndex]
+                safeTp(root, Vector3.new(region.x, 100, region.z))
+                collected = setmetatable({}, {__mode = "k"})
+                task.wait(2.5)
+                continue
+            end
+
+            if getHpPercent() < 40 then
+                pcall(function()
+                    Rayfield:Notify({Title = "💀 " .. S.systemName,
+                        Content = "máu nguy hiểm — tạm dừng đợi hồi...",
+                        Duration = 3})
+                end)
+                waitForHeal(75, 25)
+            end
 
             local shroomList = findShrooms()
             local fresh = {}
@@ -684,62 +796,79 @@ local function startAutoFarm()
             end
 
             if #fresh == 0 then
-                emptyAreaCount = emptyAreaCount + 1
-                if emptyAreaCount >= MAX_EMPTY then
-                    emptyAreaCount = 0
-                    pcall(function()
-                        Rayfield:Notify({Title = "🍄 " .. S.systemName,
-                            Content = "hết shoom piles khu này — chuyển khu...",
-                            Duration = 4})
-                    end)
-                    if root then pickNewArea(root) end
-                    collected = setmetatable({}, {__mode = "k"})
-                    questCount = 0
-                end
-                task.wait(2)
+                regionIndex = regionIndex + 1
+                if regionIndex > #MAP_REGIONS then regionIndex = 1 end
+                local region = MAP_REGIONS[regionIndex]
+                pcall(function()
+                    Rayfield:Notify({Title = "🍄 " .. S.systemName,
+                        Content = "hết nấm — tới " .. region.name .. "...",
+                        Duration = 3})
+                end)
+                safeTp(root, Vector3.new(region.x, 100, region.z))
+                collected = setmetatable({}, {__mode = "k"})
+                task.wait(2.5)
                 continue
             end
 
-            emptyAreaCount = 0
+            local clusters = clusterShrooms(fresh, 350)
             local myPos = root.Position
-            local bestItem, bestD = nil, math.huge
-            for _, item in ipairs(fresh) do
-                local p = getShroomPos(item.obj)
-                if p then
-                    local d = (p - myPos).Magnitude
-                    if d < bestD then bestItem, bestD = item, d end
-                end
-            end
+            table.sort(clusters, function(a, b)
+                return (a.center - myPos).Magnitude < (b.center - myPos).Magnitude
+            end)
 
-            if bestItem then
-                local pos = getShroomPos(bestItem.obj)
-                if pos and pos.Y > -50 then
-                    safeTp(root, pos)
-                    task.wait(0.15)
-                    collectShroom(bestItem.obj)
-                    task.wait(0.15)
-                    collected[bestItem.obj] = true
-                    questCount = questCount + 1
+            local targetCluster = clusters[1]
+            if not targetCluster then task.wait(1); continue end
 
-                    local label = bestItem.colorType or "red"
-                    local emoji = label == "blue" and "🔵" or (label == "gold" and "🟡" or "🔴")
+            safeTp(root, targetCluster.center)
+            task.wait(0.5)
+
+            table.sort(targetCluster.members, function(a, b)
+                local pa = getShroomPos(a.obj)
+                local pb = getShroomPos(b.obj)
+                if not pa or not pb then return false end
+                return (pa - targetCluster.center).Magnitude < (pb - targetCluster.center).Magnitude
+            end)
+
+            for _, item in ipairs(targetCluster.members) do
+                if not S.autoFarmOn then break end
+                if collected[item.obj] then continue end
+
+                local cCur, cTotal = readShroomQuest()
+                if cCur and cTotal and cCur >= cTotal then
                     pcall(function()
-                        Rayfield:Notify({Title = "🍄 " .. S.systemName,
-                            Content = emoji .. " shoom " .. label:upper() .. " ("..questCount.."/3)",
-                            Duration = 1.5})
+                        Rayfield:Notify({Title = "✅ " .. S.systemName,
+                            Content = "đủ quest " .. cCur .. "/" .. cTotal .. " — chuyển khu!",
+                            Duration = 4})
                     end)
-
-                    if questCount >= 3 then
-                        questCount = 0
-                        pickNewArea(root)
-                        collected = setmetatable({}, {__mode = "k"})
-                    end
-                else
-                    collected[bestItem.obj] = true
+                    regionIndex = regionIndex + 1
+                    if regionIndex > #MAP_REGIONS then regionIndex = 1 end
+                    local region = MAP_REGIONS[regionIndex]
+                    safeTp(root, Vector3.new(region.x, 100, region.z))
+                    collected = setmetatable({}, {__mode = "k"})
+                    task.wait(2)
+                    break
                 end
-            else
-                task.wait(0.5)
+
+                if getHpPercent() < 45 then
+                    waitForHeal(70, 15)
+                end
+
+                local pos = getShroomPos(item.obj)
+                if pos then
+                    safeTp(root, pos)
+                    task.wait(0.4)
+                    collectShroom(item.obj)
+                    collected[item.obj] = true
+
+                    local ctype = item.colorType or "red"
+                    shroomStats[ctype] = (shroomStats[ctype] or 0) + 1
+                    updateShroomNotify()
+
+                    task.wait(0.5)
+                end
             end
+
+            task.wait(1)
         end
     end)
 end
@@ -791,7 +920,6 @@ local function startAntiDeath()
             if h and hrp and h.Health > 0 then
                 local hpPct = (h.Health / math.max(h.MaxHealth, 1)) * 100
                 local threshold = S.antiDeathThreshold or 30
-
                 if not sentAway and hpPct <= threshold then
                     safeReturn = hrp.Position
                     h.PlatformStand = true
@@ -803,7 +931,6 @@ local function startAntiDeath()
                             Content = "máu thấp — đang trốn ở vùng an toàn...", Duration = 4})
                     end)
                 end
-
                 if sentAway then
                     local myPos = hrp.Position
                     local nearEnemy = false
@@ -816,12 +943,10 @@ local function startAntiDeath()
                             end
                         end
                     end
-
                     if nearEnemy and hpPct < 95 then
                         hrp.CFrame = CFrame.new(findSafeSpot())
                         hrp.AssemblyLinearVelocity = Vector3.zero
                     end
-
                     if hpPct >= math.min(threshold + 30, 95) and not nearEnemy then
                         if safeReturn then
                             hrp.CFrame = CFrame.new(safeReturn + Vector3.new(0, 3, 0))
@@ -870,36 +995,6 @@ task.spawn(function()
     end
 end)
 
--- TIME STOP
-local frozenCFrames = {}
-RunService.RenderStepped:Connect(function()
-    if _G.WGVersion ~= MY_VERSION then return end
-    if not S.timeStopOn then
-        if next(frozenCFrames) then frozenCFrames = {} end
-        return
-    end
-    local myPos = nil
-    local c = LP.Character
-    local myRoot = c and c:FindFirstChild("HumanoidRootPart")
-    if myRoot then myPos = myRoot.Position end
-    for _, pl in ipairs(Players:GetPlayers()) do
-        if pl ~= LP then
-            local pc = pl.Character
-            local hrp = pc and pc:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                local inRange = true
-                if myPos then inRange = (hrp.Position - myPos).Magnitude <= S.timeStopRange end
-                if inRange then
-                    if not frozenCFrames[pl] then frozenCFrames[pl] = hrp.CFrame end
-                    hrp.CFrame = frozenCFrames[pl]
-                else
-                    frozenCFrames[pl] = nil
-                end
-            end
-        end
-    end
-end)
-
 -- ============================================================
 --  FREECAM
 -- ============================================================
@@ -909,19 +1004,15 @@ local freecamConnections = {}
 local function startFreecam()
     if freecamActive then return end
     freecamActive = true
-
     local cam = workspace.CurrentCamera
     local onMobile = not UIS.KeyboardEnabled
     local keysDown = {}
     local rotating = false
     local touchPos = nil
-
     cam.CameraType = Enum.CameraType.Scriptable
-
     local speed = 5 / 10
     local sens = 0.3
     if onMobile then sens = sens * 2 end
-
     table.insert(freecamConnections, RunService.RenderStepped:Connect(function()
         if rotating then
             local delta = UIS:GetMouseDelta()
@@ -941,7 +1032,6 @@ local function startFreecam()
         else
             UIS.MouseBehavior = Enum.MouseBehavior.Default
         end
-
         if keysDown["Enum.KeyCode.W"] then cam.CFrame *= CFrame.new(0, 0, -speed) end
         if keysDown["Enum.KeyCode.A"] then cam.CFrame *= CFrame.new(-speed, 0, 0) end
         if keysDown["Enum.KeyCode.S"] then cam.CFrame *= CFrame.new(0, 0, speed) end
@@ -949,9 +1039,7 @@ local function startFreecam()
         if keysDown["Enum.KeyCode.Space"] then cam.CFrame *= CFrame.new(0, speed, 0) end
         if keysDown["Enum.KeyCode.LeftShift"] then cam.CFrame *= CFrame.new(0, -speed, 0) end
     end))
-
     local validKeys = {"Enum.KeyCode.W","Enum.KeyCode.A","Enum.KeyCode.S","Enum.KeyCode.D","Enum.KeyCode.Space","Enum.KeyCode.LeftShift"}
-
     table.insert(freecamConnections, UIS.InputBegan:Connect(function(Input)
         for _, key in pairs(validKeys) do
             if key == tostring(Input.KeyCode) then keysDown[key] = true end
@@ -967,7 +1055,6 @@ local function startFreecam()
             end
         end
     end))
-
     table.insert(freecamConnections, UIS.InputEnded:Connect(function(Input)
         for key in pairs(keysDown) do
             if key == tostring(Input.KeyCode) then keysDown[key] = false end
@@ -987,7 +1074,6 @@ local function startFreecam()
             end
         end
     end))
-
     table.insert(freecamConnections, UIS.TouchMoved:Connect(function(input)
         if touchPos then
             if input.Position.X < cam.ViewportSize.X / 2 then
@@ -1029,7 +1115,7 @@ local function stopFreecam()
 end
 
 -- ============================================================
---  OPTIMIZE + ANTI-LAG + CHỐNG RUNG
+--  OPTIMIZE + ANTI-LAG
 -- ============================================================
 local optimizeLoopThread = nil
 local antiLagLoopThread = nil
@@ -1073,7 +1159,6 @@ local function applyAntiLag()
         Lighting.ClockTime = 14
         Lighting.FogEnd = 100000
         Lighting.GlobalShadows = false
-
         for _, v in ipairs(workspace:GetDescendants()) do
             if v:IsA("Decal") or v:IsA("Texture") then
                 v.Transparency = 1
@@ -1086,7 +1171,6 @@ local function applyAntiLag()
                 v.Material = Enum.Material.SmoothPlastic
             end
         end
-
         pcall(function()
             workspace.Terrain.Decoration = false
             workspace.Terrain.WaterWaveSize = 0
@@ -1094,7 +1178,6 @@ local function applyAntiLag()
             workspace.Terrain.WaterReflectance = 0
             workspace.Terrain.WaterTransparency = 1
         end)
-
         pcall(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Level01 end)
         pcall(function() settings().Rendering.MeshPartDetailLevel = Enum.MeshPartDetailLevel.Level01 end)
     end)
@@ -1168,7 +1251,7 @@ local function setupTradeHooks()
 end
 
 -- ============================================================
---  ANTIBAN + BANSBY (có toggle)
+--  ANTIBAN + BANSBY
 -- ============================================================
 local BLOCK = {report=true,ban=true,kick=true,vote=true,cheat=true,anticheat=true,detect=true,flag=true,suspicious=true,scan=true,check=true}
 
@@ -1228,7 +1311,6 @@ local antibanDone = false
 local function enableAntiban()
     if antibanDone then return end
     antibanDone = true
-
     local mt = getrawmetatable and getrawmetatable(game)
     if mt and newcclosure and setreadonly then
         setreadonly(mt, false)
@@ -1247,7 +1329,6 @@ local function enableAntiban()
         setreadonly(mt, true)
     end
     warn = function() end
-
     pcall(startBansbyProtection)
 end
 
@@ -1413,16 +1494,60 @@ end)
 
 Players.PlayerRemoving:Connect(function(pl) originals[pl] = nil end)
 
--- ESP
+-- ============================================================
+--  ESP — MÀU THEO LOẠI NẤM
+-- ============================================================
 local mushroomESP = {}
 
-local function makeESP(part)
+local COLOR_ESP = {
+    red = Color3.fromRGB(255, 50, 50),
+    blue = Color3.fromRGB(80, 180, 255),
+    gold = Color3.fromRGB(255, 215, 0),
+    player = Color3.fromRGB(255, 255, 255),
+}
+
+local function makeShroomESP(part, ctype)
+    local color = COLOR_ESP[ctype] or COLOR_ESP.red
     local hl = Instance.new("Highlight")
-    hl.Name = "WG_ESP_HL"; hl.FillTransparency = 1
-    hl.OutlineColor = Color3.fromRGB(255, 200, 60)
+    hl.Name = "WG_ShroomESP_HL"
+    hl.FillColor = color
+    hl.FillTransparency = 0.75
+    hl.OutlineColor = color
+    hl.OutlineTransparency = 0
+    hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    hl.Adornee = part
+    hl.Parent = part
+
+    local bb = Instance.new("BillboardGui")
+    bb.Name = "WG_ShroomESP_Tag"
+    bb.Size = UDim2.new(0, 100, 0, 22)
+    bb.StudsOffset = Vector3.new(0, 6, 0)
+    bb.AlwaysOnTop = true
+    bb.Adornee = part
+    bb.Parent = part
+
+    local lbl = Instance.new("TextLabel", bb)
+    lbl.Size = UDim2.new(1, 0, 1, 0)
+    lbl.BackgroundTransparency = 1
+    lbl.TextColor3 = color
+    lbl.TextStrokeTransparency = 0.2
+    lbl.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    lbl.Font = Enum.Font.GothamBold
+    lbl.TextSize = 14
+    lbl.Text = ctype == "blue" and "🔵 SILVER" or (ctype == "gold" and "🟡 GOLD" or "🔴 RED")
+
+    return hl, bb
+end
+
+local function makePlayerESP(part)
+    local hl = Instance.new("Highlight")
+    hl.Name = "WG_ESP_HL"
+    hl.FillTransparency = 1
+    hl.OutlineColor = COLOR_ESP.player
     hl.OutlineTransparency = 0.2
     hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-    hl.Adornee = part; hl.Parent = part
+    hl.Adornee = part
+    hl.Parent = part
     return hl
 end
 
@@ -1465,7 +1590,7 @@ local function applyPlayerESP()
         if pl ~= LP then
             local c = pl.Character
             if c then
-                if not c:FindFirstChild("WG_ESP_HL") then makeESP(c) end
+                if not c:FindFirstChild("WG_ESP_HL") then makePlayerESP(c) end
                 if S.espInfo == "name" then
                     local head = c:FindFirstChild("Head")
                     if head and not head:FindFirstChild("WG_ESP_Name") then makeNameTag(pl) end
@@ -1476,7 +1601,10 @@ local function applyPlayerESP()
 end
 
 local function clearMushroomESP()
-    for part, hl in pairs(mushroomESP) do if hl then hl:Destroy() end end
+    for _, data in pairs(mushroomESP) do
+        if data.hl then data.hl:Destroy() end
+        if data.bb then data.bb:Destroy() end
+    end
     mushroomESP = {}
 end
 
@@ -1485,12 +1613,15 @@ local function applyMushroomESP()
     local root = c and c:FindFirstChild("HumanoidRootPart")
     if not root then return end
     local myPos = root.Position
-    local MAXD = 500 * 500; local MAXC = 60
-    local count = 0; local current = {}
+    local MAXD = 3000 * 3000
+    local MAXC = 80
+    local count = 0
+    local current = {}
+
     for _, obj in ipairs(workspace:GetDescendants()) do
         if count >= MAXC then break end
         if (obj:IsA("BasePart") or obj:IsA("Model")) and obj.Parent then
-            local ok = detectShroom(obj)
+            local ok, ctype = detectShroom(obj)
             if ok then
                 local p = getShroomPos(obj)
                 if p then
@@ -1500,16 +1631,22 @@ local function applyMushroomESP()
                         local target = obj:IsA("BasePart") and obj or (obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart"))
                         if target then
                             current[target] = true
-                            if not mushroomESP[target] then mushroomESP[target] = makeESP(target) end
+                            if not mushroomESP[target] then
+                                local hl, bb = makeShroomESP(target, ctype or "red")
+                                mushroomESP[target] = {hl = hl, bb = bb}
+                            end
                         end
                     end
                 end
             end
         end
     end
-    for part, hl in pairs(mushroomESP) do
+
+    for part, data in pairs(mushroomESP) do
         if not current[part] or not part.Parent then
-            hl:Destroy(); mushroomESP[part] = nil
+            if data.hl then data.hl:Destroy() end
+            if data.bb then data.bb:Destroy() end
+            mushroomESP[part] = nil
         end
     end
 end
@@ -1526,7 +1663,7 @@ task.spawn(function()
     local v = MY_VERSION
     while _G.WGVersion == v do
         if S.espMushrooms then
-            pcall(applyMushroomESP); task.wait(1.5)
+            pcall(applyMushroomESP); task.wait(1)
         else
             if next(mushroomESP) then clearMushroomESP() end
             task.wait(0.6)
@@ -1759,6 +1896,10 @@ buildMenu = function()
         Callback = function(v) S.espMushrooms = v; if not v then clearMushroomESP() end
             sysNotify(v and "esp_m_on" or "esp_m_off"); saveFullConfig() end})
 
+    TabESP:CreateLabel("🔴 Shoom Pile đỏ — 5-13 shooms")
+    TabESP:CreateLabel("🔵 Silver Shoom Pile — 10-30 shooms + token")
+    TabESP:CreateLabel("🟡 Gold Shoom Pile — nhiều shooms + material")
+
     local espInfoOptions = {"tắt", "hiện tên"}
     local curEspInfo = espInfoOptions[1]
     if S.espInfo == "name" then curEspInfo = espInfoOptions[2] end
@@ -1933,7 +2074,6 @@ buildMenu = function()
             sysNotify(nil, v and "🖱️ bật kéo menu" or "🔒 khóa menu"); saveFullConfig()
         end})
 
-    -- LOGO
     TabMisc:CreateSection("🎨 logo script")
     TabMisc:CreateInput({
         Name = "🖼️ logo ID",
@@ -2130,7 +2270,6 @@ local function startMain()
     end
 
     task.spawn(injectLogoIntoLoading)
-
     task.wait(0.5)
 
     local ok2, err2 = pcall(buildMenu)
