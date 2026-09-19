@@ -11,7 +11,6 @@ local UIS = game:GetService("UserInputService")
 local HttpService = game:GetService("HttpService")
 local Lighting = game:GetService("Lighting")
 local TweenService = game:GetService("TweenService")
-local SoundService = game:GetService("SoundService")
 local LP = Players.LocalPlayer
 
 _G.WGVersion = (_G.WGVersion or 0) + 1
@@ -88,7 +87,7 @@ _G.WGState = _G.WGState or {
     antiDeathOn=false, antiDeathThreshold=30,
     antiLagOn=false,
     antibanOn=true,
-    freecamDistance=15, freecamMaxZoom=10000, freecamSensitivity=0.5,
+    freecamMaxZoom=10000,
 }
 local S = _G.WGState
 
@@ -115,7 +114,6 @@ local function saveFullConfig()
             antibanOn=S.antibanOn,
             bansbyOn=_G.WGAntibanSettings.bansbyOn,
             freecamMaxZoom=S.freecamMaxZoom,
-            freecamSensitivity=S.freecamSensitivity,
         }))
     end)
 end
@@ -169,8 +167,8 @@ local TXT = {
         tab_ab="🛡️ antiban", tab_combat="⚔️ combat", tab_esp="👁️ esp",
         tab_farm="🍄 auto farm", tab_misc="⚙️ misc", tab_util="🔒 phong ấn",
         ab_toggle="bật antiban", ab_warn_pro="🛡️ antiban 85% — bot có thể quét nhưng rất khó.",
-        combat_warn="⚠️ game combat — khuyên nên dùng mức thấp!",
-        speed_warn="⚠️ nên chọn 500-1000. là khu vực lên cao sẽ lag.",
+        combat_warn="⚠️ game combat — khuyên nên dừng mức thấp!",
+        speed_warn="⚠️ nên chọn 500-1000. là khu vực lên cai sẽ lag.",
         hitbox="bật hitbox", hitbox_size="kích thước hitbox",
         aoe="bật aoe", aoe_range="bán kính aoe",
         esp_p="esp player", esp_m="esp shoom (màu theo loại)",
@@ -185,10 +183,9 @@ local TXT = {
         util_anti_afk="🟢 anti afk", util_join="👋 thông báo người vào",
         util_noclip="👻 noclip", util_fly="🕊️ fly", util_flyspeed="tốc độ bay",
         antivoid_toggle="bật anti-void",
-        freecam_toggle="bật freecam (giống roblox mặc định)",
-        freecam_maxzoom="khoảng cách zoom tối đa (studs)",
-        freecam_sensitivity="độ nhạy xoay",
-        freecam_hint="💡 PC: chuột phải xoay + scroll zoom | Mobile: 1 ngón xoay, 2 ngón zoom",
+        freecam_toggle="bật freecam",
+        freecam_maxzoom="khoảng cách zoom tối đa",
+        freecam_hint="💡 PC | Mobile",
         spam_toggle="spam chat", spam_msg="nội dung tin nhắn", spam_delay="delay spam",
         trade_toggle="auto trade", trade_view="📋 xem lịch sử", trade_clear="🗑️ xóa lịch sử",
         seal_locked="🔒 phong ấn chưa vỡ", seal_hint="💡 bấm nút bên dưới để mở khóa.",
@@ -223,7 +220,6 @@ local TXT = {
         antivoid_toggle="enable anti-void",
         freecam_toggle="enable freecam (roblox default style)",
         freecam_maxzoom="max zoom distance (studs)",
-        freecam_sensitivity="rotation sensitivity",
         freecam_hint="💡 PC: right mouse rotate + scroll zoom | Mobile: 1 finger rotate, 2 finger zoom",
         spam_toggle="spam chat", spam_msg="message", spam_delay="delay",
         trade_toggle="auto trade", trade_view="📋 history", trade_clear="🗑️ clear",
@@ -252,7 +248,6 @@ local TXT = {
         antivoid_toggle="防掉落",
         freecam_toggle="自由相机 (Roblox默认风格)",
         freecam_maxzoom="最大缩放距离 (studs)",
-        freecam_sensitivity="旋转灵敏度",
         freecam_hint="💡 PC:右键旋转 + 滚轮缩放 | 手机:单指旋转,双指缩放",
         spam_toggle="刷屏", spam_msg="消息", spam_delay="延迟",
         trade_toggle="自动交易", trade_view="📋 历史", trade_clear="🗑️ 清除",
@@ -278,7 +273,6 @@ local TXT = {
         antivoid_toggle="アンチボイド",
         freecam_toggle="フリーカメラ (Robloxデフォルト)",
         freecam_maxzoom="最大ズーム距離 (studs)",
-        freecam_sensitivity="回転感度",
         freecam_hint="💡 PC:右クリック回転 + スクロールズーム | モバイル:1本指回転,2本指ズーム",
         spam_toggle="スパム", spam_msg="メッセージ", spam_delay="間隔",
         trade_toggle="自動トレード", trade_view="📋 履歴", trade_clear="🗑️ 削除",
@@ -304,7 +298,6 @@ local TXT = {
         antivoid_toggle="안티보이드",
         freecam_toggle="프리캠 (Roblox 기본 스타일)",
         freecam_maxzoom="최대 줌 거리 (studs)",
-        freecam_sensitivity="회전 감도",
         freecam_hint="💡 PC:우클릭 회전 + 스크롤 줌 | 모바일:1손가락 회전,2손가락 줌",
         spam_toggle="스팸", spam_msg="메시지", spam_delay="지연",
         trade_toggle="자동 거래", trade_view="📋 기록", trade_clear="🗑️ 삭제",
@@ -854,11 +847,9 @@ local function startAutoFarm()
                     task.wait(0.4)
                     collectShroom(item.obj)
                     collected[item.obj] = true
-
                     local ctype = item.colorType or "red"
                     shroomStats[ctype] = (shroomStats[ctype] or 0) + 1
                     updateShroomNotify()
-
                     task.wait(0.5)
                 end
             end
@@ -986,119 +977,32 @@ task.spawn(function()
     end
 end)
 
--- FREECAM MỚI (giống Roblox mặc định — zoom không giới hạn)
 local freecamActive = false
-local freecamConnections = {}
-local freecamDistance = 15
-local freecamYaw = 0
-local freecamPitch = 0
-local freecamLastPan = nil
-local freecamInitialSet = false
+local oldZoomMin = nil
+local oldZoomMax = nil
 
 local function startFreecam()
     if freecamActive then return end
     freecamActive = true
-
-    local cam = workspace.CurrentCamera
-    cam.CameraType = Enum.CameraType.Scriptable
-
-    local c = LP.Character
-    local hrp = c and c:FindFirstChild("HumanoidRootPart")
-    local cf = cam.CFrame
-    if hrp then
-        local offset = cf.Position - hrp.Position
-        freecamDistance = math.max(offset.Magnitude, 15)
-    else
-        freecamDistance = 15
-    end
-    freecamYaw = math.atan2(-cf.LookVector.X, -cf.LookVector.Z)
-    freecamPitch = math.asin(math.clamp(cf.LookVector.Y, -1, 1))
-    freecamLastPan = nil
-
-    table.insert(freecamConnections, RunService.RenderStepped:Connect(function()
-        local chr = LP.Character
-        local r = chr and chr:FindFirstChild("HumanoidRootPart")
-        if not r then return end
-        local focus = r.Position + Vector3.new(0, 1.5, 0)
-        local rot = CFrame.Angles(0, freecamYaw, 0) * CFrame.Angles(freecamPitch, 0, 0)
-        cam.CFrame = CFrame.new(focus) * rot * CFrame.new(0, 0, freecamDistance)
-    end))
-
-    -- PC: chuột phải xoay, scroll zoom
-    table.insert(freecamConnections, UIS.InputChanged:Connect(function(input)
-        if not freecamActive then return end
-        if input.UserInputType == Enum.UserInputType.MouseMovement then
-            if UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
-                local d = input.Delta
-                local sens = S.freecamSensitivity or 0.5
-                freecamYaw = freecamYaw - math.rad(d.X * sens)
-                freecamPitch = math.clamp(freecamPitch - math.rad(d.Y * sens), -math.rad(85), math.rad(85))
-            end
-        elseif input.UserInputType == Enum.UserInputType.MouseWheel then
-            local maxZoom = S.freecamMaxZoom or 10000
-            freecamDistance = math.clamp(freecamDistance - input.Position.Z * 5, 1, maxZoom)
-        end
-    end))
-
-    -- Mobile: 1 ngón kéo để xoay, 2 ngón pinch để zoom
-    table.insert(freecamConnections, UIS.TouchPan:Connect(function(touchPositions, totalTranslation, velocity, state)
-        if not freecamActive then return end
-        if state == Enum.UserInputState.Begin then
-            freecamLastPan = totalTranslation
-            return
-        end
-        if state == Enum.UserInputState.End or state == Enum.UserInputState.Cancel then
-            freecamLastPan = nil
-            return
-        end
-        if #touchPositions == 1 then
-            if freecamLastPan then
-                local delta = totalTranslation - freecamLastPan
-                local sens = S.freecamSensitivity or 0.5
-                freecamYaw = freecamYaw - math.rad(delta.X * sens)
-                freecamPitch = math.clamp(freecamPitch - math.rad(delta.Y * sens), -math.rad(85), math.rad(85))
-            end
-            freecamLastPan = totalTranslation
-        end
-    end))
-
-    -- Pinch zoom (2 ngón)
-    table.insert(freecamConnections, UIS.TouchPinch:Connect(function(touchPositions, scale, velocity, state)
-        if not freecamActive then return end
-        local maxZoom = S.freecamMaxZoom or 10000
-        freecamDistance = math.clamp(freecamDistance / scale, 1, maxZoom)
-    end))
-
-    -- 2 ngón pan để zoom (dự phòng cho thiết bị không hỗ trợ pinch tốt)
-    table.insert(freecamConnections, UIS.TouchPan:Connect(function(touchPositions, totalTranslation, velocity, state)
-        if not freecamActive then return end
-        if #touchPositions >= 2 and state == Enum.UserInputState.Change then
-            if freecamLastPan then
-                local deltaY = totalTranslation.Y - freecamLastPan.Y
-                local maxZoom = S.freecamMaxZoom or 10000
-                freecamDistance = math.clamp(freecamDistance + deltaY * 2, 1, maxZoom)
-            end
-            freecamLastPan = totalTranslation
-        end
-    end))
+    pcall(function()
+        oldZoomMin = LP.CameraMinZoomDistance
+        oldZoomMax = LP.CameraMaxZoomDistance
+    end)
+    pcall(function()
+        LP.CameraMinZoomDistance = 0.5
+        LP.CameraMaxZoomDistance = S.freecamMaxZoom or 10000
+    end)
 end
 
 local function stopFreecam()
     if not freecamActive then return end
     freecamActive = false
-    for _, c in ipairs(freecamConnections) do
-        pcall(function() c:Disconnect() end)
-    end
-    freecamConnections = {}
-    local cam = workspace.CurrentCamera
-    cam.CameraType = Enum.CameraType.Custom
-    local c = LP.Character
-    local h = c and c:FindFirstChildOfClass("Humanoid")
-    if h then cam.CameraSubject = h end
-    UIS.MouseBehavior = Enum.MouseBehavior.Default
+    pcall(function()
+        LP.CameraMinZoomDistance = oldZoomMin or 0.5
+        LP.CameraMaxZoomDistance = oldZoomMax or 12.5
+    end)
 end
 
--- SIÊU GIẢM LAG
 local antiLagLoopThread = nil
 local shakeConnection = nil
 local fpsUnlockConnection = nil
@@ -1706,7 +1610,6 @@ local function applyMushroomESP()
     local MAXC = 80
     local count = 0
     local current = {}
-
     for _, obj in ipairs(workspace:GetDescendants()) do
         if count >= MAXC then break end
         if (obj:IsA("BasePart") or obj:IsA("Model")) and obj.Parent then
@@ -2299,21 +2202,11 @@ buildMenu = function()
                 local n = tonumber(t)
                 if n and n > 100 then
                     S.freecamMaxZoom = n
+                    if freecamActive then
+                        pcall(function() LP.CameraMaxZoomDistance = n end)
+                    end
                     saveFullConfig()
                     Rayfield:Notify({Title = "🎥", Content = "zoom max: " .. n, Duration = 2})
-                end
-            end})
-        TabUtil:CreateInput({Name = T("freecam_sensitivity"),
-            CurrentValue = tostring(S.freecamSensitivity or 0.5),
-            PlaceholderText = "0.5",
-            RemoveTextAfterFocusLost = false,
-            Flag = "FreecamSens",
-            Callback = function(t)
-                local n = tonumber(t)
-                if n and n > 0 then
-                    S.freecamSensitivity = n
-                    saveFullConfig()
-                    Rayfield:Notify({Title = "🎥", Content = "độ nhạy: " .. n, Duration = 2})
                 end
             end})
         TabUtil:CreateLabel(T("freecam_hint"))
