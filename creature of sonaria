@@ -1,5 +1,5 @@
 -- ============================================================
---  WonGaVn🇻🇳 Script - V3 (Rayfield Gen 2)
+--  WonGaVn🇻🇳 Script - V2 (Gen2 Compatible)
 --  tiktok: Nkhaj97 | discord: discord.gg/ry3buvjz5
 -- ============================================================
 local SCRIPT_URL = "https://raw.githubusercontent.com/nguyenkha233/WonGaVn/refs/heads/main/creature%20of%20sonaria"
@@ -11,51 +11,11 @@ local UIS = game:GetService("UserInputService")
 local HttpService = game:GetService("HttpService")
 local Lighting = game:GetService("Lighting")
 local TweenService = game:GetService("TweenService")
-local StarterGui = game:GetService("StarterGui")
 local LP = Players.LocalPlayer
 
 _G.WGVersion = (_G.WGVersion or 0) + 1
 local MY_VERSION = _G.WGVersion
 
--- ============================================================
---  XÓA TOÀN BỘ RAYFIELD CŨ + GIAO DIỆN SCRIPT CŨ
--- ============================================================
-local function clearOldUIs()
-    local parents = {}
-    if gethui then
-        local ok, h = pcall(gethui)
-        if ok and h then table.insert(parents, h) end
-    end
-    table.insert(parents, game:GetService("CoreGui"))
-    pcall(function()
-        if LP:FindFirstChild("PlayerGui") then
-            table.insert(parents, LP.PlayerGui)
-        end
-    end)
-    for _, parent in ipairs(parents) do
-        if parent then
-            for _, g in ipairs(parent:GetChildren()) do
-                if g:IsA("ScreenGui") then
-                    local nm = string.lower(g.Name)
-                    local kill = false
-                    if nm:find("rayfield") or nm:find("sirius")
-                       or nm:find("wongavn") or nm:find("orion")
-                       or nm:find("linoria") or nm:find("windui")
-                       or nm:find("kavo") then
-                        kill = true
-                    end
-                    if nm:sub(1, 3) == "wg_" then kill = true end
-                    if kill then pcall(function() g:Destroy() end) end
-                end
-            end
-        end
-    end
-end
-clearOldUIs()
-
--- ============================================================
---  LOGO
--- ============================================================
 local LOGO_FILE = "WonGaVn_Logo.txt"
 local DEFAULT_LOGO = "rbxassetid://6675147490"
 local function loadLogoId()
@@ -73,53 +33,11 @@ local function saveLogoId(id)
 end
 _G.WGLogoId = loadLogoId()
 
-local function injectLogoIntoLoading()
-    task.spawn(function()
-        for attempt = 1, 40 do
-            local parent = (gethui and gethui()) or game:GetService("CoreGui")
-            local rayGui = nil
-            for _, g in ipairs(parent:GetChildren()) do
-                if g:IsA("ScreenGui") then
-                    local nm = string.lower(g.Name)
-                    if nm:find("rayfield") or nm:find("sirius") then rayGui = g; break end
-                end
-            end
-            if rayGui then
-                local existing = rayGui:FindFirstChild("WG_CustomLogo")
-                if existing then existing:Destroy() end
-                local logo = Instance.new("ImageLabel")
-                logo.Name = "WG_CustomLogo"
-                logo.Size = UDim2.new(0, 140, 0, 140)
-                logo.Position = UDim2.new(0.5, -70, 0.5, -200)
-                logo.BackgroundTransparency = 1
-                logo.Image = _G.WGLogoId
-                logo.ZIndex = 999999
-                logo.Parent = rayGui
-                task.spawn(function()
-                    local t = 0
-                    while logo.Parent do
-                        t = t + 0.05
-                        pcall(function()
-                            logo.ImageTransparency = 0.1 + 0.1 * math.sin(t)
-                        end)
-                        task.wait(0.05)
-                    end
-                end)
-                return
-            end
-            task.wait(0.25)
-        end
-    end)
-end
-
--- ============================================================
---  STATE
--- ============================================================
 _G.WGState = _G.WGState or {
     lang = "vi",
     hitboxOn=false, hitboxSize=15, aoeOn=false, aoeRange=30,
     espPlayers=false, espMushrooms=false, espInfo="off",
-    systemName="chưa đặt tên", personality="normal", utilityUnlocked=false,
+    effects=true, systemName="chưa đặt tên", personality="normal", utilityUnlocked=false,
     walkSpeed=16, jumpPower=50, infJump=false,
     antiAfkOn=false, spamChatOn=false, spamChatMsg="wongavn on top", spamChatDelay=0.8,
     autoTradeOn=false, tradeLog={}, bypassMode="unicode",
@@ -147,7 +65,7 @@ local function saveFullConfig()
             lang=S.lang, hitboxOn=S.hitboxOn, hitboxSize=S.hitboxSize,
             aoeOn=S.aoeOn, aoeRange=S.aoeRange,
             espInfo=S.espInfo, espPlayers=S.espPlayers, espMushrooms=S.espMushrooms,
-            systemName=S.systemName, personality=S.personality,
+            effects=S.effects, systemName=S.systemName, personality=S.personality,
             utilityUnlocked=S.utilityUnlocked,
             walkSpeed=S.walkSpeed, jumpPower=S.jumpPower, infJump=S.infJump,
             flySpeed=S.flySpeed,
@@ -195,14 +113,16 @@ end)
 local function restartScript()
     _G.WGVersion = _G.WGVersion + 1
     saveFullConfig()
-    clearOldUIs()
+    pcall(function()
+        for _, g in ipairs(game:GetService("CoreGui"):GetChildren()) do
+            local nm = g.Name:lower()
+            if nm:find("rayfield") or nm:find("sirius") or nm:find("wg_") then g:Destroy() end
+        end
+    end)
     task.wait(1.5)
     pcall(function() loadstring(game:HttpGet(SCRIPT_URL))() end)
 end
 
--- ============================================================
---  TXT / NGÔN NGỮ
--- ============================================================
 local TXT = {
     vi = {
         tab_ab="🛡️ antiban", tab_combat="⚔️ combat", tab_esp="👁️ esp",
@@ -217,6 +137,7 @@ local TXT = {
         sys_name="tên hệ thống", sys_personality="tính cách",
         walk_slider="tốc độ chạy", jump_slider="lực nhảy",
         inf_jump="nhảy vô hạn",
+        effects_toggle="hiệu ứng menu",
         drag_menu="cho phép kéo menu", lang="chọn ngôn ngữ",
         unlock_misc="🔓 mở khóa năng lực bị phong ấn",
         unlock_hint="script sẽ tự khởi động lại sau khi mở khóa.",
@@ -252,6 +173,7 @@ local TXT = {
         esp_info="esp display", esp_info_opts="off,show name",
         sys_name="system name", sys_personality="personality",
         walk_slider="walk speed", jump_slider="jump power", inf_jump="infinite jump",
+        effects_toggle="menu effects",
         drag_menu="allow drag", lang="language",
         unlock_misc="🔓 unlock sealed power", unlock_hint="script restarts after unlock.",
         util_anti_afk="🟢 anti afk", util_join="👋 player join alert",
@@ -281,7 +203,7 @@ local TXT = {
         hitbox="命中框", hitbox_size="大小", aoe="范围", aoe_range="半径",
         esp_p="esp玩家", esp_m="esp蘑菇 (按颜色)", esp_info="esp显示", esp_info_opts="关闭,显示名称",
         sys_name="系统名", sys_personality="性格", walk_slider="速度", jump_slider="跳跃", inf_jump="无限跳跃",
-        drag_menu="允许拖动", lang="语言",
+        effects_toggle="菜单特效", drag_menu="允许拖动", lang="语言",
         unlock_misc="🔓 解锁封印", unlock_hint="解锁后重启。",
         util_anti_afk="🟢 防挂机", util_join="👋 玩家提醒", util_noclip="👻 穿墙", util_fly="🕊️ 飞行", util_flyspeed="速度",
         antivoid_toggle="防掉落",
@@ -306,7 +228,7 @@ local TXT = {
         hitbox="ヒットボックス", hitbox_size="サイズ", aoe="範囲", aoe_range="半径",
         esp_p="espプレイヤー", esp_m="espキノコ (色別)", esp_info="esp表示", esp_info_opts="オフ,名前",
         sys_name="システム名", sys_personality="性格", walk_slider="速度", jump_slider="ジャンプ", inf_jump="無限ジャンプ",
-        drag_menu="ドラッグ", lang="言語",
+        effects_toggle="メニュー効果", drag_menu="ドラッグ", lang="言語",
         unlock_misc="🔓 封印解除", unlock_hint="解除後再起動。",
         util_anti_afk="🟢 アンチafk", util_join="👋 参加通知", util_noclip="👻 ノークリップ", util_fly="🕊️ フライ", util_flyspeed="速度",
         antivoid_toggle="アンチボイド",
@@ -331,7 +253,7 @@ local TXT = {
         hitbox="히트박스", hitbox_size="크기", aoe="범위", aoe_range="반경",
         esp_p="esp 플레이어", esp_m="esp 버섯 (색상별)", esp_info="esp", esp_info_opts="끄기,이름",
         sys_name="시스템", sys_personality="성격", walk_slider="속도", jump_slider="점프", inf_jump="무한 점프",
-        drag_menu="드래그", lang="언어",
+        effects_toggle="메뉴 효과", drag_menu="드래그", lang="언어",
         unlock_misc="🔓 봉인 해제", unlock_hint="해제 후 재시작.",
         util_anti_afk="🟢 안티afk", util_join="👋 참가 알림", util_noclip="👻 노클립", util_fly="🕊️ 비행", util_flyspeed="속도",
         antivoid_toggle="안티보이드",
@@ -459,6 +381,29 @@ local function getPLine(key)
 end
 
 -- ============================================================
+--  GEN2 HELPER FUNCTIONS
+-- ============================================================
+local Rayfield = nil
+local CurrentWindow = nil
+local buildMenu
+
+local function notify(title, content, duration, image)
+    if not Rayfield then return end
+    pcall(function()
+        Rayfield:Notify({
+            Title = title,
+            Content = content,
+            Duration = duration or 4,
+            Image = image
+        })
+    end)
+end
+
+local function sysNotify(key, custom)
+    notify("⚡ " .. S.systemName, custom or getPLine(key), 4)
+end
+
+-- ============================================================
 --  INTRO SCREEN
 -- ============================================================
 local function showIntro(onDone)
@@ -529,7 +474,7 @@ local function showIntro(onDone)
 end
 
 -- ============================================================
---  SHROOM SCAN
+--  FARM / SHROOM LOGIC
 -- ============================================================
 local farmThread = nil
 local collectRemotes = {}
@@ -740,13 +685,7 @@ local function updateShroomNotify()
     if now - lastNotifyTime < 0.8 then return end
     lastNotifyTime = now
     local total = shroomStats.red + shroomStats.blue + shroomStats.gold
-    pcall(function()
-        Rayfield:Notify({
-            Title = "🍄 " .. S.systemName,
-            Content = "🔴 " .. shroomStats.red .. " | 🔵 " .. shroomStats.blue .. " | 🟡 " .. shroomStats.gold .. " | tổng: " .. total,
-            Duration = 2
-        })
-    end)
+    notify("🍄 " .. S.systemName, "🔴 " .. shroomStats.red .. " | 🔵 " .. shroomStats.blue .. " | 🟡 " .. shroomStats.gold .. " | tổng: " .. total, 2)
 end
 
 local function safeTp(root, pos)
@@ -797,11 +736,7 @@ local function startAutoFarm()
 
             local qCur, qTotal = readShroomQuest()
             if qCur and qTotal and qCur >= qTotal then
-                pcall(function()
-                    Rayfield:Notify({Title = "✅ " .. S.systemName,
-                        Content = "nhiệm vụ hoàn thành " .. qCur .. "/" .. qTotal .. " — chuyển khu!",
-                        Duration = 5})
-                end)
+                notify("✅ " .. S.systemName, "nhiệm vụ hoàn thành " .. qCur .. "/" .. qTotal .. " — chuyển khu!", 5)
                 regionIndex = regionIndex + 1
                 if regionIndex > #MAP_REGIONS then regionIndex = 1 end
                 local region = MAP_REGIONS[regionIndex]
@@ -812,11 +747,7 @@ local function startAutoFarm()
             end
 
             if getHpPercent() < 40 then
-                pcall(function()
-                    Rayfield:Notify({Title = "💀 " .. S.systemName,
-                        Content = "máu nguy hiểm — tạm dừng đợi hồi...",
-                        Duration = 3})
-                end)
+                notify("💀 " .. S.systemName, "máu nguy hiểm — tạm dừng đợi hồi...", 3)
                 waitForHeal(75, 25)
             end
 
@@ -832,11 +763,7 @@ local function startAutoFarm()
                 regionIndex = regionIndex + 1
                 if regionIndex > #MAP_REGIONS then regionIndex = 1 end
                 local region = MAP_REGIONS[regionIndex]
-                pcall(function()
-                    Rayfield:Notify({Title = "🍄 " .. S.systemName,
-                        Content = "hết nấm — tới " .. region.name .. "...",
-                        Duration = 3})
-                end)
+                notify("🍄 " .. S.systemName, "hết nấm — tới " .. region.name .. "...", 3)
                 safeTp(root, Vector3.new(region.x, 100, region.z))
                 collected = setmetatable({}, {__mode = "k"})
                 task.wait(2.5)
@@ -868,11 +795,7 @@ local function startAutoFarm()
 
                 local cCur, cTotal = readShroomQuest()
                 if cCur and cTotal and cCur >= cTotal then
-                    pcall(function()
-                        Rayfield:Notify({Title = "✅ " .. S.systemName,
-                            Content = "đủ quest " .. cCur .. "/" .. cTotal .. " — chuyển khu!",
-                            Duration = 4})
-                    end)
+                    notify("✅ " .. S.systemName, "đủ quest " .. cCur .. "/" .. cTotal .. " — chuyển khu!", 4)
                     regionIndex = regionIndex + 1
                     if regionIndex > #MAP_REGIONS then regionIndex = 1 end
                     local region = MAP_REGIONS[regionIndex]
@@ -912,7 +835,7 @@ local function stopAutoFarm()
 end
 
 -- ============================================================
---  ANTI-DEATH
+--  ANTI DEATH
 -- ============================================================
 local antiDeathThread = nil
 
@@ -957,10 +880,7 @@ local function startAntiDeath()
                     hrp.CFrame = CFrame.new(findSafeSpot())
                     hrp.AssemblyLinearVelocity = Vector3.zero
                     sentAway = true
-                    pcall(function()
-                        Rayfield:Notify({Title = "💀 " .. S.systemName,
-                            Content = "máu thấp — đang trốn ở vùng an toàn...", Duration = 4})
-                    end)
+                    notify("💀 " .. S.systemName, "máu thấp — đang trốn ở vùng an toàn...", 4)
                 end
                 if sentAway then
                     local myPos = hrp.Position
@@ -985,10 +905,7 @@ local function startAntiDeath()
                         h.PlatformStand = false
                         sentAway = false
                         safeReturn = nil
-                        pcall(function()
-                            Rayfield:Notify({Title = "✅ " .. S.systemName,
-                                Content = "hồi máu xong — quay lại.", Duration = 3})
-                        end)
+                        notify("✅ " .. S.systemName, "hồi máu xong — quay lại.", 3)
                     end
                 end
             end
@@ -1008,7 +925,7 @@ local function stopAntiDeath()
 end
 
 -- ============================================================
---  ANTI-VOID
+--  ANTI VOID
 -- ============================================================
 task.spawn(function()
     local v = MY_VERSION
@@ -1058,7 +975,7 @@ local function stopFreecam()
 end
 
 -- ============================================================
---  ANTI-LAG
+--  ANTI LAG
 -- ============================================================
 local antiLagLoopThread = nil
 local shakeConnection = nil
@@ -1356,7 +1273,7 @@ local function enableAntiban()
 end
 
 -- ============================================================
---  CORE LOOPS
+--  CHARACTER UPDATE LOOP
 -- ============================================================
 RunService.Heartbeat:Connect(function()
     if _G.WGVersion ~= MY_VERSION then return end
@@ -1779,40 +1696,58 @@ local function stopSpamChat()
 end
 
 -- ============================================================
---  RAYFIELD GEN 2 + NOTIFICATION ONCE
+--  MENU THEME
 -- ============================================================
-local Rayfield = nil
-local CurrentWindow = nil
-local buildMenu
-
--- ==== HỆ THỐNG THÔNG BÁO 1 LẦN ====
-local notifCache = {}
-local function sysNotify(key, custom)
-    local content = custom or getPLine(key)
-    if notifCache[content] and tick() - notifCache[content] < 1.0 then
-        return
+local function applyMenuTheme()
+    if not S.effects then return end
+    task.wait(1.0)
+    local rayGui = nil
+    for _, g in ipairs(game:GetService("CoreGui"):GetChildren()) do
+        if g:IsA("ScreenGui") then
+            local nm = g.Name:lower()
+            if nm:find("rayfield") or nm:find("sirius") then rayGui = g; break end
+        end
     end
-    notifCache[content] = tick()
-    pcall(function()
-        Rayfield:Notify({
-            Title = "⚡ " .. S.systemName,
-            Content = content,
-            Duration = 4
-        })
-    end)
+    if not rayGui then return end
+    local accents = {normal=Color3.fromRGB(100,200,255), neko=Color3.fromRGB(255,150,220),
+        demon=Color3.fromRGB(220,60,60), king=Color3.fromRGB(255,200,60),
+        hacker=Color3.fromRGB(80,255,140), god=Color3.fromRGB(200,160,255),
+        pervert=Color3.fromRGB(255,100,180)}
+    local accent = accents[S.personality] or accents.normal
+    for _, child in ipairs(rayGui:GetDescendants()) do
+        if child:IsA("GuiObject") then
+            pcall(function()
+                if child:IsA("TextLabel") or child:IsA("TextButton") then
+                    child.TextColor3 = Color3.fromRGB(240,245,255)
+                end
+                if (child:IsA("Frame") or child:IsA("TextButton")) then
+                    local abs = child.AbsoluteSize
+                    if abs.X > 60 and abs.X < 320 and abs.Y > 20 and abs.Y < 70 then
+                        if not child:FindFirstChildOfClass("UIStroke") then
+                            local stroke = Instance.new("UIStroke")
+                            stroke.Color = accent; stroke.Thickness = 1; stroke.Transparency = 0.75
+                            stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+                            stroke.Parent = child
+                        end
+                    end
+                end
+            end)
+        end
+    end
 end
 
+-- ============================================================
+--  UNLOCK
+-- ============================================================
 local function doUnlock()
     if S.utilityUnlocked then
-        sysNotify(nil, "🔓 đã mở rồi.")
-        return
+        notify("🔓", "đã mở rồi.", 3); return
     end
     task.spawn(function()
         for i = 1, 15 do
             pcall(function()
-                Rayfield:Notify({Title = "💥 sức mạnh đang tràn về...",
-                    Content = string.rep("▓", i) .. string.rep("░", 15-i) .. " " .. math.floor(i/15*100) .. "%",
-                    Duration = 1})
+                notify("💥 sức mạnh đang tràn về...",
+                    string.rep("▓", i) .. string.rep("░", 15-i) .. " " .. math.floor(i/15*100) .. "%", 1)
             end)
             task.wait(0.22)
         end
@@ -1821,53 +1756,48 @@ local function doUnlock()
     S.utilityUnlocked = true
     if writefile then pcall(function() writefile("WonGaVn_Seal.txt", "unlocked") end) end
     saveFullConfig()
-    sysNotify(nil, getPLine("unlock"))
+    notify("🔥 " .. S.systemName, getPLine("unlock"), 4)
     task.wait(1.5)
-    sysNotify(nil, getPLine("powerRelease"))
+    notify("⚡ " .. S.systemName, getPLine("powerRelease"), 4)
     task.wait(1.5)
-    sysNotify(nil, "🌟 đang khởi động lại hệ thống...")
+    notify("🌟", "đang khởi động lại hệ thống...", 5)
     task.wait(2)
     restartScript()
 end
 
-UIS.InputBegan:Connect(function(input, gp)
-    if gp then return end
-    if input.KeyCode == Enum.KeyCode.RightShift then
-        if CurrentWindow then pcall(function() CurrentWindow:Toggle() end) end
-    end
-end)
-
+-- ============================================================
+--  BUILD MENU - GEN2 COMPATIBLE
+-- ============================================================
 buildMenu = function()
-    -- Rayfield Gen 2 – CreateWindow
     local Window = Rayfield:CreateWindow({
         Name = "WonGaVn🇻🇳 Script",
-        Icon = 0,
         LoadingTitle = "WonGaVn🇻🇳",
-        LoadingSubtitle = "tiktok: Nkhaj97 | gen 2",
-        Theme = "Amethyst",
-        DisableRayfieldPrompts = false,
-        DisableBuildWarnings = true,
+        LoadingSubtitle = "tiktok: Nkhaj97",
         ConfigurationSaving = { Enabled = false },
-        Discord = { Enabled = false },
-        KeySystem = false,
+        KeySystem = false
     })
     CurrentWindow = Window
 
-    local TabAB     = Window:CreateTab(T("tab_ab"), 4483362458)
-    local TabCombat = Window:CreateTab(T("tab_combat"), 4483362458)
-    local TabESP    = Window:CreateTab(T("tab_esp"), 4483362458)
-    local TabFarm   = Window:CreateTab(T("tab_farm"), 4483362458)
-    local TabMisc   = Window:CreateTab(T("tab_misc"), 4483362458)
-    local TabUtil   = Window:CreateTab(T("tab_util"), 4483362458)
+    -- Tabs (Gen2: CreateTab with table or string)
+    local TabAB = Window:CreateTab({ name = T("tab_ab"), icon = 4483362458 })
+    local TabCombat = Window:CreateTab({ name = T("tab_combat"), icon = 4483362458 })
+    local TabESP = Window:CreateTab({ name = T("tab_esp"), icon = 4483362458 })
+    local TabFarm = Window:CreateTab({ name = T("tab_farm"), icon = 4483362458 })
+    local TabMisc = Window:CreateTab({ name = T("tab_misc"), icon = 4483362458 })
+    local TabUtil = Window:CreateTab({ name = T("tab_util"), icon = 4483362458 })
 
-    -- ============ ANTIBAN ============
+    -- ========== ANTIBAN TAB ==========
     TabAB:CreateSection("🛡️ antiban")
-    TabAB:CreateToggle({Name = T("ab_toggle"), CurrentValue = S.antibanOn ~= false, Flag = "Antiban",
+    TabAB:CreateToggle({
+        Name = T("ab_toggle"),
+        CurrentValue = S.antibanOn ~= false,
+        Flag = "Antiban",
         Callback = function(v)
             S.antibanOn = v
             if v then enableAntiban(); sysNotify("on") else sysNotify("off") end
             saveFullConfig()
-        end})
+        end
+    })
     TabAB:CreateLabel(T("ab_warn_pro"))
 
     TabAB:CreateSection("🛡️ bảo vệ player (Bansby)")
@@ -1878,9 +1808,10 @@ buildMenu = function()
         Flag = "BansbyToggle",
         Callback = function(v)
             _G.WGAntibanSettings.bansbyOn = v
-            if v then sysNotify(nil, "🛡️ đã bật Bansby")
+            if v then
+                notify("🛡️", "đã bật Bansby", 3)
             else
-                sysNotify(nil, "🛡️ đã tắt Bansby")
+                notify("🛡️", "đã tắt Bansby", 3)
                 pcall(function()
                     for _, m in ipairs(workspace:GetChildren()) do
                         if m:IsA("Message") then m:Destroy() end
@@ -1899,22 +1830,30 @@ buildMenu = function()
         Callback = function(t)
             if t and #t > 0 then
                 _G.WGAntibanSettings.protectPlayer = t
-                sysNotify(nil, "🛡️ đang bảo vệ: " .. t)
+                notify("🛡️", "đang bảo vệ: " .. t, 3)
             end
         end
     })
     TabAB:CreateLabel("💡 nếu player này rời server → kick toàn bộ player khác")
 
-    -- ============ COMBAT ============
+    -- ========== COMBAT TAB ==========
     TabCombat:CreateSection("hitbox")
-    TabCombat:CreateToggle({Name = T("hitbox"), CurrentValue = S.hitboxOn, Flag = "Hitbox",
+    TabCombat:CreateToggle({
+        Name = T("hitbox"),
+        CurrentValue = S.hitboxOn,
+        Flag = "Hitbox",
         Callback = function(v)
             S.hitboxOn = v
             if v then startHitbox() else stopHitbox() end
             sysNotify(v and "hitbox_on" or "hitbox_off"); saveFullConfig()
-        end})
-    TabCombat:CreateInput({Name = T("hitbox_size"), CurrentValue = tostring(S.hitboxSize),
-        PlaceholderText = "nhập số", RemoveTextAfterFocusLost = false, Flag = "HitboxSize",
+        end
+    })
+    TabCombat:CreateInput({
+        Name = T("hitbox_size"),
+        CurrentValue = tostring(S.hitboxSize),
+        PlaceholderText = "nhập số",
+        RemoveTextAfterFocusLost = false,
+        Flag = "HitboxSize",
         Callback = function(t)
             local n = tonumber(t)
             if n and n > 0 then
@@ -1925,35 +1864,59 @@ buildMenu = function()
                     end
                 end
                 saveFullConfig()
-                sysNotify(nil, "🎯 hitbox: " .. n)
+                notify("🎯", "hitbox: " .. n, 2)
             end
-        end})
+        end
+    })
     TabCombat:CreateSection("aoe")
-    TabCombat:CreateToggle({Name = T("aoe"), CurrentValue = S.aoeOn, Flag = "AoE",
+    TabCombat:CreateToggle({
+        Name = T("aoe"),
+        CurrentValue = S.aoeOn,
+        Flag = "AoE",
         Callback = function(v)
             S.aoeOn = v
             if v then startAoeLoop(); sysNotify("aoe_on") else sysNotify("aoe_off") end
             saveFullConfig()
-        end})
-    TabCombat:CreateInput({Name = T("aoe_range"), CurrentValue = tostring(S.aoeRange),
-        PlaceholderText = "nhập số", RemoveTextAfterFocusLost = false, Flag = "AoERange",
+        end
+    })
+    TabCombat:CreateInput({
+        Name = T("aoe_range"),
+        CurrentValue = tostring(S.aoeRange),
+        PlaceholderText = "nhập số",
+        RemoveTextAfterFocusLost = false,
+        Flag = "AoERange",
         Callback = function(t)
             local n = tonumber(t)
             if n and n > 0 then S.aoeRange = n; saveFullConfig()
-                sysNotify(nil, "💥 aoe: " .. n) end
-        end})
+                notify("💥", "aoe: " .. n, 2) end
+        end
+    })
     TabCombat:CreateSection("⚠️ cảnh báo")
     TabCombat:CreateLabel(T("combat_warn"))
     TabCombat:CreateLabel(T("speed_warn"))
 
-    -- ============ ESP ============
+    -- ========== ESP TAB ==========
     TabESP:CreateSection("esp")
-    TabESP:CreateToggle({Name = T("esp_p"), CurrentValue = S.espPlayers, Flag = "EspPlayer",
-        Callback = function(v) S.espPlayers = v; if not v then clearPlayerESP() end
-            sysNotify(v and "esp_p_on" or "esp_p_off"); saveFullConfig() end})
-    TabESP:CreateToggle({Name = T("esp_m"), CurrentValue = S.espMushrooms, Flag = "EspMushroom",
-        Callback = function(v) S.espMushrooms = v; if not v then clearMushroomESP() end
-            sysNotify(v and "esp_m_on" or "esp_m_off"); saveFullConfig() end})
+    TabESP:CreateToggle({
+        Name = T("esp_p"),
+        CurrentValue = S.espPlayers,
+        Flag = "EspPlayer",
+        Callback = function(v)
+            S.espPlayers = v
+            if not v then clearPlayerESP() end
+            sysNotify(v and "esp_p_on" or "esp_p_off"); saveFullConfig()
+        end
+    })
+    TabESP:CreateToggle({
+        Name = T("esp_m"),
+        CurrentValue = S.espMushrooms,
+        Flag = "EspMushroom",
+        Callback = function(v)
+            S.espMushrooms = v
+            if not v then clearMushroomESP() end
+            sysNotify(v and "esp_m_on" or "esp_m_off"); saveFullConfig()
+        end
+    })
     TabESP:CreateLabel("🔴 Shoom Pile đỏ — 5-13 shooms")
     TabESP:CreateLabel("🔵 Silver Shoom Pile — 10-30 shooms + token")
     TabESP:CreateLabel("🟡 Gold Shoom Pile — nhiều shooms + material")
@@ -1962,8 +1925,12 @@ buildMenu = function()
     local curEspInfo = espInfoOptions[1]
     if S.espInfo == "name" then curEspInfo = espInfoOptions[2] end
 
-    TabESP:CreateDropdown({Name = T("esp_info"), Options = espInfoOptions,
-        CurrentOption = {curEspInfo}, Flag = "EspInfoDropdown",
+    TabESP:CreateDropdown({
+        Name = T("esp_info"),
+        Options = espInfoOptions,
+        CurrentOption = {curEspInfo},
+        MultipleOptions = false,
+        Flag = "EspInfoDropdown",
         Callback = function(opt)
             local sel = type(opt) == "table" and opt[1] or opt
             if sel == espInfoOptions[1] then S.espInfo = "off"
@@ -1988,10 +1955,11 @@ buildMenu = function()
                     end
                 end
             end
-        end})
+        end
+    })
     TabESP:CreateLabel(T("esp_coming"))
 
-    -- ============ FARM ============
+    -- ========== FARM TAB ==========
     TabFarm:CreateSection("🍄 auto farm shoom pile")
     TabFarm:CreateToggle({
         Name = T("farm_toggle"),
@@ -2008,17 +1976,22 @@ buildMenu = function()
     TabFarm:CreateLabel("🔵 Silver Shoom Pile → 10-30 shooms + token")
     TabFarm:CreateLabel("🟡 Gold Shoom Pile   → nhiều shooms + material")
 
-    -- ============ MISC ============
+    -- ========== MISC TAB ==========
     TabMisc:CreateSection("⚡ " .. T("sys_name"))
-    TabMisc:CreateInput({Name = T("sys_name"), CurrentValue = S.systemName,
-        PlaceholderText = "nhập tên...", RemoveTextAfterFocusLost = false, Flag = "SysName",
+    TabMisc:CreateInput({
+        Name = T("sys_name"),
+        CurrentValue = S.systemName,
+        PlaceholderText = "nhập tên...",
+        RemoveTextAfterFocusLost = false,
+        Flag = "SysName",
         Callback = function(t)
             if t and #t > 0 then
                 S.systemName = t
                 if writefile then pcall(function() writefile("WonGaVn_Name.txt", t) end) end
                 sysNotify(nil, "✅ tên mới: " .. t)
             end
-        end})
+        end
+    })
 
     local pOptions = {}; local curP = nil
     for code, p in pairs(PERSONALITIES) do
@@ -2026,8 +1999,12 @@ buildMenu = function()
         if code == S.personality then curP = p.name end
     end
     table.sort(pOptions)
-    TabMisc:CreateDropdown({Name = T("sys_personality"), Options = pOptions,
-        CurrentOption = curP and {curP} or {}, Flag = "PersonaDrop",
+    TabMisc:CreateDropdown({
+        Name = T("sys_personality"),
+        Options = pOptions,
+        CurrentOption = curP and {curP} or {},
+        MultipleOptions = false,
+        Flag = "PersonaDrop",
         Callback = function(opt)
             local sel = type(opt) == "table" and opt[1] or opt
             for code, p in pairs(PERSONALITIES) do
@@ -2036,13 +2013,14 @@ buildMenu = function()
                     S.personality = code
                     if writefile then pcall(function() writefile("WonGaVn_Personality.txt", code) end) end
                     task.spawn(function()
-                        sysNotify(nil, "🎭 tính cách: " .. sel)
+                        notify("🎭 " .. S.systemName, "tính cách: " .. sel, 2)
                         task.wait(1.5); restartScript()
                     end)
                     break
                 end
             end
-        end})
+        end
+    })
 
     TabMisc:CreateSection("🌐 " .. T("lang"))
     local langOptions = {}; local curLang = nil
@@ -2052,8 +2030,12 @@ buildMenu = function()
         if code == S.lang then curLang = name end
     end
     table.sort(langOptions)
-    TabMisc:CreateDropdown({Name = "🌐 " .. T("lang"), Options = langOptions,
-        CurrentOption = curLang and {curLang} or {}, Flag = "LangDropdown",
+    TabMisc:CreateDropdown({
+        Name = "🌐 " .. T("lang"),
+        Options = langOptions,
+        CurrentOption = curLang and {curLang} or {},
+        MultipleOptions = false,
+        Flag = "LangDropdown",
         Callback = function(opt)
             local selected = type(opt) == "table" and opt[1] or opt
             for code, name in pairs(langMap) do
@@ -2061,36 +2043,82 @@ buildMenu = function()
                     if code ~= S.lang then
                         S.lang = code; saveFullConfig()
                         task.spawn(function()
-                            sysNotify(nil, "🌐 đang đổi ngôn ngữ...")
+                            notify("🌐", "đang đổi ngôn ngữ...", 2)
                             task.wait(1.5); restartScript()
                         end)
                     end
                     break
                 end
             end
-        end})
+        end
+    })
 
     TabMisc:CreateSection("🚶 tốc độ & nhảy")
-    TabMisc:CreateSlider({Name = T("walk_slider"), Range = {16, 1000}, Increment = 10,
-        Suffix = " studs/s", CurrentValue = S.walkSpeed, Flag = "WalkSlider",
-        Callback = function(v) S.walkSpeed = v; saveFullConfig() end})
-    TabMisc:CreateSlider({Name = T("jump_slider"), Range = {50, 1000}, Increment = 10,
-        Suffix = "", CurrentValue = S.jumpPower, Flag = "JumpSlider",
-        Callback = function(v) S.jumpPower = v; saveFullConfig() end})
-    TabMisc:CreateToggle({Name = T("inf_jump"), CurrentValue = S.infJump, Flag = "InfJump",
-        Callback = function(v) S.infJump = v; sysNotify(v and "infjump_on" or "infjump_off"); saveFullConfig() end})
+    TabMisc:CreateSlider({
+        Name = T("walk_slider"),
+        Range = {16, 1000},
+        Increment = 10,
+        Suffix = " studs/s",
+        CurrentValue = S.walkSpeed,
+        Flag = "WalkSlider",
+        Callback = function(v) S.walkSpeed = v; saveFullConfig() end
+    })
+    TabMisc:CreateSlider({
+        Name = T("jump_slider"),
+        Range = {50, 1000},
+        Increment = 10,
+        Suffix = "",
+        CurrentValue = S.jumpPower,
+        Flag = "JumpSlider",
+        Callback = function(v) S.jumpPower = v; saveFullConfig() end
+    })
+    TabMisc:CreateToggle({
+        Name = T("inf_jump"),
+        CurrentValue = S.infJump,
+        Flag = "InfJump",
+        Callback = function(v)
+            S.infJump = v
+            sysNotify(v and "infjump_on" or "infjump_off")
+            saveFullConfig()
+        end
+    })
 
     TabMisc:CreateSection("🎮 di chuyển")
-    TabMisc:CreateToggle({Name = T("util_noclip"), CurrentValue = S.noclipOn, Flag = "NoclipMisc",
-        Callback = function(v) S.noclipOn = v; saveFullConfig(); sysNotify(v and "noclip_on" or "noclip_off") end})
-    TabMisc:CreateToggle({Name = T("util_fly"), CurrentValue = S.flyOn, Flag = "FlyMisc",
-        Callback = function(v) S.flyOn = v; saveFullConfig(); sysNotify(v and "fly_on" or "fly_off") end})
-    TabMisc:CreateSlider({Name = T("util_flyspeed"), Range = {10, 500}, Increment = 10,
-        Suffix = "", CurrentValue = S.flySpeed, Flag = "FlySpeedMisc",
-        Callback = function(v) S.flySpeed = v; saveFullConfig() end})
+    TabMisc:CreateToggle({
+        Name = T("util_noclip"),
+        CurrentValue = S.noclipOn,
+        Flag = "NoclipMisc",
+        Callback = function(v)
+            S.noclipOn = v
+            saveFullConfig()
+            sysNotify(v and "noclip_on" or "noclip_off")
+        end
+    })
+    TabMisc:CreateToggle({
+        Name = T("util_fly"),
+        CurrentValue = S.flyOn,
+        Flag = "FlyMisc",
+        Callback = function(v)
+            S.flyOn = v
+            saveFullConfig()
+            sysNotify(v and "fly_on" or "fly_off")
+        end
+    })
+    TabMisc:CreateSlider({
+        Name = T("util_flyspeed"),
+        Range = {10, 500},
+        Increment = 10,
+        Suffix = "",
+        CurrentValue = S.flySpeed,
+        Flag = "FlySpeedMisc",
+        Callback = function(v) S.flySpeed = v; saveFullConfig() end
+    })
 
     TabMisc:CreateSection("⚡ chống lag")
-    TabMisc:CreateToggle({Name = T("antilag_toggle"), CurrentValue = S.antiLagOn, Flag = "AntiLag",
+    TabMisc:CreateToggle({
+        Name = T("antilag_toggle"),
+        CurrentValue = S.antiLagOn,
+        Flag = "AntiLag",
         Callback = function(v)
             S.antiLagOn = v
             if v then
@@ -2101,17 +2129,29 @@ buildMenu = function()
                 stopAntiLag()
                 sysNotify("antilag_off")
             end
-        end})
+        end
+    })
 
-    -- (ĐÃ XÓA MỤC "hiệu ứng menu" – effects toggle)
     TabMisc:CreateSection("🎨 giao diện")
-    TabMisc:CreateToggle({Name = T("drag_menu"), CurrentValue = S.dragMenu ~= false, Flag = "DragMenu",
+    TabMisc:CreateToggle({
+        Name = T("effects_toggle"),
+        CurrentValue = S.effects ~= false,
+        Flag = "Effects",
+        Callback = function(v)
+            S.effects = v
+            if v then task.spawn(function() pcall(applyMenuTheme) end); sysNotify("on") else sysNotify("off") end
+        end
+    })
+    TabMisc:CreateToggle({
+        Name = T("drag_menu"),
+        CurrentValue = S.dragMenu ~= false,
+        Flag = "DragMenu",
         Callback = function(v)
             S.dragMenu = v
             pcall(function()
                 local parent = (gethui and gethui()) or game:GetService("CoreGui")
                 for _, g in ipairs(parent:GetChildren()) do
-                    local nm = string.lower(g.Name)
+                    local nm = g.Name:lower()
                     if nm:find("rayfield") or nm:find("sirius") then
                         for _, d in ipairs(g:GetDescendants()) do
                             if d:IsA("Frame") and d.Name == "Main" then
@@ -2122,7 +2162,8 @@ buildMenu = function()
                 end
             end)
             sysNotify(nil, v and "🖱️ bật kéo menu" or "🔒 khóa menu"); saveFullConfig()
-        end})
+        end
+    })
 
     TabMisc:CreateSection("🎨 logo script")
     TabMisc:CreateInput({
@@ -2138,7 +2179,7 @@ buildMenu = function()
                 end
                 _G.WGLogoId = t
                 saveLogoId(t)
-                sysNotify(nil, "🎨 đã lưu logo — khởi động lại để áp dụng")
+                notify("🎨", "đã lưu logo — khởi động lại để áp dụng", 4)
             end
         end
     })
@@ -2183,13 +2224,16 @@ buildMenu = function()
             if writefile and delfile and isfile and isfile(LOGO_FILE) then
                 pcall(function() delfile(LOGO_FILE) end)
             end
-            sysNotify(nil, "🎨 đã khôi phục logo WonGaVn")
+            notify("🎨", "đã khôi phục logo WonGaVn", 3)
         end
     })
 
     TabMisc:CreateSection("🔒 phong ấn")
     if not S.utilityUnlocked then
-        TabMisc:CreateButton({Name = T("unlock_misc"), Callback = function() pcall(doUnlock) end})
+        TabMisc:CreateButton({
+            Name = T("unlock_misc"),
+            Callback = function() pcall(doUnlock) end
+        })
         TabMisc:CreateLabel(T("unlock_hint"))
     else
         TabMisc:CreateLabel("✅ phong ấn đã vỡ.")
@@ -2199,24 +2243,27 @@ buildMenu = function()
     TabMisc:CreateButton({
         Name = "📱 tiktok: Nkhaj97",
         Callback = function()
-            sysNotify(nil, T("tiktok_update"))
+            notify("📢 " .. S.systemName, T("tiktok_update"), 8)
         end
     })
     TabMisc:CreateButton({
         Name = "💬 discord: discord.gg/ry3buvjz5",
         Callback = function()
             if setclipboard then pcall(function() setclipboard("https://discord.gg/rY3BUVJz5") end) end
-            sysNotify(nil, "💬 đã copy link!")
+            notify("💬", "đã copy link!", 5)
         end
     })
     TabMisc:CreateLabel(T("tiktok_update"))
     TabMisc:CreateLabel(T("credit"))
 
-    -- ============ UTIL / SEAL ============
+    -- ========== UTIL TAB ==========
     if not S.utilityUnlocked then
         TabUtil:CreateSection("🔒 " .. T("seal_locked"))
         TabUtil:CreateLabel(T("seal_hint"))
-        TabUtil:CreateButton({Name = T("seal_unlock"), Callback = function() pcall(doUnlock) end})
+        TabUtil:CreateButton({
+            Name = T("seal_unlock"),
+            Callback = function() pcall(doUnlock) end
+        })
     else
         TabUtil:CreateSection("💀 anti-death")
         TabUtil:CreateToggle({
@@ -2242,18 +2289,37 @@ buildMenu = function()
         TabUtil:CreateLabel(T("antideath_hint"))
 
         TabUtil:CreateSection("🔧 utility")
-        TabUtil:CreateToggle({Name = T("util_anti_afk"), CurrentValue = S.antiAfkOn, Flag = "AntiAfk",
-            Callback = function(v) S.antiAfkOn = v; sysNotify(v and "afk_on" or "afk_off") end})
-        TabUtil:CreateToggle({Name = T("util_join"), CurrentValue = S.playerJoinAlert, Flag = "PlayerJoin",
-            Callback = function(v) S.playerJoinAlert = v; saveFullConfig() end})
+        TabUtil:CreateToggle({
+            Name = T("util_anti_afk"),
+            CurrentValue = S.antiAfkOn,
+            Flag = "AntiAfk",
+            Callback = function(v)
+                S.antiAfkOn = v
+                sysNotify(v and "afk_on" or "afk_off")
+            end
+        })
+        TabUtil:CreateToggle({
+            Name = T("util_join"),
+            CurrentValue = S.playerJoinAlert,
+            Flag = "PlayerJoin",
+            Callback = function(v)
+                S.playerJoinAlert = v
+                saveFullConfig()
+            end
+        })
 
         TabUtil:CreateSection("🎥 freecam")
-        TabUtil:CreateToggle({Name = T("freecam_toggle"), CurrentValue = false, Flag = "FreecamToggle",
+        TabUtil:CreateToggle({
+            Name = T("freecam_toggle"),
+            CurrentValue = false,
+            Flag = "FreecamToggle",
             Callback = function(v)
                 if v then startFreecam(); sysNotify("freecam_on")
                 else stopFreecam(); sysNotify("freecam_off") end
-            end})
-        TabUtil:CreateInput({Name = T("freecam_maxzoom"),
+            end
+        })
+        TabUtil:CreateInput({
+            Name = T("freecam_maxzoom"),
             CurrentValue = tostring(S.freecamMaxZoom or 10000),
             PlaceholderText = "10000",
             RemoveTextAfterFocusLost = false,
@@ -2266,37 +2332,70 @@ buildMenu = function()
                         pcall(function() LP.CameraMaxZoomDistance = n end)
                     end
                     saveFullConfig()
-                    sysNotify(nil, "🎥 zoom max: " .. n)
+                    notify("🎥", "zoom max: " .. n, 2)
                 end
-            end})
+            end
+        })
         TabUtil:CreateLabel(T("freecam_hint"))
 
         TabUtil:CreateSection("🛡️ anti-void")
-        TabUtil:CreateToggle({Name = T("antivoid_toggle"), CurrentValue = S.antivoidOn, Flag = "AntiVoid",
-            Callback = function(v) S.antivoidOn = v; sysNotify(v and "antivoid_on" or "antivoid_off") end})
+        TabUtil:CreateToggle({
+            Name = T("antivoid_toggle"),
+            CurrentValue = S.antivoidOn,
+            Flag = "AntiVoid",
+            Callback = function(v)
+                S.antivoidOn = v
+                sysNotify(v and "antivoid_on" or "antivoid_off")
+            end
+        })
 
         TabUtil:CreateSection("💬 spam chat")
-        TabUtil:CreateToggle({Name = T("spam_toggle"), CurrentValue = S.spamChatOn, Flag = "SpamChat",
+        TabUtil:CreateToggle({
+            Name = T("spam_toggle"),
+            CurrentValue = S.spamChatOn,
+            Flag = "SpamChat",
             Callback = function(v)
                 S.spamChatOn = v
                 if v then startSpamChat() else stopSpamChat() end
                 sysNotify(v and "spam_on" or "spam_off")
-            end})
-        TabUtil:CreateInput({Name = T("spam_msg"), CurrentValue = S.spamChatMsg,
-            PlaceholderText = "wongavn on top", RemoveTextAfterFocusLost = false, Flag = "SpamMsg",
-            Callback = function(t) if t and #t > 0 then S.spamChatMsg = t; saveFullConfig() end end})
-        TabUtil:CreateSlider({Name = T("spam_delay"), Range = {0.3, 5}, Increment = 0.1,
-            Suffix = "s", CurrentValue = S.spamChatDelay, Flag = "SpamDelay",
-            Callback = function(v) S.spamChatDelay = v; saveFullConfig() end})
+            end
+        })
+        TabUtil:CreateInput({
+            Name = T("spam_msg"),
+            CurrentValue = S.spamChatMsg,
+            PlaceholderText = "wongavn on top",
+            RemoveTextAfterFocusLost = false,
+            Flag = "SpamMsg",
+            Callback = function(t)
+                if t and #t > 0 then
+                    S.spamChatMsg = t
+                    saveFullConfig()
+                end
+            end
+        })
+        TabUtil:CreateSlider({
+            Name = T("spam_delay"),
+            Range = {0.3, 5},
+            Increment = 0.1,
+            Suffix = "s",
+            CurrentValue = S.spamChatDelay,
+            Flag = "SpamDelay",
+            Callback = function(v) S.spamChatDelay = v; saveFullConfig() end
+        })
 
         TabUtil:CreateSection("🔄 auto trade")
-        TabUtil:CreateToggle({Name = T("trade_toggle"), CurrentValue = S.autoTradeOn, Flag = "AutoTrade",
+        TabUtil:CreateToggle({
+            Name = T("trade_toggle"),
+            CurrentValue = S.autoTradeOn,
+            Flag = "AutoTrade",
             Callback = function(v)
                 S.autoTradeOn = v
                 if v then setupTradeHooks() end
                 sysNotify(v and "trade_on" or "trade_off")
-            end})
-        TabUtil:CreateButton({Name = T("trade_view"),
+            end
+        })
+        TabUtil:CreateButton({
+            Name = T("trade_view"),
             Callback = function()
                 local text = "=== lịch sử giao dịch ===\n"
                 if #S.tradeLog == 0 then text = text .. "(chưa có)"
@@ -2308,53 +2407,46 @@ buildMenu = function()
                             .. t.trader .. " — " .. t.item
                     end
                 end
-                sysNotify(nil, text)
-            end})
-        TabUtil:CreateButton({Name = T("trade_clear"),
+                notify("📋", text, 15)
+            end
+        })
+        TabUtil:CreateButton({
+            Name = T("trade_clear"),
             Callback = function()
                 S.tradeLog = {}
                 if writefile then pcall(function() writefile(TRADE_FILE, "[]") end) end
-                sysNotify(nil, "🗑️ đã xóa")
-            end})
+                notify("🗑️", "đã xóa", 2)
+            end
+        })
     end
 end
 
 -- ============================================================
---  START
+--  START MAIN
 -- ============================================================
 local function startMain()
-    -- Xóa UI cũ lần cuối trước khi load Rayfield Gen 2
-    clearOldUIs()
-    task.wait(0.3)
-
     local ok, err = pcall(function()
-        Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+        -- ✅ Link Rayfield Gen2
+        Rayfield = loadstring(game:HttpGet("https://sirius.menu/gen2"))()
     end)
     if not ok or not Rayfield then
-        warn("[wongavn] không load được rayfield: " .. tostring(err)); return
+        warn("[wongavn] không load được rayfield gen2: " .. tostring(err)); return
     end
 
-    task.spawn(injectLogoIntoLoading)
     task.wait(0.5)
-
     local ok2, err2 = pcall(buildMenu)
     if not ok2 then
         warn("[wongavn] buildmenu lỗi: " .. tostring(err2)); return
     end
-
     task.wait(1)
     enableAntiban()
     task.wait(0.5)
-
-    -- ✅ CHỈ 1 THÔNG BÁO KHI BẬT SCRIPT
+    pcall(applyMenuTheme)
+    sysNotify("loaded")
+    task.wait(2)
     pcall(function()
-        Rayfield:Notify({
-            Title = "⚡ " .. S.systemName,
-            Content = getPLine("loaded") .. "\n" .. T("testing_notif"),
-            Duration = 8
-        })
+        notify("🧪 " .. S.systemName, T("testing_notif"), 8)
     end)
-
     task.spawn(function()
         while _G.WGVersion == MY_VERSION do
             task.wait(30)
