@@ -1,11 +1,11 @@
 -- ============================================================
---  WonGaVn🇻🇳 Script - V3.4 GEN2 FINAL
+--  WonGaVn🇻🇳 Script - V3.5 GEN2
 --  tiktok: Nkhaj97 | discord: discord.gg/ry3buvjz5
 -- ============================================================
 local SCRIPT_URL = "https://raw.githubusercontent.com/nguyenkha233/WonGaVn/refs/heads/main/creature%20of%20sonaria"
-local VERSION_TAG = "V3.4 GEN2"
+local VERSION_TAG = "V3.5 GEN2"
 
--- ✅ Chống chạy song song
+-- ✅ Chống chạy song song + version lock
 if _G.WGLoaded == VERSION_TAG then
     warn("[WonGaVn] " .. VERSION_TAG .. " đang chạy — bỏ qua")
     return
@@ -43,14 +43,11 @@ local TCS          = game:GetService("TextChatService")
 local StarterGui   = game:GetService("StarterGui")
 local LP           = Players.LocalPlayer
 
--- ─────────────────────────────────────────────────────────────
---  §2. VERSION GUARD
--- ─────────────────────────────────────────────────────────────
 _G.WGVersion = (_G.WGVersion or 0) + 1
 local MY_VERSION = _G.WGVersion
 
 -- ─────────────────────────────────────────────────────────────
---  §3. STATE
+--  §2. STATE
 -- ─────────────────────────────────────────────────────────────
 _G.WGState = _G.WGState or {
     lang="vi",
@@ -62,32 +59,22 @@ _G.WGState = _G.WGState or {
     autoTradeOn=false, tradeLog={}, bypassMode="unicode",
     playerJoinAlert=true, flyOn=false, flySpeed=50, noclipOn=false,
     antivoidOn=false, antivoidSafe=Vector3.new(0,50,0),
-    dragMenu=true,
-    autoFarmOn=false,
+    dragMenu=true, autoFarmOn=false,
     antiDeathOn=false, antiDeathThreshold=30,
-    antiLagOn=false,
-    antibanOn=true,
-    zoomXaOn=false,        -- ✅ đổi tên: không còn freecam
-    zoomDistance=99999,    -- khoảng cách zoom cố định
-    watermarkOn=true,
-    themeColor="6496FF",
-    menuKey="RightShift",
-    hitboxKey="F2",
-    aoeKey="F3",
-    flyKey="F4",
-    noclipKey="F5",
-    farmKey="F6",
-    zoomKey="F7",
+    antiLagOn=false, antibanOn=true,
+    zoomXaOn=false, zoomDistance=99999,
+    watermarkOn=true, themeColor="6496FF",
+    menuKey="RightShift", hitboxKey="F2", aoeKey="F3",
+    flyKey="F4", noclipKey="F5", farmKey="F6", zoomKey="F7",
 }
 local S = _G.WGState
 
 _G.WGAntibanSettings = _G.WGAntibanSettings or {
-    protectPlayer = "wongavnx",
-    bansbyOn = false,
+    protectPlayer = "wongavnx", bansbyOn = false,
 }
 
 -- ─────────────────────────────────────────────────────────────
---  §4. CONFIG I/O
+--  §3. CONFIG I/O
 -- ─────────────────────────────────────────────────────────────
 local CONFIG_FILE = "WonGaVn_Config.json"
 
@@ -101,8 +88,7 @@ local function saveFullConfig()
             effects=S.effects, systemName=S.systemName, personality=S.personality,
             utilityUnlocked=S.utilityUnlocked,
             walkSpeed=S.walkSpeed, jumpPower=S.jumpPower, infJump=S.infJump,
-            flySpeed=S.flySpeed,
-            spamChatMsg=S.spamChatMsg, spamChatDelay=S.spamChatDelay,
+            flySpeed=S.flySpeed, spamChatMsg=S.spamChatMsg, spamChatDelay=S.spamChatDelay,
             bypassMode=S.bypassMode, playerJoinAlert=S.playerJoinAlert, dragMenu=S.dragMenu,
             antiDeathThreshold=S.antiDeathThreshold, antibanOn=S.antibanOn,
             bansbyOn=_G.WGAntibanSettings.bansbyOn,
@@ -145,11 +131,9 @@ pcall(function()
 end)
 
 -- ─────────────────────────────────────────────────────────────
---  §5. HARD CLEANUP + SOFT RELOAD
+--  §4. HARD CLEANUP + SOFT RELOAD
 -- ─────────────────────────────────────────────────────────────
-local Rayfield      = nil
-local CurrentWindow = nil
-local buildMenu
+local Rayfield, CurrentWindow, buildMenu
 
 local function hardCleanup()
     local parent = (gethui and gethui()) or game:GetService("CoreGui")
@@ -173,19 +157,15 @@ local function softReload()
     if _G.WGWatermarkRef then pcall(function() _G.WGWatermarkRef:Destroy() end); _G.WGWatermarkRef = nil end
     hardCleanup()
     task.wait(0.4)
-
-    Rayfield = nil
-    CurrentWindow = nil
+    Rayfield = nil; CurrentWindow = nil
 
     local ok = pcall(function()
         Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
     end)
     if not ok or not Rayfield then
         warn("[wongavn] soft reload fail")
-        _softReloading = false
-        return
+        _softReloading = false; return
     end
-
     task.wait(0.4)
     pcall(buildMenu)
     task.wait(0.6)
@@ -200,7 +180,7 @@ end
 local restartScript = softReload
 
 -- ─────────────────────────────────────────────────────────────
---  §6. TRANSLATIONS
+--  §5. TRANSLATIONS (5 ngôn ngữ - giữ nguyên bản cũ)
 -- ─────────────────────────────────────────────────────────────
 local TXT = {
     vi = {
@@ -212,11 +192,10 @@ local TXT = {
         hitbox="bật hitbox", hitbox_size="kích thước hitbox",
         aoe="bật aoe", aoe_range="bán kính aoe",
         esp_p="esp player", esp_m="esp shoom (màu theo loại)",
-        esp_info="hiển thị esp",
+        esp_info="hiển thị esp", esp_info_opts="tắt,hiện tên",
         sys_name="tên hệ thống", sys_personality="tính cách",
-        walk_slider="tốc độ chạy", jump_slider="lực nhảy",
-        inf_jump="nhảy vô hạn", effects_toggle="hiệu ứng menu",
-        drag_menu="cho phép kéo menu", lang="chọn ngôn ngữ",
+        walk_slider="tốc độ chạy", jump_slider="lực nhảy", inf_jump="nhảy vô hạn",
+        effects_toggle="hiệu ứng menu", drag_menu="cho phép kéo menu", lang="chọn ngôn ngữ",
         unlock_misc="🔓 mở khóa năng lực bị phong ấn",
         unlock_hint="script sẽ tự khởi động lại sau khi mở khóa.",
         util_anti_afk="🟢 anti afk", util_join="👋 thông báo người vào",
@@ -247,7 +226,7 @@ local TXT = {
         hitbox="enable hitbox", hitbox_size="hitbox size",
         aoe="enable aoe", aoe_range="aoe range",
         esp_p="esp player", esp_m="esp shoom (color by type)",
-        esp_info="esp display",
+        esp_info="esp display", esp_info_opts="off,show name",
         sys_name="system name", sys_personality="personality",
         walk_slider="walk speed", jump_slider="jump power", inf_jump="infinite jump",
         effects_toggle="menu effects", drag_menu="allow drag", lang="language",
@@ -268,6 +247,75 @@ local TXT = {
         antideath_hint="💡 low HP → TP far 8000-12000 studs to heal.",
         antilag_toggle="🚀 ultra anti-lag (120 FPS + no screen shake)",
     },
+    cn = {
+        tab_ab="🛡️ 反封", tab_combat="⚔️ 战斗", tab_esp="👁️ esp",
+        tab_farm="🍄 自动农场", tab_misc="⚙️ 杂项", tab_util="🔒 封印",
+        ab_toggle="启用反封", ab_warn_pro="🛡️ 反封 85%。",
+        combat_warn="⚠️ 战斗游戏！", speed_warn="⚠️ 500-1000。",
+        hitbox="命中框", hitbox_size="大小", aoe="范围", aoe_range="半径",
+        esp_p="esp玩家", esp_m="esp蘑菇", esp_info="esp显示", esp_info_opts="关闭,显示名称",
+        sys_name="系统名", sys_personality="性格", walk_slider="速度", jump_slider="跳跃", inf_jump="无限跳跃",
+        effects_toggle="菜单特效", drag_menu="允许拖动", lang="语言",
+        unlock_misc="🔓 解锁封印", unlock_hint="解锁后重启。",
+        util_anti_afk="🟢 防挂机", util_join="👋 玩家提醒", util_noclip="👻 穿墙", util_fly="🕊️ 飞行", util_flyspeed="速度",
+        antivoid_toggle="防掉落",
+        zoom_toggle="🔭 无限缩放 (Roblox默认相机)",
+        zoom_hint="💡 使用Roblox相机旋转,可无限缩放—不会重置。",
+        spam_toggle="刷屏", spam_msg="消息", spam_delay="延迟",
+        trade_toggle="自动交易", trade_view="📋 历史", trade_clear="🗑️ 清除",
+        seal_locked="🔒 封印未破", seal_hint="💡 点击下方。", seal_unlock="🔓 立即解锁",
+        credit="WonGaVn🇻🇳 | Nkhaj97", testing_notif="⚠️ 测试中。", esp_coming="🚧 更新中。",
+        tiktok_update="📢 tiktok Nkhaj97", update_section="📢 更新",
+        farm_toggle="🍄 启用自动农场",
+        antideath_toggle="💀 防死亡", antideath_threshold="📊 生命阈值(%)",
+        antideath_hint="💡 生命低时移动至安全处。", antilag_toggle="🚀 防卡",
+    },
+    jp = {
+        tab_ab="🛡️ アンチban", tab_combat="⚔️ 戦闘", tab_esp="👁️ esp",
+        tab_farm="🍄 自動ファーム", tab_misc="⚙️ その他", tab_util="🔒 封印",
+        ab_toggle="アンチban", ab_warn_pro="🛡️ アンチban 85%。",
+        combat_warn="⚠️ 戦闘ゲーム！", speed_warn="⚠️ 500-1000。",
+        hitbox="ヒットボックス", hitbox_size="サイズ", aoe="範囲", aoe_range="半径",
+        esp_p="espプレイヤー", esp_m="espキノコ", esp_info="esp表示", esp_info_opts="オフ,名前",
+        sys_name="システム名", sys_personality="性格", walk_slider="速度", jump_slider="ジャンプ", inf_jump="無限ジャンプ",
+        effects_toggle="メニュー効果", drag_menu="ドラッグ", lang="言語",
+        unlock_misc="🔓 封印解除", unlock_hint="解除後再起動。",
+        util_anti_afk="🟢 アンチafk", util_join="👋 参加通知", util_noclip="👻 ノークリップ", util_fly="🕊️ フライ", util_flyspeed="速度",
+        antivoid_toggle="アンチボイド",
+        zoom_toggle="🔭 無限ズーム (Robloxデフォルト)",
+        zoom_hint="💡 Robloxカメラ回転、無限ズーム—リセットなし。",
+        spam_toggle="スパム", spam_msg="メッセージ", spam_delay="間隔",
+        trade_toggle="自動トレード", trade_view="📋 履歴", trade_clear="🗑️ 削除",
+        seal_locked="🔒 封印中", seal_hint="💡 下のボタン。", seal_unlock="🔓 解除",
+        credit="WonGaVn🇻🇳 | Nkhaj97", testing_notif="⚠️ テスト中。", esp_coming="🚧 更新中。",
+        tiktok_update="📢 tiktok Nkhaj97", update_section="📢 更新",
+        farm_toggle="🍄 自動ファーム有効",
+        antideath_toggle="💀 アンチデス", antideath_threshold="📊 HP閾値(%)",
+        antideath_hint="💡 HP低下時に安全地帯へ。", antilag_toggle="🚀 超アンチラグ",
+    },
+    kr = {
+        tab_ab="🛡️ 안티밴", tab_combat="⚔️ 전투", tab_esp="👁️ esp",
+        tab_farm="🍄 자동 파밍", tab_misc="⚙️ 기타", tab_util="🔒 봉인",
+        ab_toggle="안티밴", ab_warn_pro="🛡️ 안티밴 85%.",
+        combat_warn="⚠️ 전투 게임!", speed_warn="⚠️ 500-1000.",
+        hitbox="히트박스", hitbox_size="크기", aoe="범위", aoe_range="반경",
+        esp_p="esp 플레이어", esp_m="esp 버섯", esp_info="esp", esp_info_opts="끄기,이름",
+        sys_name="시스템", sys_personality="성격", walk_slider="속도", jump_slider="점프", inf_jump="무한 점프",
+        effects_toggle="메뉴 효과", drag_menu="드래그", lang="언어",
+        unlock_misc="🔓 봉인 해제", unlock_hint="해제 후 재시작.",
+        util_anti_afk="🟢 안티afk", util_join="👋 참가 알림", util_noclip="👻 노클립", util_fly="🕊️ 비행", util_flyspeed="속도",
+        antivoid_toggle="안티보이드",
+        zoom_toggle="🔭 무한 줌 (Roblox 기본 카메라)",
+        zoom_hint="💡 Roblox 카메라 회전, 무한 줌—리셋 없음.",
+        spam_toggle="스팸", spam_msg="메시지", spam_delay="지연",
+        trade_toggle="자동 거래", trade_view="📋 기록", trade_clear="🗑️ 삭제",
+        seal_locked="🔒 봉인 중", seal_hint="💡 아래 버튼.", seal_unlock="🔓 지금 해제",
+        credit="WonGaVn🇻🇳 | Nkhaj97", testing_notif="⚠️ 테스트 중.", esp_coming="🚧 업데이트 중.",
+        tiktok_update="📢 tiktok Nkhaj97", update_section="📢 업데이트",
+        farm_toggle="🍄 자동 파밍",
+        antideath_toggle="💀 안티데스", antideath_threshold="📊 HP 임계값(%)",
+        antideath_hint="💡 HP 낮으면 안전한 곳으로.", antilag_toggle="🚀 초강력 안티랙",
+    },
 }
 local function T(k)
     local t = TXT[S.lang] or TXT.vi
@@ -275,7 +323,7 @@ local function T(k)
 end
 
 -- ─────────────────────────────────────────────────────────────
---  §7. PERSONALITIES
+--  §6. PERSONALITIES (7 - giữ nguyên bản cũ)
 -- ─────────────────────────────────────────────────────────────
 local PERSONALITIES = {
     normal = { name="bình thường", lines={loaded="ta đã trở lại.", on="đã kích hoạt.", off="đã tắt.",
@@ -362,7 +410,7 @@ local function getPLine(key)
 end
 
 -- ─────────────────────────────────────────────────────────────
---  §8. THEME / WATERMARK / ICONS
+--  §7. THEME / WATERMARK / ICONS
 -- ─────────────────────────────────────────────────────────────
 _G.WGThemeColor = _G.WGThemeColor or Color3.fromRGB(100,200,255)
 local watermarkGui = nil
@@ -374,15 +422,11 @@ local function hexToColor(hex)
     if not n then return _G.WGThemeColor end
     local b32 = bit32 or bit
     if not b32 then return _G.WGThemeColor end
-    return Color3.fromRGB(
-        b32.band(b32.rshift(n, 16), 0xFF),
-        b32.band(b32.rshift(n, 8), 0xFF),
-        b32.band(n, 0xFF))
+    return Color3.fromRGB(b32.band(b32.rshift(n,16),0xFF), b32.band(b32.rshift(n,8),0xFF), b32.band(n,0xFF))
 end
 
 local function colorToHex(c)
-    return string.format("%02X%02X%02X",
-        math.floor(c.R * 255), math.floor(c.G * 255), math.floor(c.B * 255))
+    return string.format("%02X%02X%02X", math.floor(c.R*255), math.floor(c.G*255), math.floor(c.B*255))
 end
 
 local function applyThemeColor(color)
@@ -433,16 +477,13 @@ local function createWatermark()
     Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
 
     local stroke = Instance.new("UIStroke", frame)
-    stroke.Color = _G.WGThemeColor
-    stroke.Thickness = 1.5
-    stroke.Transparency = 0.3
+    stroke.Color = _G.WGThemeColor; stroke.Thickness = 1.5; stroke.Transparency = 0.3
 
     local grad = Instance.new("UIGradient", frame)
     grad.Color = ColorSequence.new(_G.WGThemeColor, Color3.fromRGB(255,255,255))
     grad.Transparency = NumberSequence.new({
         NumberSequenceKeypoint.new(0, 0.7),
-        NumberSequenceKeypoint.new(1, 0.95),
-    })
+        NumberSequenceKeypoint.new(1, 0.95)})
     grad.Rotation = 90
 
     local badge = Instance.new("TextLabel", frame)
@@ -501,7 +542,7 @@ local ICONS = {
 }
 
 -- ─────────────────────────────────────────────────────────────
---  §9. NOTIFY DEDUP
+--  §8. NOTIFY DEDUP
 -- ─────────────────────────────────────────────────────────────
 local _notifyCache = {}
 local _notifyLast = 0
@@ -526,7 +567,7 @@ end
 _G.WGResetNotify = resetNotifyCache
 
 -- ─────────────────────────────────────────────────────────────
---  §10. INTRO SCREEN
+--  §9. INTRO SCREEN
 -- ─────────────────────────────────────────────────────────────
 local function showIntro(onDone)
     local parent = (gethui and gethui()) or game:GetService("CoreGui")
@@ -606,7 +647,7 @@ local function showIntro(onDone)
 end
 
 -- ─────────────────────────────────────────────────────────────
---  §11. LOADING LOGO
+--  §10. LOADING LOGO
 -- ─────────────────────────────────────────────────────────────
 local function injectLogoIntoLoading()
     task.spawn(function()
@@ -646,7 +687,7 @@ local function injectLogoIntoLoading()
 end
 
 -- ─────────────────────────────────────────────────────────────
---  §12. SHROOM DETECTION & AUTO FARM
+--  §11. SHROOM DETECTION & AUTO FARM
 -- ─────────────────────────────────────────────────────────────
 local farmThread = nil
 local collectRemotes = {}
@@ -665,32 +706,21 @@ task.spawn(function()
 end)
 
 local MAP_REGIONS = {
-    {name = "Flower Cove",       x = 2200,  z = 500},
-    {name = "Forgotten Shores",  x = 2600,  z = 1200},
-    {name = "Volcano Island",    x = 2400,  z = -2200},
-    {name = "Jungle",            x = -2000, z = -1800},
-    {name = "Pride Rocks",       x = -2200, z = -800},
-    {name = "Desert",            x = -1800, z = 2000},
-    {name = "Tundra",            x = -2400, z = 2600},
-    {name = "Swamp Hollow",      x = -600,  z = 1800},
-    {name = "Redwoods",          x = 200,   z = -1000},
-    {name = "Mesa",              x = 800,   z = 500},
-    {name = "Mountains",         x = -500,  z = -2000},
-    {name = "Central Rockfaces", x = -800,  z = 500},
-    {name = "Coral Reef",        x = -1500, z = -2600},
-    {name = "Seaweed Depths",    x = 1000,  z = -2600},
-    {name = "Rocky Drop",        x = 1600,  z = -1600},
-    {name = "Grassy Shoal",      x = 0,     z = 2600},
+    {name = "Flower Cove", x = 2200, z = 500}, {name = "Forgotten Shores", x = 2600, z = 1200},
+    {name = "Volcano Island", x = 2400, z = -2200}, {name = "Jungle", x = -2000, z = -1800},
+    {name = "Pride Rocks", x = -2200, z = -800}, {name = "Desert", x = -1800, z = 2000},
+    {name = "Tundra", x = -2400, z = 2600}, {name = "Swamp Hollow", x = -600, z = 1800},
+    {name = "Redwoods", x = 200, z = -1000}, {name = "Mesa", x = 800, z = 500},
+    {name = "Mountains", x = -500, z = -2000}, {name = "Central Rockfaces", x = -800, z = 500},
+    {name = "Coral Reef", x = -1500, z = -2600}, {name = "Seaweed Depths", x = 1000, z = -2600},
+    {name = "Rocky Drop", x = 1600, z = -1600}, {name = "Grassy Shoal", x = 0, z = 2600},
 }
 
 local function nameIsShoomPile(name)
     if not name then return false end
     local n = name:lower()
-    return n:find("shoom pile", 1, true) ~= nil
-        or n:find("shoompile", 1, true) ~= nil
-        or n:find("shoom_pile", 1, true) ~= nil
-        or n:find("silver shoom", 1, true) ~= nil
-        or n:find("gold shoom", 1, true) ~= nil
+    return n:find("shoom pile",1,true) or n:find("shoompile",1,true) or n:find("shoom_pile",1,true)
+        or n:find("silver shoom",1,true) or n:find("gold shoom",1,true)
 end
 
 local function getColorType(color)
@@ -728,8 +758,8 @@ local function detectShroom(obj)
     if sz.X < 8 or sz.Z < 8 or sz.Y < 3 then return false, nil end
     local nameLower = obj.Name:lower()
     local colorType = nil
-    if nameLower:find("silver", 1, true) then colorType = "blue"
-    elseif nameLower:find("gold", 1, true) then colorType = "gold"
+    if nameLower:find("silver",1,true) then colorType = "blue"
+    elseif nameLower:find("gold",1,true) then colorType = "gold"
     else
         local col = getPartColor(obj)
         colorType = getColorType(col) or "red"
@@ -745,9 +775,7 @@ local function findShrooms()
             if ok then
                 local rootObj = obj
                 if obj:IsA("BasePart") and obj.Parent and obj.Parent:IsA("Model")
-                   and nameIsShoomPile(obj.Parent.Name) then
-                    rootObj = obj.Parent
-                end
+                   and nameIsShoomPile(obj.Parent.Name) then rootObj = obj.Parent end
                 if not seen[rootObj] then
                     seen[rootObj] = true
                     table.insert(list, {obj = rootObj, colorType = ctype})
@@ -794,7 +822,7 @@ local function readShroomQuest()
     for _, gui in ipairs(LP.PlayerGui:GetDescendants()) do
         if gui:IsA("TextLabel") or gui:IsA("TextButton") then
             local txt = (gui.Text or ""):lower()
-            if txt:find("shoom", 1, true) or txt:find("shroom", 1, true) or txt:find("pile", 1, true) then
+            if txt:find("shoom",1,true) or txt:find("shroom",1,true) or txt:find("pile",1,true) then
                 local cur, total = txt:match("(%d+)%s*/%s*(%d+)")
                 if cur and total then
                     cur, total = tonumber(cur), tonumber(total)
@@ -993,7 +1021,7 @@ local function stopAutoFarm()
 end
 
 -- ─────────────────────────────────────────────────────────────
---  §13. ANTI-DEATH
+--  §12. ANTI-DEATH
 -- ─────────────────────────────────────────────────────────────
 local antiDeathThread = nil
 
@@ -1001,7 +1029,7 @@ local function findSafeSpot()
     for _ = 1, 25 do
         local angle = math.random() * math.pi * 2
         local dist = 8000 + math.random() * 4000
-        local pos = Vector3.new(math.cos(angle) * dist, 1500 + math.random() * 1500, math.sin(angle) * dist)
+        local pos = Vector3.new(math.cos(angle)*dist, 1500 + math.random()*1500, math.sin(angle)*dist)
         local safe = true
         for _, pl in ipairs(Players:GetPlayers()) do
             if pl ~= LP then
@@ -1052,7 +1080,7 @@ local function startAntiDeath()
                         hrp.AssemblyLinearVelocity = Vector3.zero
                     end
                     if hpPct >= math.min(threshold + 30, 95) and not nearEnemy then
-                        if safeReturn then hrp.CFrame = CFrame.new(safeReturn + Vector3.new(0, 3, 0)) end
+                        if safeReturn then hrp.CFrame = CFrame.new(safeReturn + Vector3.new(0,3,0)) end
                         h.PlatformStand = false
                         sentAway = false; safeReturn = nil
                         pcall(function()
@@ -1078,7 +1106,7 @@ local function stopAntiDeath()
 end
 
 -- ─────────────────────────────────────────────────────────────
---  §14. ANTI-VOID LOOP
+--  §13. ANTI-VOID LOOP
 -- ─────────────────────────────────────────────────────────────
 task.spawn(function()
     local v = MY_VERSION
@@ -1090,7 +1118,7 @@ task.spawn(function()
                 local pos = root.Position
                 if pos.Y > -100 then S.antivoidSafe = pos end
                 if pos.Y < -500 then
-                    root.CFrame = CFrame.new((S.antivoidSafe or Vector3.new(0, 50, 0)) + Vector3.new(0, 5, 0))
+                    root.CFrame = CFrame.new((S.antivoidSafe or Vector3.new(0,50,0)) + Vector3.new(0,5,0))
                 end
             end
         end
@@ -1099,7 +1127,7 @@ task.spawn(function()
 end)
 
 -- ─────────────────────────────────────────────────────────────
---  §15. ZOOM VÔ HẠN (camera mặc định Roblox)
+--  §14. ZOOM VÔ HẠN (camera mặc định Roblox)
 -- ─────────────────────────────────────────────────────────────
 local zoomThread = nil
 local oldZoomMin, oldZoomMax = nil, nil
@@ -1114,7 +1142,6 @@ local function startZoomXa()
         local targetDist = S.zoomDistance or 99999
         while S.zoomXaOn do
             pcall(function()
-                -- Ép liên tục chống game reset
                 if LP.CameraMaxZoomDistance ~= targetDist then
                     LP.CameraMaxZoomDistance = targetDist
                 end
@@ -1130,8 +1157,7 @@ end
 
 local function stopZoomXa()
     if zoomThread then
-        pcall(function() task.cancel(zoomThread) end)
-        zoomThread = nil
+        pcall(function() task.cancel(zoomThread) end); zoomThread = nil
     end
     pcall(function()
         LP.CameraMinZoomDistance = oldZoomMin or 0.5
@@ -1140,7 +1166,7 @@ local function stopZoomXa()
 end
 
 -- ─────────────────────────────────────────────────────────────
---  §16. ANTI-LAG
+--  §15. ANTI-LAG
 -- ─────────────────────────────────────────────────────────────
 local antiLagLoopThread, fpsUnlockConnection, shakeConnection = nil, nil, nil
 local antiLagConnections = {}
@@ -1289,7 +1315,7 @@ local function stopAntiLag()
 end
 
 -- ─────────────────────────────────────────────────────────────
---  §17. TRADE HOOKS
+--  §16. TRADE HOOKS
 -- ─────────────────────────────────────────────────────────────
 local TRADE_FILE = "WonGaVn_Trades.json"
 
@@ -1328,7 +1354,7 @@ local function setupTradeHooks()
 end
 
 -- ─────────────────────────────────────────────────────────────
---  §18. ANTIBAN
+--  §17. ANTIBAN
 -- ─────────────────────────────────────────────────────────────
 local BLOCK = {report=true,ban=true,kick=true,vote=true,cheat=true,anticheat=true,
     detect=true,flag=true,suspicious=true,scan=true,check=true}
@@ -1403,7 +1429,7 @@ local function enableAntiban()
 end
 
 -- ─────────────────────────────────────────────────────────────
---  §19. CHARACTER LOOPS
+--  §18. CHARACTER LOOPS
 -- ─────────────────────────────────────────────────────────────
 RunService.Heartbeat:Connect(function()
     if _G.WGVersion ~= MY_VERSION then return end
@@ -1479,7 +1505,7 @@ task.spawn(function()
 end)
 
 -- ─────────────────────────────────────────────────────────────
---  §20. HITBOX
+--  §19. HITBOX
 -- ─────────────────────────────────────────────────────────────
 local originals = {}
 local hitboxConnections = {}
@@ -1540,7 +1566,7 @@ end
 Players.PlayerRemoving:Connect(function(pl) originals[pl] = nil end)
 
 -- ─────────────────────────────────────────────────────────────
---  §21. AOE
+--  §20. AOE
 -- ─────────────────────────────────────────────────────────────
 local aoeCooldown = 0
 local AOE_COOLDOWN = 0.5
@@ -1600,14 +1626,12 @@ local function startAoeLoop()
 end
 
 -- ─────────────────────────────────────────────────────────────
---  §22. ESP
+--  §21. ESP
 -- ─────────────────────────────────────────────────────────────
 local mushroomESP = {}
 local COLOR_ESP = {
-    red = Color3.fromRGB(255, 50, 50),
-    blue = Color3.fromRGB(80, 180, 255),
-    gold = Color3.fromRGB(255, 215, 0),
-    player = Color3.fromRGB(255, 255, 255),
+    red = Color3.fromRGB(255,50,50), blue = Color3.fromRGB(80,180,255),
+    gold = Color3.fromRGB(255,215,0), player = Color3.fromRGB(255,255,255),
 }
 
 local function makeShroomESP(part, ctype)
@@ -1656,8 +1680,8 @@ local function makeNameTag(pl)
     bb.AlwaysOnTop = true; bb.Adornee = head; bb.Parent = head
     local lbl = Instance.new("TextLabel", bb)
     lbl.Size = UDim2.new(1, 0, 1, 0); lbl.BackgroundTransparency = 1
-    lbl.TextColor3 = Color3.fromRGB(255, 255, 255); lbl.TextStrokeTransparency = 0.3
-    lbl.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    lbl.TextColor3 = Color3.fromRGB(255,255,255); lbl.TextStrokeTransparency = 0.3
+    lbl.TextStrokeColor3 = Color3.fromRGB(0,0,0)
     lbl.Font = Enum.Font.GothamBold; lbl.TextSize = 13
     lbl.Text = pl.Name
 end
@@ -1764,7 +1788,7 @@ Players.PlayerAdded:Connect(function(pl)
 end)
 
 -- ─────────────────────────────────────────────────────────────
---  §23. CHAT SPAM
+--  §22. CHAT SPAM
 -- ─────────────────────────────────────────────────────────────
 local spamThread = nil
 local CONFUSABLES = {["a"]="а",["e"]="е",["o"]="о",["p"]="р",["c"]="с",["x"]="х",["y"]="у"}
@@ -1801,7 +1825,7 @@ local function stopSpamChat()
 end
 
 -- ─────────────────────────────────────────────────────────────
---  §24. MENU THEME
+--  §23. MENU THEME
 -- ─────────────────────────────────────────────────────────────
 local function applyMenuTheme()
     if not S.effects then return end
@@ -1842,7 +1866,7 @@ local function applyMenuTheme()
 end
 
 -- ─────────────────────────────────────────────────────────────
---  §25. NOTIFY + UNLOCK
+--  §24. NOTIFY + UNLOCK
 -- ─────────────────────────────────────────────────────────────
 local function sysNotify(key, custom)
     pcall(function()
@@ -1879,7 +1903,7 @@ local function doUnlock()
 end
 
 -- ─────────────────────────────────────────────────────────────
---  §26. BUILD MENU
+--  §25. BUILD MENU
 -- ─────────────────────────────────────────────────────────────
 buildMenu = function()
     local Window = Rayfield:CreateWindow({
@@ -1908,7 +1932,7 @@ buildMenu = function()
     pcall(function() TabKeys = Window:CreateTab("⌨️ keybinds", ICONS.keyboard) end)
     pcall(function() TabVisual = Window:CreateTab("🎨 visual", ICONS.sparkle) end)
 
-    -- ═══════════════════ ANTIBAN ═══════════════════
+    -- ══════════════ ANTIBAN ══════════════
     TabAB:CreateSection("🛡️ antiban")
     TabAB:CreateToggle({Name = T("ab_toggle"), CurrentValue = S.antibanOn ~= false, Flag = "Antiban",
         Callback = function(v)
@@ -1923,8 +1947,7 @@ buildMenu = function()
     TabAB:CreateLabel("🧪 bản thử nghiệm — có thể không hoạt động")
     TabAB:CreateToggle({
         Name = "🔛 bật bảo vệ player",
-        CurrentValue = _G.WGAntibanSettings.bansbyOn,
-        Flag = "BansbyToggle",
+        CurrentValue = _G.WGAntibanSettings.bansbyOn, Flag = "BansbyToggle",
         Callback = function(v)
             _G.WGAntibanSettings.bansbyOn = v
             if v then
@@ -1943,9 +1966,7 @@ buildMenu = function()
     TabAB:CreateInput({
         Name = "👤 tên player cần bảo vệ",
         CurrentValue = _G.WGAntibanSettings.protectPlayer,
-        PlaceholderText = "wongavnx",
-        RemoveTextAfterFocusLost = false,
-        Flag = "AntibanProtectName",
+        PlaceholderText = "wongavnx", RemoveTextAfterFocusLost = false, Flag = "AntibanProtectName",
         Callback = function(t)
             if t and #t > 0 then
                 _G.WGAntibanSettings.protectPlayer = t
@@ -1955,7 +1976,7 @@ buildMenu = function()
     })
     TabAB:CreateLabel("💡 nếu player này rời server → kick toàn bộ player khác")
 
-    -- ═══════════════════ COMBAT ═══════════════════
+    -- ══════════════ COMBAT ══════════════
     TabCombat:CreateSection("hitbox")
     TabCombat:CreateToggle({Name = T("hitbox"), CurrentValue = S.hitboxOn, Flag = "Hitbox",
         Callback = function(v)
@@ -2000,7 +2021,7 @@ buildMenu = function()
     TabCombat:CreateLabel(T("combat_warn"))
     TabCombat:CreateLabel(T("speed_warn"))
 
-    -- ═══════════════════ ESP ═══════════════════
+    -- ══════════════ ESP ══════════════
     TabESP:CreateSection("esp")
     TabESP:CreateToggle({Name = T("esp_p"), CurrentValue = S.espPlayers, Flag = "EspPlayer",
         Callback = function(v) S.espPlayers = v
@@ -2044,12 +2065,10 @@ buildMenu = function()
         end})
     TabESP:CreateLabel(T("esp_coming"))
 
-    -- ═══════════════════ AUTO FARM ═══════════════════
+    -- ══════════════ AUTO FARM ══════════════
     TabFarm:CreateSection("🍄 auto farm shoom pile")
     TabFarm:CreateToggle({
-        Name = T("farm_toggle"),
-        CurrentValue = S.autoFarmOn,
-        Flag = "AutoFarm",
+        Name = T("farm_toggle"), CurrentValue = S.autoFarmOn, Flag = "AutoFarm",
         Callback = function(v)
             S.autoFarmOn = v
             if v then startAutoFarm() else stopAutoFarm() end
@@ -2058,7 +2077,7 @@ buildMenu = function()
         end
     })
 
-    -- ═══════════════════ MISC ═══════════════════
+    -- ══════════════ MISC ══════════════
     TabMisc:CreateSection("⚡ " .. T("sys_name"))
     TabMisc:CreateInput({Name = T("sys_name"), CurrentValue = S.systemName,
         PlaceholderText = "nhập tên...", RemoveTextAfterFocusLost = false, Flag = "SysName",
@@ -2096,7 +2115,7 @@ buildMenu = function()
 
     TabMisc:CreateSection("🌐 " .. T("lang"))
     local langOptions, curLang = {}, nil
-    local langMap = {vi="🇻🇳 tiếng việt", us="🇺🇸 english (us)"}
+    local langMap = {vi="🇻🇳 tiếng việt", us="🇺🇸 english (us)", cn="🇨🇳 中文", jp="🇯🇵 日本語", kr="🇰🇷 한국어"}
     for code, name in pairs(langMap) do
         table.insert(langOptions, name)
         if code == S.lang then curLang = name end
@@ -2222,105 +2241,78 @@ buildMenu = function()
     TabMisc:CreateLabel(T("tiktok_update"))
     TabMisc:CreateLabel(T("credit"))
 
-    -- ═══════════════════ KEYBINDS (nếu lib support) ═══════════════════
+    -- ══════════════ KEYBINDS ══════════════
     if TabKeys then
         TabKeys:CreateSection("⌨️ phím tắt hệ thống")
         TabKeys:CreateLabel("💡 bấm vào nút key rồi nhấn phím bạn muốn gán")
 
-        pcall(function()
-            TabKeys:CreateKeybind({
-                Name = "🎛️ mở/đóng menu",
-                CurrentKeybind = S.menuKey or "RightShift",
-                HoldToInteract = false, Flag = "KeyMenu",
-                Callback = function(k)
-                    S.menuKey = k
-                    if CurrentWindow then pcall(function() CurrentWindow:Toggle() end) end
-                    saveFullConfig()
-                end
-            })
-        end)
-        pcall(function()
-            TabKeys:CreateKeybind({
-                Name = "🎯 hitbox", CurrentKeybind = S.hitboxKey or "F2",
-                HoldToInteract = false, Flag = "KeyHitbox",
-                Callback = function()
-                    S.hitboxOn = not S.hitboxOn
-                    if S.hitboxOn then startHitbox() else stopHitbox() end
-                    notifyChange("hitbox", S.hitboxOn, "hitbox_on", "hitbox_off")
-                end
-            })
-        end)
-        pcall(function()
-            TabKeys:CreateKeybind({
-                Name = "💥 aoe", CurrentKeybind = S.aoeKey or "F3",
-                HoldToInteract = false, Flag = "KeyAoe",
-                Callback = function()
-                    S.aoeOn = not S.aoeOn
-                    if S.aoeOn then startAoeLoop() end
-                    notifyChange("aoe", S.aoeOn, "aoe_on", "aoe_off")
-                end
-            })
-        end)
-        pcall(function()
-            TabKeys:CreateKeybind({
-                Name = "🕊️ fly", CurrentKeybind = S.flyKey or "F4",
-                HoldToInteract = false, Flag = "KeyFly",
-                Callback = function()
-                    S.flyOn = not S.flyOn
-                    notifyChange("fly", S.flyOn, "fly_on", "fly_off")
-                end
-            })
-        end)
-        pcall(function()
-            TabKeys:CreateKeybind({
-                Name = "👻 noclip", CurrentKeybind = S.noclipKey or "F5",
-                HoldToInteract = false, Flag = "KeyNoclip",
-                Callback = function()
-                    S.noclipOn = not S.noclipOn
-                    notifyChange("noclip", S.noclipOn, "noclip_on", "noclip_off")
-                end
-            })
-        end)
-        pcall(function()
-            TabKeys:CreateKeybind({
-                Name = "🍄 auto farm", CurrentKeybind = S.farmKey or "F6",
-                HoldToInteract = false, Flag = "KeyFarm",
-                Callback = function()
-                    S.autoFarmOn = not S.autoFarmOn
-                    if S.autoFarmOn then startAutoFarm() else stopAutoFarm() end
-                    notifyChange("farm", S.autoFarmOn, "farm_on", "farm_off")
-                end
-            })
-        end)
-        pcall(function()
-            TabKeys:CreateKeybind({
-                Name = "🔭 zoom vô hạn", CurrentKeybind = S.zoomKey or "F7",
-                HoldToInteract = false, Flag = "KeyZoom",
-                Callback = function()
-                    S.zoomXaOn = not S.zoomXaOn
-                    if S.zoomXaOn then startZoomXa() else stopZoomXa() end
-                    notifyChange("zoom", S.zoomXaOn, "zoom_on", "zoom_off")
-                end
-            })
-        end)
+        pcall(function() TabKeys:CreateKeybind({
+            Name = "🎛️ mở/đóng menu", CurrentKeybind = S.menuKey or "RightShift",
+            HoldToInteract = false, Flag = "KeyMenu",
+            Callback = function(k)
+                S.menuKey = k
+                if CurrentWindow then pcall(function() CurrentWindow:Toggle() end) end
+                saveFullConfig()
+            end}) end)
+        pcall(function() TabKeys:CreateKeybind({
+            Name = "🎯 hitbox", CurrentKeybind = S.hitboxKey or "F2",
+            HoldToInteract = false, Flag = "KeyHitbox",
+            Callback = function()
+                S.hitboxOn = not S.hitboxOn
+                if S.hitboxOn then startHitbox() else stopHitbox() end
+                notifyChange("hitbox", S.hitboxOn, "hitbox_on", "hitbox_off")
+            end}) end)
+        pcall(function() TabKeys:CreateKeybind({
+            Name = "💥 aoe", CurrentKeybind = S.aoeKey or "F3",
+            HoldToInteract = false, Flag = "KeyAoe",
+            Callback = function()
+                S.aoeOn = not S.aoeOn
+                if S.aoeOn then startAoeLoop() end
+                notifyChange("aoe", S.aoeOn, "aoe_on", "aoe_off")
+            end}) end)
+        pcall(function() TabKeys:CreateKeybind({
+            Name = "🕊️ fly", CurrentKeybind = S.flyKey or "F4",
+            HoldToInteract = false, Flag = "KeyFly",
+            Callback = function()
+                S.flyOn = not S.flyOn
+                notifyChange("fly", S.flyOn, "fly_on", "fly_off")
+            end}) end)
+        pcall(function() TabKeys:CreateKeybind({
+            Name = "👻 noclip", CurrentKeybind = S.noclipKey or "F5",
+            HoldToInteract = false, Flag = "KeyNoclip",
+            Callback = function()
+                S.noclipOn = not S.noclipOn
+                notifyChange("noclip", S.noclipOn, "noclip_on", "noclip_off")
+            end}) end)
+        pcall(function() TabKeys:CreateKeybind({
+            Name = "🍄 auto farm", CurrentKeybind = S.farmKey or "F6",
+            HoldToInteract = false, Flag = "KeyFarm",
+            Callback = function()
+                S.autoFarmOn = not S.autoFarmOn
+                if S.autoFarmOn then startAutoFarm() else stopAutoFarm() end
+                notifyChange("farm", S.autoFarmOn, "farm_on", "farm_off")
+            end}) end)
+        pcall(function() TabKeys:CreateKeybind({
+            Name = "🔭 zoom vô hạn", CurrentKeybind = S.zoomKey or "F7",
+            HoldToInteract = false, Flag = "KeyZoom",
+            Callback = function()
+                S.zoomXaOn = not S.zoomXaOn
+                if S.zoomXaOn then startZoomXa() else stopZoomXa() end
+                notifyChange("zoom", S.zoomXaOn, "zoom_on", "zoom_off")
+            end}) end)
     end
 
-    -- ═══════════════════ VISUAL (nếu lib support) ═══════════════════
+    -- ══════════════ VISUAL ══════════════
     if TabVisual then
         TabVisual:CreateSection("🎨 màu chủ đạo")
         TabVisual:CreateLabel("💡 đổi màu đồng bộ UI + watermark")
 
-        pcall(function()
-            TabVisual:CreateColorPicker({
-                Name = "🌈 theme color",
-                Color = _G.WGThemeColor,
-                Flag = "ThemeColor",
-                Callback = function(c)
-                    applyThemeColor(c)
-                    saveFullConfig()
-                end
-            })
-        end)
+        pcall(function() TabVisual:CreateColorPicker({
+            Name = "🌈 theme color", Color = _G.WGThemeColor, Flag = "ThemeColor",
+            Callback = function(c)
+                applyThemeColor(c)
+                saveFullConfig()
+            end}) end)
 
         pcall(function() TabVisual:CreateButton({Name = "🔵 xanh dương",
             Callback = function() applyThemeColor(Color3.fromRGB(100,200,255)) end}) end)
@@ -2336,8 +2328,7 @@ buildMenu = function()
         TabVisual:CreateSection("💧 watermark FPS")
         TabVisual:CreateToggle({
             Name = "hiển thị watermark (tên + FPS + giờ)",
-            CurrentValue = S.watermarkOn ~= false,
-            Flag = "WatermarkToggle",
+            CurrentValue = S.watermarkOn ~= false, Flag = "WatermarkToggle",
             Callback = function(v)
                 S.watermarkOn = v
                 if v then createWatermark() else destroyWatermark() end
@@ -2346,15 +2337,13 @@ buildMenu = function()
         })
 
         TabVisual:CreateSection("💡 thông tin")
-        pcall(function()
-            TabVisual:CreateParagraph({
-                Title = "ℹ️ " .. VERSION_TAG,
-                Content = "Keybind, watermark, color theme đã được tích hợp. Nếu tab trống → executor cần update Rayfield library (restart executor)."
-            })
-        end)
+        pcall(function() TabVisual:CreateParagraph({
+            Title = "ℹ️ " .. VERSION_TAG,
+            Content = "UI nâng cấp Gen 2 — toàn bộ chức năng bản cũ giữ nguyên. Nếu tab trống → executor cần update Rayfield library."
+        }) end)
     end
 
-    -- ═══════════════════ UTIL ═══════════════════
+    -- ══════════════ UTIL ══════════════
     if not S.utilityUnlocked then
         TabUtil:CreateSection("🔒 " .. T("seal_locked"))
         TabUtil:CreateLabel(T("seal_hint"))
@@ -2362,8 +2351,7 @@ buildMenu = function()
     else
         TabUtil:CreateSection("💀 anti-death")
         TabUtil:CreateToggle({
-            Name = T("antideath_toggle"),
-            CurrentValue = S.antiDeathOn, Flag = "AntiDeath",
+            Name = T("antideath_toggle"), CurrentValue = S.antiDeathOn, Flag = "AntiDeath",
             Callback = function(v)
                 S.antiDeathOn = v
                 if v then startAntiDeath() else stopAntiDeath() end
@@ -2372,8 +2360,7 @@ buildMenu = function()
             end
         })
         TabUtil:CreateSlider({
-            Name = T("antideath_threshold"),
-            Range = {10, 80}, Increment = 5, Suffix = "%",
+            Name = T("antideath_threshold"), Range = {10, 80}, Increment = 5, Suffix = "%",
             CurrentValue = S.antiDeathThreshold, Flag = "AntiDeathThreshold",
             Callback = function(v) S.antiDeathThreshold = v; saveFullConfig() end
         })
@@ -2438,7 +2425,6 @@ buildMenu = function()
             end})
     end
 
-    -- Báo version + verify tabs
     task.wait(0.3)
     pcall(function()
         Rayfield:Notify({
@@ -2452,7 +2438,7 @@ buildMenu = function()
 end
 
 -- ─────────────────────────────────────────────────────────────
---  §27. START
+--  §26. START
 -- ─────────────────────────────────────────────────────────────
 local function startMain()
     hardCleanup()
