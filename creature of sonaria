@@ -1,8 +1,9 @@
 -- ============================================================
---  WonGaVn🇻🇳 Script - V3.1 (Gen 2)
+--  WonGaVn🇻🇳 Script - V3.2 GEN2 (FINAL)
 --  tiktok: Nkhaj97 | discord: discord.gg/ry3buvjz5
 -- ============================================================
 local SCRIPT_URL = "https://raw.githubusercontent.com/nguyenkha233/WonGaVn/refs/heads/main/creature%20of%20sonaria"
+local VERSION_TAG = "V3.2 GEN2"
 
 -- ─────────────────────────────────────────────────────────────
 --  §1. SERVICES
@@ -15,6 +16,7 @@ local HttpService  = game:GetService("HttpService")
 local Lighting     = game:GetService("Lighting")
 local TweenService = game:GetService("TweenService")
 local TCS          = game:GetService("TextChatService")
+local StarterGui   = game:GetService("StarterGui")
 local LP           = Players.LocalPlayer
 
 -- ─────────────────────────────────────────────────────────────
@@ -117,21 +119,71 @@ pcall(function()
 end)
 
 -- ─────────────────────────────────────────────────────────────
---  §5. RESTART
+--  §5. HARD CLEANUP + SOFT RELOAD
 -- ─────────────────────────────────────────────────────────────
-local function restartScript()
-    _G.WGVersion = _G.WGVersion + 1
+local Rayfield      = nil
+local CurrentWindow = nil
+local buildMenu
+
+local function hardCleanup()
+    local parent = (gethui and gethui()) or game:GetService("CoreGui")
+    for _, g in ipairs(parent:GetChildren()) do
+        if g:IsA("ScreenGui") then
+            local nm = g.Name:lower()
+            if nm:find("rayfield") or nm:find("sirius")
+               or nm:find("wg_") or nm:find("wongavn") then
+                pcall(function() g:Destroy() end)
+            end
+        end
+    end
+end
+
+local _softReloading = false
+local function softReload()
+    if _softReloading then return end
+    _softReloading = true
     saveFullConfig()
     if _G.WGResetNotify then _G.WGResetNotify() end
-    pcall(function()
-        for _, g in ipairs(game:GetService("CoreGui"):GetChildren()) do
-            local nm = g.Name:lower()
-            if nm:find("rayfield") or nm:find("sirius") or nm:find("wg_") then g:Destroy() end
-        end
+
+    if _G.WGWatermarkRef then
+        pcall(function() _G.WGWatermarkRef:Destroy() end)
+        _G.WGWatermarkRef = nil
+    end
+    if _G.WGWatermark then
+        pcall(function() _G.WGWatermark:Destroy() end)
+        _G.WGWatermark = nil
+    end
+
+    hardCleanup()
+    task.wait(0.4)
+
+    Rayfield = nil
+    CurrentWindow = nil
+
+    local ok = pcall(function()
+        Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
     end)
-    task.wait(1.5)
-    pcall(function() loadstring(game:HttpGet(SCRIPT_URL))() end)
+    if not ok or not Rayfield then
+        warn("[wongavn] soft reload fail — thử hard reload...")
+        task.wait(1)
+        pcall(function() loadstring(game:HttpGet(SCRIPT_URL))() end)
+        return
+    end
+
+    task.wait(0.4)
+    pcall(buildMenu)
+    task.wait(0.6)
+    pcall(function() if applyMenuTheme then applyMenuTheme() end end)
+
+    task.spawn(function()
+        task.wait(0.5)
+        if applyThemeColor then applyThemeColor(_G.WGThemeColor or Color3.fromRGB(100,200,255)) end
+        if S.watermarkOn ~= false and createWatermark then createWatermark() end
+    end)
+
+    _softReloading = false
 end
+local restartScript = softReload
 
 -- ─────────────────────────────────────────────────────────────
 --  §6. TRANSLATIONS
@@ -146,7 +198,7 @@ local TXT = {
         hitbox="bật hitbox", hitbox_size="kích thước hitbox",
         aoe="bật aoe", aoe_range="bán kính aoe",
         esp_p="esp player", esp_m="esp shoom (màu theo loại)",
-        esp_info="hiển thị esp", esp_info_opts="tắt,hiện tên",
+        esp_info="hiển thị esp",
         sys_name="tên hệ thống", sys_personality="tính cách",
         walk_slider="tốc độ chạy", jump_slider="lực nhảy",
         inf_jump="nhảy vô hạn", effects_toggle="hiệu ứng menu",
@@ -181,7 +233,7 @@ local TXT = {
         hitbox="enable hitbox", hitbox_size="hitbox size",
         aoe="enable aoe", aoe_range="aoe range",
         esp_p="esp player", esp_m="esp shoom (color by type)",
-        esp_info="esp display", esp_info_opts="off,show name",
+        esp_info="esp display",
         sys_name="system name", sys_personality="personality",
         walk_slider="walk speed", jump_slider="jump power", inf_jump="infinite jump",
         effects_toggle="menu effects", drag_menu="allow drag", lang="language",
@@ -208,7 +260,7 @@ local TXT = {
         ab_toggle="启用反封", ab_warn_pro="🛡️ 反封 85%。",
         combat_warn="⚠️ 战斗游戏！", speed_warn="⚠️ 500-1000。",
         hitbox="命中框", hitbox_size="大小", aoe="范围", aoe_range="半径",
-        esp_p="esp玩家", esp_m="esp蘑菇", esp_info="esp显示", esp_info_opts="关闭,显示名称",
+        esp_p="esp玩家", esp_m="esp蘑菇", esp_info="esp显示",
         sys_name="系统名", sys_personality="性格", walk_slider="速度", jump_slider="跳跃", inf_jump="无限跳跃",
         effects_toggle="菜单特效", drag_menu="允许拖动", lang="语言",
         unlock_misc="🔓 解锁封印", unlock_hint="解锁后重启。",
@@ -230,7 +282,7 @@ local TXT = {
         ab_toggle="アンチban", ab_warn_pro="🛡️ アンチban 85%。",
         combat_warn="⚠️ 戦闘ゲーム！", speed_warn="⚠️ 500-1000。",
         hitbox="ヒットボックス", hitbox_size="サイズ", aoe="範囲", aoe_range="半径",
-        esp_p="espプレイヤー", esp_m="espキノコ", esp_info="esp表示", esp_info_opts="オフ,名前",
+        esp_p="espプレイヤー", esp_m="espキノコ", esp_info="esp表示",
         sys_name="システム名", sys_personality="性格", walk_slider="速度", jump_slider="ジャンプ", inf_jump="無限ジャンプ",
         effects_toggle="メニュー効果", drag_menu="ドラッグ", lang="言語",
         unlock_misc="🔓 封印解除", unlock_hint="解除後再起動。",
@@ -252,7 +304,7 @@ local TXT = {
         ab_toggle="안티밴", ab_warn_pro="🛡️ 안티밴 85%.",
         combat_warn="⚠️ 전투 게임!", speed_warn="⚠️ 500-1000.",
         hitbox="히트박스", hitbox_size="크기", aoe="범위", aoe_range="반경",
-        esp_p="esp 플레이어", esp_m="esp 버섯", esp_info="esp", esp_info_opts="끄기,이름",
+        esp_p="esp 플레이어", esp_m="esp 버섯", esp_info="esp",
         sys_name="시스템", sys_personality="성격", walk_slider="속도", jump_slider="점프", inf_jump="무한 점프",
         effects_toggle="메뉴 효과", drag_menu="드래그", lang="언어",
         unlock_misc="🔓 봉인 해제", unlock_hint="해제 후 재시작.",
@@ -362,7 +414,7 @@ local function getPLine(key)
 end
 
 -- ─────────────────────────────────────────────────────────────
---  §8. GEN 2 — THEME / WATERMARK / ICONS
+--  §8. THEME / WATERMARK / ICONS
 -- ─────────────────────────────────────────────────────────────
 _G.WGThemeColor = _G.WGThemeColor or Color3.fromRGB(100,200,255)
 local watermarkGui = nil
@@ -372,10 +424,12 @@ local function hexToColor(hex)
     hex = hex:gsub("#", "")
     local n = tonumber(hex, 16)
     if not n then return _G.WGThemeColor end
+    local b32 = bit32 or bit
+    if not b32 then return _G.WGThemeColor end
     return Color3.fromRGB(
-        bit32.band(bit32.rshift(n, 16), 0xFF),
-        bit32.band(bit32.rshift(n, 8), 0xFF),
-        bit32.band(n, 0xFF))
+        b32.band(b32.rshift(n, 16), 0xFF),
+        b32.band(b32.rshift(n, 8), 0xFF),
+        b32.band(n, 0xFF))
 end
 
 local function colorToHex(c)
@@ -404,6 +458,8 @@ local function applyThemeColor(color)
             if st then st.Color = color end
             local grad = bar:FindFirstChildOfClass("UIGradient")
             if grad then grad.Color = ColorSequence.new(color, Color3.fromRGB(255,255,255)) end
+            local badge = bar:FindFirstChild("Badge")
+            if badge then badge.BackgroundColor3 = color end
         end
     end
 end
@@ -412,38 +468,52 @@ local function createWatermark()
     if watermarkGui then return end
     local parent = (gethui and gethui()) or game:GetService("CoreGui")
     local gui = Instance.new("ScreenGui")
-    gui.Name = "WG_Watermark"
+    gui.Name = "WG_Watermark_V32"
     gui.ResetOnSpawn = false
     gui.IgnoreGuiInset = true
     gui.DisplayOrder = 9999998
     gui.Parent = parent
+    _G.WGWatermarkRef = gui
 
     local frame = Instance.new("Frame", gui)
     frame.Name = "Bar"
-    frame.Size = UDim2.new(0, 320, 0, 30)
-    frame.Position = UDim2.new(1, -336, 0, 12)
+    frame.Size = UDim2.new(0, 380, 0, 32)
+    frame.Position = UDim2.new(1, -396, 0, 12)
     frame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
-    frame.BackgroundTransparency = 0.15
+    frame.BackgroundTransparency = 0.1
     frame.BorderSizePixel = 0
     Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
 
     local stroke = Instance.new("UIStroke", frame)
     stroke.Color = _G.WGThemeColor
     stroke.Thickness = 1.5
-    stroke.Transparency = 0.35
+    stroke.Transparency = 0.3
 
     local grad = Instance.new("UIGradient", frame)
     grad.Color = ColorSequence.new(_G.WGThemeColor, Color3.fromRGB(255,255,255))
     grad.Transparency = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 0.75),
+        NumberSequenceKeypoint.new(0, 0.7),
         NumberSequenceKeypoint.new(1, 0.95),
     })
     grad.Rotation = 90
 
+    local badge = Instance.new("TextLabel", frame)
+    badge.Name = "Badge"
+    badge.Size = UDim2.new(0, 80, 1, -8)
+    badge.Position = UDim2.new(0, 6, 0, 4)
+    badge.BackgroundColor3 = _G.WGThemeColor
+    badge.BackgroundTransparency = 0.2
+    badge.BorderSizePixel = 0
+    badge.TextColor3 = Color3.fromRGB(255, 255, 255)
+    badge.Font = Enum.Font.GothamBlack
+    badge.TextSize = 12
+    badge.Text = VERSION_TAG
+    Instance.new("UICorner", badge).CornerRadius = UDim.new(0, 6)
+
     local label = Instance.new("TextLabel", frame)
     label.Name = "Info"
-    label.Size = UDim2.new(1, -20, 1, 0)
-    label.Position = UDim2.new(0, 12, 0, 0)
+    label.Size = UDim2.new(1, -100, 1, 0)
+    label.Position = UDim2.new(0, 92, 0, 0)
     label.BackgroundTransparency = 1
     label.TextColor3 = Color3.fromRGB(240, 245, 255)
     label.Font = Enum.Font.GothamBold
@@ -452,13 +522,14 @@ local function createWatermark()
     label.Text = "⚡ " .. (S.systemName or "WonGaVn")
 
     watermarkGui = gui
+    _G.WGWatermark = gui
     task.spawn(function()
         local fps, frames, lastT = 60, 0, tick()
         RunService.RenderStepped:Connect(function() frames = frames + 1 end)
         while watermarkGui == gui and gui.Parent do
             local now = tick()
             if now - lastT >= 1 then fps = frames; frames = 0; lastT = now end
-            label.Text = string.format("⚡ %s  •  FPS: %d  •  %s",
+            label.Text = string.format("⚡ %s  •  FPS %d  •  %s",
                 S.systemName or "WonGaVn", fps, os.date("%H:%M:%S"))
             task.wait(0.25)
         end
@@ -466,7 +537,10 @@ local function createWatermark()
 end
 
 local function destroyWatermark()
-    if watermarkGui then pcall(function() watermarkGui:Destroy() end); watermarkGui = nil end
+    if watermarkGui then pcall(function() watermarkGui:Destroy() end) end
+    watermarkGui = nil
+    _G.WGWatermarkRef = nil
+    _G.WGWatermark = nil
 end
 
 local ICONS = {
@@ -481,7 +555,7 @@ local ICONS = {
 }
 
 -- ─────────────────────────────────────────────────────────────
---  §9. NOTIFY DEDUP — chống spam
+--  §9. NOTIFY DEDUP
 -- ─────────────────────────────────────────────────────────────
 local _notifyCache = {}
 local _notifyLast = 0
@@ -588,7 +662,7 @@ local function showIntro(onDone)
 end
 
 -- ─────────────────────────────────────────────────────────────
---  §11. RAYFIELD LOADING LOGO
+--  §11. LOADING LOGO
 -- ─────────────────────────────────────────────────────────────
 local function injectLogoIntoLoading()
     task.spawn(function()
@@ -1809,12 +1883,8 @@ local function applyMenuTheme()
 end
 
 -- ─────────────────────────────────────────────────────────────
---  §25. UNLOCK SEAL
+--  §25. NOTIFY + UNLOCK
 -- ─────────────────────────────────────────────────────────────
-local Rayfield = nil
-local CurrentWindow = nil
-local buildMenu
-
 local function sysNotify(key, custom)
     pcall(function()
         Rayfield:Notify({Title = "⚡ " .. S.systemName, Content = custom or getPLine(key), Duration = 4})
@@ -1846,7 +1916,7 @@ local function doUnlock()
     task.wait(1.5)
     Rayfield:Notify({Title = "🌟", Content = "đang khởi động lại hệ thống...", Duration = 5})
     task.wait(2)
-    restartScript()
+    softReload()
 end
 
 -- ─────────────────────────────────────────────────────────────
@@ -1854,8 +1924,8 @@ end
 -- ─────────────────────────────────────────────────────────────
 buildMenu = function()
     local Window = Rayfield:CreateWindow({
-        Name = "WonGaVn🇻🇳 Script",
-        LoadingTitle = "WonGaVn🇻🇳 • Gen 2",
+        Name = "WonGaVn🇻🇳 " .. VERSION_TAG,
+        LoadingTitle = "WonGaVn🇻🇳 • " .. VERSION_TAG,
         LoadingSubtitle = "tiktok: Nkhaj97",
         ConfigurationSaving = { Enabled = false },
         KeySystem = false,
@@ -1877,7 +1947,7 @@ buildMenu = function()
     local TabKeys    = Window:CreateTab("⌨️ keybinds",   ICONS.keyboard)
     local TabVisual  = Window:CreateTab("🎨 visual",     ICONS.sparkle)
 
-    -- ── ANTIBAN ─────────────────────────────────────────
+    -- ANTIBAN
     TabAB:CreateSection("🛡️ antiban")
     TabAB:CreateToggle({Name = T("ab_toggle"), CurrentValue = S.antibanOn ~= false, Flag = "Antiban",
         Callback = function(v)
@@ -1924,7 +1994,7 @@ buildMenu = function()
     })
     TabAB:CreateLabel("💡 nếu player này rời server → kick toàn bộ player khác")
 
-    -- ── COMBAT ──────────────────────────────────────────
+    -- COMBAT
     TabCombat:CreateSection("hitbox")
     TabCombat:CreateToggle({Name = T("hitbox"), CurrentValue = S.hitboxOn, Flag = "Hitbox",
         Callback = function(v)
@@ -1969,7 +2039,7 @@ buildMenu = function()
     TabCombat:CreateLabel(T("combat_warn"))
     TabCombat:CreateLabel(T("speed_warn"))
 
-    -- ── ESP ─────────────────────────────────────────────
+    -- ESP
     TabESP:CreateSection("esp")
     TabESP:CreateToggle({Name = T("esp_p"), CurrentValue = S.espPlayers, Flag = "EspPlayer",
         Callback = function(v) S.espPlayers = v
@@ -2013,7 +2083,7 @@ buildMenu = function()
         end})
     TabESP:CreateLabel(T("esp_coming"))
 
-    -- ── AUTO FARM ───────────────────────────────────────
+    -- AUTO FARM
     TabFarm:CreateSection("🍄 auto farm shoom pile")
     TabFarm:CreateToggle({
         Name = T("farm_toggle"),
@@ -2027,7 +2097,7 @@ buildMenu = function()
         end
     })
 
-    -- ── MISC ────────────────────────────────────────────
+    -- MISC
     TabMisc:CreateSection("⚡ " .. T("sys_name"))
     TabMisc:CreateInput({Name = T("sys_name"), CurrentValue = S.systemName,
         PlaceholderText = "nhập tên...", RemoveTextAfterFocusLost = false, Flag = "SysName",
@@ -2056,7 +2126,7 @@ buildMenu = function()
                     if writefile then pcall(function() writefile("WonGaVn_Personality.txt", code) end) end
                     task.spawn(function()
                         Rayfield:Notify({Title = "🎭 " .. S.systemName, Content = "tính cách: " .. sel, Duration = 2})
-                        task.wait(1.5); restartScript()
+                        task.wait(1.5); softReload()
                     end)
                     break
                 end
@@ -2081,7 +2151,7 @@ buildMenu = function()
                         S.lang = code; saveFullConfig()
                         task.spawn(function()
                             Rayfield:Notify({Title = "🌐", Content = "đang đổi ngôn ngữ...", Duration = 2})
-                            task.wait(1.5); restartScript()
+                            task.wait(1.5); softReload()
                         end)
                     end
                     break
@@ -2181,7 +2251,7 @@ buildMenu = function()
     TabMisc:CreateLabel(T("tiktok_update"))
     TabMisc:CreateLabel(T("credit"))
 
-    -- ── KEYBINDS ────────────────────────────────────────
+    -- KEYBINDS
     TabKeys:CreateSection("⌨️ phím tắt hệ thống")
     TabKeys:CreateLabel("💡 bấm vào nút key rồi nhấn phím bạn muốn gán")
 
@@ -2195,7 +2265,6 @@ buildMenu = function()
             saveFullConfig()
         end
     })
-
     TabKeys:CreateKeybind({
         Name = "🎯 hitbox",
         CurrentKeybind = S.hitboxKey or "F2",
@@ -2206,7 +2275,6 @@ buildMenu = function()
             notifyChange("hitbox", S.hitboxOn, "hitbox_on", "hitbox_off")
         end
     })
-
     TabKeys:CreateKeybind({
         Name = "💥 aoe",
         CurrentKeybind = S.aoeKey or "F3",
@@ -2217,7 +2285,6 @@ buildMenu = function()
             notifyChange("aoe", S.aoeOn, "aoe_on", "aoe_off")
         end
     })
-
     TabKeys:CreateKeybind({
         Name = "🕊️ fly",
         CurrentKeybind = S.flyKey or "F4",
@@ -2227,7 +2294,6 @@ buildMenu = function()
             notifyChange("fly", S.flyOn, "fly_on", "fly_off")
         end
     })
-
     TabKeys:CreateKeybind({
         Name = "👻 noclip",
         CurrentKeybind = S.noclipKey or "F5",
@@ -2237,7 +2303,6 @@ buildMenu = function()
             notifyChange("noclip", S.noclipOn, "noclip_on", "noclip_off")
         end
     })
-
     TabKeys:CreateKeybind({
         Name = "🍄 auto farm",
         CurrentKeybind = S.farmKey or "F6",
@@ -2249,7 +2314,7 @@ buildMenu = function()
         end
     })
 
-    -- ── VISUAL ──────────────────────────────────────────
+    -- VISUAL
     TabVisual:CreateSection("🎨 màu chủ đạo")
     TabVisual:CreateLabel("💡 đổi màu để đồng bộ toàn bộ UI + watermark")
 
@@ -2288,11 +2353,11 @@ buildMenu = function()
 
     TabVisual:CreateSection("💡 thông tin")
     TabVisual:CreateParagraph({
-        Title = "ℹ️ Rayfield Gen 2",
+        Title = "ℹ️ " .. VERSION_TAG,
         Content = "UI đã được nâng cấp với keybind, watermark, color theme, tab icons. Toàn bộ cấu hình được lưu tự động."
     })
 
-    -- ── UTIL ────────────────────────────────────────────
+    -- UTIL
     if not S.utilityUnlocked then
         TabUtil:CreateSection("🔒 " .. T("seal_locked"))
         TabUtil:CreateLabel(T("seal_hint"))
@@ -2401,6 +2466,9 @@ end
 --  §27. START
 -- ─────────────────────────────────────────────────────────────
 local function startMain()
+    hardCleanup()
+    task.wait(0.3)
+
     local ok, err = pcall(function()
         Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
     end)
@@ -2425,12 +2493,20 @@ local function startMain()
         if S.watermarkOn ~= false then createWatermark() end
     end)
 
+    task.wait(0.3)
+    pcall(function()
+        Rayfield:Notify({
+            Title = "⚡ " .. VERSION_TAG .. " • " .. S.systemName,
+            Content = "Script đã nâng cấp lên Gen 2 — giao diện mới, keybind, watermark, theme color!",
+            Duration = 6
+        })
+    end)
+
     if not _G.WGIntroShown then
         _G.WGIntroShown = true
-        sysNotify("loaded")
-        task.wait(2)
+        task.wait(1.5)
         pcall(function()
-            Rayfield:Notify({Title = "🧪 " .. S.systemName, Content = T("testing_notif"), Duration = 8})
+            Rayfield:Notify({Title = "🧪", Content = T("testing_notif"), Duration = 8})
         end)
     end
 
